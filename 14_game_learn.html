@@ -1238,7 +1238,10 @@ async function loadFromDB() {
     // 2. Expand pool if too small (less than 5 unique questions)
     if (qs.length < 5) {
       const moreQs = await sbFetch(`?language=eq.${state.lang}&level=eq.${state.level}&select=*&limit=50`, headers);
-      if (moreQs.length) qs = [...new Set([...qs, ...moreQs])];
+      if (moreQs.length) {
+        const ids = new Set(qs.map(q => q.id));
+        moreQs.forEach(q => { if (!ids.has(q.id)) qs.push(q); });
+      }
     }
     
     // 3. Same language, nearby levels
@@ -1246,16 +1249,34 @@ async function loadFromDB() {
       const minLvl = Math.max(1, state.level - 2);
       const maxLvl = Math.min(10, state.level + 2);
       const moreQs = await sbFetch(`?language=eq.${state.lang}&level=gte.${minLvl}&level=lte.${maxLvl}&select=*&limit=50`, headers);
-      if (moreQs.length) qs = [...new Set([...qs, ...moreQs])];
+      if (moreQs.length) {
+        const ids = new Set(qs.map(q => q.id));
+        moreQs.forEach(q => { if (!ids.has(q.id)) qs.push(q); });
+      }
     }
     
     // 4. Any question in language
     if (qs.length < 5) {
       const moreQs = await sbFetch(`?language=eq.${state.lang}&select=*&limit=50`, headers);
-      if (moreQs.length) qs = [...new Set([...qs, ...moreQs])];
+      if (moreQs.length) {
+        const ids = new Set(qs.map(q => q.id));
+        moreQs.forEach(q => { if (!ids.has(q.id)) qs.push(q); });
+      }
     }
     
-    // 5. Hard-coded dummy fallback
+    // 5. Automatic AI Fallback if pool is still too small and Gemini is available
+    const hasGemini = GEMINI_API_KEY && GEMINI_API_KEY !== 'YOUR_GEMINI_API_KEY_HERE';
+    if (qs.length < 3 && hasGemini && !state._forcedAI) {
+      console.log('Pool too small, switching to Gemini AI...');
+      state._forcedAI = true;
+      state.aiMode = true;
+      document.getElementById('mode-btn').classList.remove('db-mode');
+      document.getElementById('mode-label').textContent = 'AI Mode (Auto)';
+      await loadFromGemini();
+      return;
+    }
+
+    // 6. Hard-coded dummy fallback
     if (!qs.length) { renderDummy(); return; }
 
     shuffle(qs);
