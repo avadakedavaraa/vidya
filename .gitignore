@@ -1,0 +1,19 @@
+# Node / build artefacts
+node_modules/
+dist/
+.next/
+
+# API keys — NEVER commit these
+.env.local
+.env
+config.js
+
+# Python
+.venv/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db

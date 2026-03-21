@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="logo-v.png" type="image/png">
+<title>Vidyasetu — Live Session</title>
+<link rel="stylesheet" href="ui-system.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0D0D1A;--indigo:#5B45E0;--indigo-light:#F0EEF9;--indigo-dark:#3D2DB8;
+  --teal:#16A27B;--teal-light:#F0FAF6;--coin:#F5A623;--coin-light:#FFF9EF;
+  --danger:#E84040;--surface:#F7F8FA;--card:#FFFFFF;--border:#E5E7EB;
+  --muted:#9CA3AF;--body:#4B5563;
+  --vid-bg:#0D0D1A;--vid-card:#1a1a2e;--vid-border:rgba(255,255,255,.1);
+}
+[data-theme="dark"]{
+  --ink:#F0F0F8;--surface:#0f0f1a;--card:#16162a;--border:rgba(255,255,255,.1);
+  --muted:#6b6b8a;--body:#9898b8;--indigo-light:rgba(91,69,224,.15);
+  --teal-light:rgba(22,162,123,.15);--coin-light:rgba(245,166,35,.12);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--vid-bg);color:#e8e8f0;min-height:100vh;overflow:hidden;transition:background .3s}
+/* LAYOUT */
+.session-wrap{display:grid;grid-template-columns:1fr 340px;height:100vh;overflow:hidden}
+/* VIDEO AREA */
+.video-area{display:flex;flex-direction:column;background:var(--vid-bg);position:relative;overflow:hidden}
+/* TOP BAR */
+.session-topbar{display:flex;align-items:center;gap:1rem;padding:.85rem 1.4rem;background:rgba(0,0,0,.4);backdrop-filter:blur(12px);border-bottom:1px solid var(--vid-border);flex-shrink:0;z-index:10}
+.stb-logo{font-family:'DM Serif Display',serif;font-size:1.1rem;color:#fff;text-decoration:none}
+.stb-logo span{color:rgba(255,255,255,.5)}
+.session-info{display:flex;align-items:center;gap:.6rem}
+.session-badge{background:rgba(232,64,64,.15);border:1px solid rgba(232,64,64,.3);border-radius:99px;padding:.25rem .75rem;font-size:.75rem;font-weight:700;color:#ff6b6b;display:flex;align-items:center;gap:.4rem}
+.rec-dot{width:7px;height:7px;background:#ff4444;border-radius:50%;animation:blink 1.2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.session-title{font-size:.88rem;font-weight:600;color:rgba(255,255,255,.8)}
+.session-topic{font-size:.75rem;color:rgba(255,255,255,.4)}
+.stb-right{margin-left:auto;display:flex;align-items:center;gap:.6rem}
+.timer-display{font-family:'JetBrains Mono',monospace;font-size:.95rem;font-weight:600;color:var(--coin);background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.2);border-radius:8px;padding:.3rem .75rem}
+.stb-btn{width:34px;height:34px;border-radius:8px;border:1px solid var(--vid-border);background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.9rem;transition:all .2s;color:rgba(255,255,255,.7)}
+.stb-btn:hover{background:rgba(255,255,255,.12);color:#fff}
+/* VIDEOS */
+.videos-container{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px;position:relative;overflow:hidden}
+.video-cell{border-radius:16px;overflow:hidden;position:relative;background:var(--vid-card);border:1px solid var(--vid-border)}
+.video-cell.main{grid-column:1/-1;grid-row:1}
+.video-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem}
+.vp-avatar{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:1.5rem;margin-bottom:.3rem;box-shadow:0 0 0 4px rgba(255,255,255,.1)}
+.vp-name{font-size:.95rem;font-weight:600;color:#fff}
+.vp-role{font-size:.75rem;color:rgba(255,255,255,.4)}
+/* Mic indicator */
+.mic-indicator{position:absolute;bottom:12px;left:12px;display:flex;align-items:center;gap:.4rem;background:rgba(0,0,0,.6);border-radius:99px;padding:.3rem .7rem;font-size:.75rem;color:#fff;backdrop-filter:blur(8px)}
+.mic-bars{display:flex;align-items:flex-end;gap:2px;height:14px}
+.mic-bar{width:3px;background:var(--teal);border-radius:2px;animation:micPulse 0.6s ease-in-out infinite}
+.mic-bar:nth-child(2){animation-delay:.1s}
+.mic-bar:nth-child(3){animation-delay:.2s}
+.mic-bar:nth-child(4){animation-delay:.15s}
+@keyframes micPulse{0%,100%{height:4px}50%{height:14px}}
+.mic-muted{color:var(--danger);font-size:.8rem}
+/* Name tag */
+.name-tag{position:absolute;top:12px;left:12px;background:rgba(0,0,0,.6);border-radius:8px;padding:.3rem .7rem;font-size:.78rem;font-weight:600;color:#fff;backdrop-filter:blur(8px)}
+/* ATTENTION ALERT */
+.attention-alert{position:absolute;top:0;left:0;right:0;z-index:20;background:rgba(232,64,64,.92);backdrop-filter:blur(8px);padding:.75rem 1.2rem;display:flex;align-items:center;gap:.75rem;transform:translateY(-100%);transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
+.attention-alert.show{transform:translateY(0)}
+.aa-icon{font-size:1.2rem;flex-shrink:0}
+.aa-text{flex:1;font-size:.85rem;font-weight:600;color:#fff}
+.aa-dismiss{background:rgba(255,255,255,.2);border:none;border-radius:6px;padding:.3rem .7rem;font-size:.75rem;font-weight:600;color:#fff;cursor:pointer;transition:all .15s}
+.aa-dismiss:hover{background:rgba(255,255,255,.3)}
+/* ESCROW BAR */
+.escrow-bar{background:rgba(0,0,0,.5);backdrop-filter:blur(12px);border-top:1px solid var(--vid-border);padding:.85rem 1.4rem;flex-shrink:0}
+.eb-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
+.eb-label{font-size:.75rem;font-weight:600;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em}
+.eb-coins{font-family:'JetBrains Mono',monospace;font-size:.88rem;font-weight:700;color:var(--coin)}
+.eb-track{height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden}
+.eb-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--teal),var(--coin));transition:width 1s linear}
+.eb-ticks{display:flex;justify-content:space-between;margin-top:.3rem;font-size:.68rem;color:rgba(255,255,255,.3)}
+/* CONTROLS */
+.controls-bar{display:flex;align-items:center;justify-content:center;gap:.75rem;padding:1rem 1.4rem;background:rgba(0,0,0,.5);backdrop-filter:blur(12px);border-top:1px solid var(--vid-border);flex-shrink:0}
+.ctrl-btn{width:48px;height:48px;border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.1rem;transition:all .2s;position:relative}
+.ctrl-btn.normal{background:rgba(255,255,255,.1);color:#fff}
+.ctrl-btn.normal:hover{background:rgba(255,255,255,.2);transform:scale(1.08)}
+.ctrl-btn.active{background:rgba(232,64,64,.2);border:1.5px solid rgba(232,64,64,.4);color:#ff6b6b}
+.ctrl-btn.active:hover{background:rgba(232,64,64,.3)}
+.ctrl-btn.end{background:var(--danger);color:#fff;width:56px;height:56px;font-size:1rem}
+.ctrl-btn.end:hover{background:#c62f2f;transform:scale(1.08)}
+.ctrl-label{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-size:.6rem;color:rgba(255,255,255,.4);white-space:nowrap;font-weight:600}
+/* CHAT PANEL */
+.chat-panel{background:var(--card);display:flex;flex-direction:column;border-left:1px solid var(--border)}
+[data-theme="dark"] .chat-panel{background:var(--vid-card);border-left:1px solid var(--vid-border)}
+.cp-header{padding:1rem 1.2rem;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;gap:.6rem}
+[data-theme="dark"] .cp-header{border-color:var(--vid-border)}
+.cp-tabs{display:flex;gap:.4rem}
+.cp-tab{padding:.4rem .9rem;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;border:none;transition:all .15s;background:none;color:var(--muted)}
+.cp-tab.active{background:var(--indigo-light);color:var(--indigo)}
+[data-theme="dark"] .cp-tab.active{background:rgba(91,69,224,.2);color:#a78bfa}
+.cp-tab .cp-badge{background:var(--indigo);color:#fff;font-size:.62rem;padding:1px 5px;border-radius:99px;margin-left:3px}
+/* CHAT MESSAGES */
+.chat-messages{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.75rem;scroll-behavior:smooth}
+.chat-messages::-webkit-scrollbar{width:4px}
+.chat-messages::-webkit-scrollbar-track{background:transparent}
+.chat-messages::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.msg{display:flex;flex-direction:column;gap:.2rem;max-width:82%}
+.msg.mine{align-self:flex-end;align-items:flex-end}
+.msg.theirs{align-self:flex-start;align-items:flex-start}
+.msg-bubble{padding:.6rem .85rem;border-radius:14px;font-size:.85rem;line-height:1.5;word-break:break-word}
+.msg.mine .msg-bubble{background:var(--indigo);color:#fff;border-bottom-right-radius:4px}
+.msg.theirs .msg-bubble{background:var(--surface);color:var(--ink);border:1px solid var(--border);border-bottom-left-radius:4px}
+[data-theme="dark"] .msg.theirs .msg-bubble{background:rgba(255,255,255,.06);border-color:var(--vid-border);color:#e8e8f0}
+.msg-meta{font-size:.68rem;color:var(--muted);padding:0 .3rem}
+.msg-sender{font-weight:600;font-size:.72rem;color:var(--muted);padding:0 .3rem}
+/* System message */
+.sys-msg{text-align:center;font-size:.75rem;color:var(--muted);background:var(--surface);border-radius:99px;padding:.3rem .9rem;align-self:center}
+[data-theme="dark"] .sys-msg{background:rgba(255,255,255,.05)}
+/* Typing indicator */
+.typing-indicator{display:flex;align-items:center;gap:.5rem;padding:0 .3rem;font-size:.75rem;color:var(--muted)}
+.typing-dots{display:flex;gap:3px;align-items:center}
+.td{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:tdBounce .8s ease-in-out infinite}
+.td:nth-child(2){animation-delay:.15s}
+.td:nth-child(3){animation-delay:.3s}
+@keyframes tdBounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
+/* CHAT INPUT */
+.chat-input-area{padding:.85rem 1rem;border-top:1px solid var(--border);flex-shrink:0}
+[data-theme="dark"] .chat-input-area{border-color:var(--vid-border)}
+.chat-input-row{display:flex;gap:.5rem;align-items:flex-end}
+.chat-input{flex:1;padding:.6rem .9rem;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.85rem;color:var(--ink);background:var(--surface);outline:none;resize:none;max-height:100px;transition:border-color .2s;line-height:1.5}
+[data-theme="dark"] .chat-input{background:rgba(255,255,255,.05);border-color:var(--vid-border);color:#e8e8f0}
+.chat-input:focus{border-color:var(--indigo)}
+.send-btn{width:36px;height:36px;border-radius:9px;background:var(--indigo);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.9rem;transition:all .2s;flex-shrink:0;color:#fff}
+.send-btn:hover{background:var(--indigo-dark);transform:scale(1.05)}
+.chat-hint{font-size:.7rem;color:var(--muted);margin-top:.4rem}
+/* NOTES PANEL */
+.notes-panel{flex:1;padding:1rem;overflow-y:auto;display:none}
+.notes-panel.active{display:flex;flex-direction:column;gap:.75rem}
+.notes-textarea{flex:1;width:100%;min-height:300px;padding:.8rem;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.85rem;color:var(--ink);background:var(--surface);outline:none;resize:none;transition:border-color .2s;line-height:1.7}
+[data-theme="dark"] .notes-textarea{background:rgba(255,255,255,.04);border-color:var(--vid-border);color:#e8e8f0}
+.notes-textarea:focus{border-color:var(--indigo)}
+.notes-hint{font-size:.74rem;color:var(--muted);line-height:1.5}
+/* SESSION STATS */
+.stats-panel{flex:1;padding:1rem;overflow-y:auto;display:none;flex-direction:column;gap:.75rem}
+.stats-panel.active{display:flex}
+.stat-row{background:var(--surface);border-radius:10px;padding:.8rem 1rem;display:flex;align-items:center;justify-content:space-between}
+[data-theme="dark"] .stat-row{background:rgba(255,255,255,.05)}
+.stat-row-label{font-size:.8rem;color:var(--body)}
+.stat-row-val{font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:700;color:var(--ink)}
+[data-theme="dark"] .stat-row-val{color:#e8e8f0}
+/* END SESSION MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:300;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--card);border-radius:20px;padding:2rem;max-width:400px;width:90%;text-align:center;animation:popIn .3s ease}
+[data-theme="dark"] .modal{background:#1e1e32;border:1px solid var(--vid-border)}
+@keyframes popIn{from{transform:scale(.88);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-icon{font-size:3rem;margin-bottom:.75rem}
+.modal h2{font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--ink);margin-bottom:.5rem}
+[data-theme="dark"] .modal h2{color:#f0f0f8}
+.modal p{font-size:.88rem;color:var(--body);line-height:1.7;margin-bottom:1rem}
+.modal-detail{background:var(--surface);border-radius:12px;padding:1rem;margin:.8rem 0;text-align:left}
+[data-theme="dark"] .modal-detail{background:rgba(255,255,255,.06)}
+.md-row{display:flex;justify-content:space-between;padding:.3rem 0;font-size:.83rem;color:var(--body)}
+.md-row strong{color:var(--ink);font-weight:600}
+[data-theme="dark"] .md-row strong{color:#e8e8f0}
+.star-row{display:flex;gap:.5rem;justify-content:center;margin:.75rem 0;font-size:1.8rem;cursor:pointer}
+.star{opacity:.3;transition:all .15s;transform-origin:center}
+.star.lit{opacity:1}
+.star:hover{transform:scale(1.2)}
+.modal-btns{display:flex;gap:.6rem;flex-direction:column}
+.btn-end-primary{padding:.8rem;background:var(--indigo);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.92rem;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-end-primary:hover{background:var(--indigo-dark)}
+.btn-end-sec{padding:.7rem;background:transparent;color:var(--body);border:1px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.85rem;cursor:pointer;transition:all .2s}
+.btn-end-sec:hover{border-color:var(--indigo);color:var(--indigo)}
+/* TOAST */
+.toast-wrap{position:fixed;top:20px;right:20px;z-index:400;display:flex;flex-direction:column;gap:.5rem;pointer-events:none}
+.toast{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.75rem 1.1rem;font-size:.83rem;font-weight:500;color:var(--ink);box-shadow:0 8px 24px rgba(0,0,0,.15);display:flex;align-items:center;gap:.6rem;animation:toastIn .35s cubic-bezier(.34,1.56,.64,1) both;pointer-events:auto;max-width:300px}
+[data-theme="dark"] .toast{background:#1e1e32;border-color:var(--vid-border);color:#e8e8f0}
+@keyframes toastIn{from{transform:translateX(120px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes toastOut{to{transform:translateX(120px);opacity:0}}
+/* RESPONSIVE */
+@media(max-width:800px){
+  .session-wrap{grid-template-columns:1fr}
+  .chat-panel{position:fixed;right:0;top:0;bottom:0;width:100%;transform:translateX(100%);transition:transform .3s;z-index:100}
+  .chat-panel.open{transform:translateX(0)}
+  .videos-container{grid-template-columns:1fr}
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="api.js"></script>
+<script src="demo-data.js"></script>
+</head>
+<body>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- END SESSION MODAL -->
+<div class="modal-overlay" id="endModal">
+  <div class="modal">
+    <div class="modal-icon">⭐</div>
+    <h2>Rate your session</h2>
+    <p>How was your session with <strong id="rateTeacherName">...</strong>? Your feedback helps other learners.</p>
+    <div class="modal-detail" id="endDetails"></div>
+    <div class="star-row" id="starRow">
+      <span class="star" data-v="1">★</span>
+      <span class="star" data-v="2">★</span>
+      <span class="star" data-v="3">★</span>
+      <span class="star" data-v="4">★</span>
+      <span class="star" data-v="5">★</span>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-end-primary" onclick="finishSession()">Submit & Release Coins →</button>
+      <button class="btn-end-sec" onclick="closeEndModal()">Continue session</button>
+    </div>
+  </div>
+</div>
+
+<div class="session-wrap">
+  <!-- VIDEO AREA -->
+  <div class="video-area">
+    <!-- TOP BAR -->
+    <div class="session-topbar">
+      <a href="03_dashboard.html" class="stb-logo"><img src="logo-v.png" alt="V" class="logo-img"><span class="logo-text">vidyasetu</span></a>
+      <div class="session-info">
+        <div class="session-badge"><div class="rec-dot"></div> LIVE</div>
+        <div>
+          <div class="session-title" id="stTitle">Loading session...</div>
+          <div class="session-topic" id="stTopic">...</div>
+        </div>
+      </div>
+      <div class="stb-right">
+        <div class="timer-display" id="timerDisplay">00:00</div>
+        <button class="stb-btn" onclick="toggleTheme()" title="Toggle theme" id="themeBtn">🌙</button>
+        <button class="stb-btn" onclick="toggleChat()" id="chatToggleBtn" title="Toggle chat">💬</button>
+      </div>
+    </div>
+
+    <!-- ATTENTION ALERT -->
+    <div class="attention-alert" id="attentionAlert">
+      <span class="aa-icon">👁️</span>
+      <span class="aa-text">Eye contact lost — are you still there? Coins are paused.</span>
+      <button class="aa-dismiss" onclick="dismissAlert()">I'm here ✓</button>
+    </div>
+
+    <!-- VIDEOS -->
+    <div class="videos-container">
+      <!-- Teacher (main) -->
+      <div class="video-cell main" style="min-height:220px">
+        <div class="video-placeholder" style="height:100%">
+          <div class="vp-avatar" id="teacherAvatar" style="background:var(--indigo)">?</div>
+          <div class="vp-name" id="teacherName">...</div>
+          <div class="vp-role" id="teacherCollege">...</div>
+          <div style="font-size:.75rem;color:rgba(255,255,255,.3);margin-top:.3rem">📺 Jitsi video stream here</div>
+        </div>
+        <div class="name-tag" id="teacherNameTag">... · Teacher</div>
+        <div class="mic-indicator">
+          <div class="mic-bars">
+            <div class="mic-bar" style="height:6px"></div>
+            <div class="mic-bar" style="height:10px"></div>
+            <div class="mic-bar" style="height:14px"></div>
+            <div class="mic-bar" style="height:8px"></div>
+          </div>
+          Speaking
+        </div>
+      </div>
+      <!-- Self (you) -->
+      <div class="video-cell" style="min-height:140px">
+        <div class="video-placeholder" style="height:100%">
+          <div class="vp-avatar" id="myAvatar" style="background:var(--indigo);width:52px;height:52px;font-size:1rem">?</div>
+          <div class="vp-name" id="myName" style="font-size:.85rem">You</div>
+        </div>
+        <div class="name-tag" id="myNameTag">... · You</div>
+        <div class="mic-indicator" id="myMic">
+          <span class="mic-muted">🎤 Muted</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ESCROW BAR -->
+    <div class="escrow-bar">
+      <div class="eb-top">
+        <span class="eb-label">🔒 Escrow Progress</span>
+        <span class="eb-coins" id="escrowCoins">🪙 0.0 / ... earned</span>
+      </div>
+      <div class="eb-track"><div class="eb-fill" id="escrowFill" style="width:0%"></div></div>
+      <div class="eb-ticks"><span>0 min</span><span>22.5 min</span><span>45 min</span><span>67.5 min</span><span>90 min</span></div>
+    </div>
+
+    <!-- CONTROLS -->
+    <div class="controls-bar">
+      <div style="position:relative">
+        <button class="ctrl-btn active" id="micBtn" onclick="toggleMic()" title="Toggle mic">🎤</button>
+        <span class="ctrl-label">Mute</span>
+      </div>
+      <div style="position:relative">
+        <button class="ctrl-btn normal" id="camBtn" onclick="toggleCam()" title="Toggle camera">📹</button>
+        <span class="ctrl-label">Camera</span>
+      </div>
+      <div style="position:relative">
+        <button class="ctrl-btn normal" id="screenBtn" onclick="toggleScreen()" title="Share screen">🖥️</button>
+        <span class="ctrl-label">Share</span>
+      </div>
+      <div style="position:relative">
+        <button class="ctrl-btn normal" onclick="showToast('✋','Hand raised — ' + (window._teacherFirstName||'Teacher') + ' will see it!')" title="Raise hand">✋</button>
+        <span class="ctrl-label">Raise Hand</span>
+      </div>
+      <div style="position:relative">
+        <button class="ctrl-btn end" onclick="openEndModal()" title="End session">📴</button>
+        <span class="ctrl-label" style="color:rgba(255,120,120,.6)">End</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAT PANEL -->
+  <div class="chat-panel" id="chatPanel">
+    <div class="cp-header">
+      <div class="cp-tabs">
+        <button class="cp-tab active" id="tabChat" onclick="switchCpTab('chat')">Chat <span class="cp-badge" id="chatBadge" style="display:none">2</span></button>
+        <button class="cp-tab" id="tabNotes" onclick="switchCpTab('notes')">Notes</button>
+        <button class="cp-tab" id="tabStats" onclick="switchCpTab('stats')">Stats</button>
+      </div>
+      <button onclick="closeChat()" style="margin-left:auto;background:none;border:none;cursor:pointer;font-size:1rem;color:var(--muted);display:none" id="closeChatBtn">✕</button>
+    </div>
+
+    <!-- CHAT -->
+    <div class="chat-messages" id="chatMessages">
+      <div class="sys-msg">Connecting to session...</div>
+      <div class="sys-msg" id="sharedScreenMsg" style="display:none"></div>
+    </div>
+
+    <!-- Typing indicator (hidden by default) -->
+    <div class="typing-indicator" id="typingIndicator" style="display:none;padding:.5rem 1rem">
+      <div class="typing-dots">
+        <div class="td"></div><div class="td"></div><div class="td"></div>
+      </div>
+      <span id="typingName">... is typing…</span>
+    </div>
+
+    <!-- Chat input -->
+    <div class="chat-input-area" id="chatInputArea">
+      <div class="chat-input-row">
+        <textarea class="chat-input" id="chatInput" placeholder="Type a message…" rows="1" onkeydown="handleChatKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="send-btn" onclick="sendMessage()">➤</button>
+      </div>
+      <div class="chat-hint">Press Enter to send · Shift+Enter for new line</div>
+    </div>
+
+    <!-- NOTES -->
+    <div class="notes-panel" id="notesPanel">
+      <textarea class="notes-textarea" placeholder="Take session notes here…&#10;&#10;Use this space to jot down key concepts, code snippets, and questions during your session."></textarea>
+      <div class="notes-hint">📎 Notes are saved automatically and attached to your session history.</div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-panel" id="statsPanel">
+      <div class="stat-row"><span class="stat-row-label">Session time</span><span class="stat-row-val" id="statTime">00:00</span></div>
+      <div class="stat-row"><span class="stat-row-label">Coins earned (<span id="statTeacherName">Teacher</span>)</span><span class="stat-row-val" id="statEarned">🪙 0.00</span></div>
+      <div class="stat-row"><span class="stat-row-label">Attention score</span><span class="stat-row-val" id="statAttention">98%</span></div>
+      <div class="stat-row"><span class="stat-row-label">Messages sent</span><span class="stat-row-val" id="statMsgs">3</span></div>
+      <div class="stat-row"><span class="stat-row-label">Screen shares</span><span class="stat-row-val">1</span></div>
+      <div class="stat-row"><span class="stat-row-label">Connection quality</span><span class="stat-row-val" style="color:var(--teal)">Excellent</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── TIMER ───
+let elapsedSeconds = 0;
+const TOTAL_SECONDS = 90 * 60;
+let timerInterval;
+let micOn = false, camOn = true, screenOn = false;
+let msgCount = 3;
+let rating = 0;
+
+async function initSession() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const sessionId = urlParams.get('id');
+  const teacherId = urlParams.get('teacher');
+
+  // Load current user
+  try {
+    const me = await VS.api.getCurrentUser();
+    if (me) {
+      const initials = (me.name||'U').split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+      document.getElementById('myName').textContent = me.name || 'You';
+      document.getElementById('myAvatar').textContent = initials;
+      document.getElementById('myNameTag').textContent = (me.name || 'You') + ' · You';
+    }
+  } catch(e) { console.warn('Could not load user:', e); }
+
+  // Load teacher details
+  if (teacherId) {
+    try {
+      const t = await VS.api.getTeacher(teacherId);
+      if (t) {
+        window._teacherName = t.name;
+        window._teacherFirstName = t.name.split(' ')[0];
+        const el = document.getElementById('teacherNameTag');
+        if (el) el.textContent = t.name + ' · Teacher';
+        const typingEl = document.getElementById('typingName');
+        if (typingEl) typingEl.textContent = window._teacherFirstName + ' is typing…';
+        const statEl = document.getElementById('statTeacherName');
+        if (statEl) statEl.textContent = window._teacherFirstName;
+        const avatarEl = document.getElementById('teacherAvatar');
+        if (avatarEl) { avatarEl.textContent = t.initials || t.name[0]; avatarEl.style.background = t.color || 'var(--indigo)'; }
+        const nameEl = document.getElementById('teacherName');
+        if (nameEl) nameEl.textContent = t.name;
+        const colEl = document.getElementById('teacherCollege');
+        if (colEl) colEl.textContent = t.college || 'Verified Teacher';
+      }
+    } catch(e) { console.warn('Could not load teacher:', e); }
+  }
+
+  if (!sessionId && !teacherId) {
+    appendMessage('sys', 'Session ID missing — using preview mode.');
+  }
+
+  appendMessage('sys', 'Secure connection established.');
+  appendMessage('sys', 'Coins locked in escrow.');
+  startTimer();
+}
+
+function updateTimer() {
+  const m = String(Math.floor(elapsedSeconds / 60)).padStart(2, '0');
+  const s = String(elapsedSeconds % 60).padStart(2, '0');
+  document.getElementById('timerDisplay').textContent = m + ':' + s;
+  if(document.getElementById('statTime')) document.getElementById('statTime').textContent = m + ':' + s;
+}
+
+function updateEscrow() {
+  const pct = Math.min(100, (elapsedSeconds / TOTAL_SECONDS) * 100);
+  const earned = ((elapsedSeconds / TOTAL_SECONDS) * 3).toFixed(2);
+  document.getElementById('escrowFill').style.width = pct + '%';
+  document.getElementById('escrowCoins').textContent = `🪙 ${earned} / 3.0 earned`;
+  if(document.getElementById('statEarned')) document.getElementById('statEarned').textContent = `🪙 ${earned}`;
+}
+
+function startTimer() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const sessionId = urlParams.get('id');
+
+  timerInterval = setInterval(() => {
+    elapsedSeconds++;
+    updateTimer();
+    updateEscrow();
+    
+    // Heartbeat every 30 seconds to maintain Escrow lock
+    if (elapsedSeconds % 30 === 0 && sessionId) {
+      VS.sessions.heartbeat(sessionId).catch(e => console.warn('Heartbeat failed:', e));
+    }
+  }, 1000);
+}
+
+// ─── CONTROLS ───
+function toggleMic() {
+  micOn = !micOn;
+  const btn = document.getElementById('micBtn');
+  btn.textContent = micOn ? '🎤' : '🔇';
+  btn.className = 'ctrl-btn ' + (micOn ? 'normal' : 'active');
+  document.getElementById('myMic').innerHTML = micOn
+    ? `<div class="mic-bars"><div class="mic-bar"></div><div class="mic-bar"></div><div class="mic-bar"></div><div class="mic-bar"></div></div> Speaking`
+    : `<span class="mic-muted">🎤 Muted</span>`;
+  showToast(micOn ? '🎤' : '🔇', micOn ? 'Microphone on' : 'Microphone muted');
+}
+
+function toggleCam() {
+  camOn = !camOn;
+  const btn = document.getElementById('camBtn');
+  btn.textContent = camOn ? '📹' : '📷';
+  btn.className = 'ctrl-btn ' + (camOn ? 'normal' : 'active');
+  showToast(camOn ? '📹' : '📷', camOn ? 'Camera on' : 'Camera off');
+}
+
+function toggleScreen() {
+  screenOn = !screenOn;
+  const btn = document.getElementById('screenBtn');
+  btn.className = 'ctrl-btn ' + (screenOn ? 'active' : 'normal');
+  showToast('🖥️', screenOn ? 'Screen sharing started' : 'Screen sharing stopped');
+}
+
+// ─── ATTENTION ───
+function showAttentionAlert() {
+  document.getElementById('attentionAlert').classList.add('show');
+  showToast('👁️', 'Attention alert sent — coins paused');
+}
+function dismissAlert() {
+  document.getElementById('attentionAlert').classList.remove('show');
+}
+
+// ─── CHAT ───
+function handleChatKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 100) + 'px'; }
+
+function sendMessage() {
+  const inp = document.getElementById('chatInput');
+  const text = inp.value.trim();
+  if (!text) return;
+  appendMessage('mine', text);
+  inp.value = '';
+  inp.style.height = 'auto';
+  msgCount++;
+  document.getElementById('statMsgs').textContent = msgCount;
+  setTimeout(() => simulateReply(text), 1800 + Math.random() * 1200);
+}
+
+const REPLIES = [
+  "Great question! Let me show you that live.",
+  "Exactly right — you're getting it 🎉",
+  "Let me draw a quick diagram to make this clearer.",
+  "Yes! That's the key insight. Now try writing the code yourself.",
+  "I made the same mistake when I was learning. Here's the fix:",
+  "Want me to slow down a bit, or should we move on?",
+];
+let replyIdx = 0;
+
+function simulateReply(trigger) {
+  showTyping();
+  setTimeout(() => {
+    hideTyping();
+    appendMessage('theirs', REPLIES[replyIdx % REPLIES.length], window._teacherName || 'Teacher');
+    replyIdx++;
+  }, 1500);
+}
+
+function simulateTyping() {
+  showTyping();
+  setTimeout(() => {
+    hideTyping();
+    appendMessage('theirs', "Quick check-in — how are you feeling about the material so far? 😊", window._teacherName || 'Teacher');
+  }, 2000);
+}
+
+function showTyping() { document.getElementById('typingIndicator').style.display = 'flex'; scrollChat(); }
+function hideTyping() { document.getElementById('typingIndicator').style.display = 'none'; }
+
+function appendMessage(type, text, sender) {
+  const msgs = document.getElementById('chatMessages');
+  const now = new Date();
+  const time = now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0') + ' PM';
+  const el = document.createElement('div');
+  el.className = 'msg ' + type;
+  el.innerHTML = (sender ? `<div class="msg-sender">${sender}</div>` : '') +
+    `<div class="msg-bubble">${text}</div><div class="msg-meta">${time}${type==='mine'?' ✓✓':''}</div>`;
+  msgs.appendChild(el);
+  scrollChat();
+}
+
+function scrollChat() { const m = document.getElementById('chatMessages'); m.scrollTop = m.scrollHeight; }
+
+// ─── PANEL TABS ───
+function switchCpTab(tab) {
+  ['chat','notes','stats'].forEach(t => {
+    document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle('active', t === tab);
+    const panels = {chat:'chatMessages',notes:'notesPanel',stats:'statsPanel'};
+    if (panels[t]) {
+      const el = document.getElementById(panels[t]);
+      if (el) el.style.display = t === tab ? (t==='chat'?'flex':'flex') : 'none';
+    }
+  });
+  document.getElementById('chatInputArea').style.display = tab === 'chat' ? '' : 'none';
+  if (tab === 'notes') { document.getElementById('notesPanel').style.display='flex'; }
+  if (tab === 'stats') { document.getElementById('statsPanel').style.display='flex'; }
+  if (tab === 'chat') {
+    document.getElementById('chatMessages').style.display='flex';
+    document.getElementById('chatBadge').style.display='none';
+  }
+}
+
+// ─── MOBILE CHAT TOGGLE ───
+function toggleChat() {
+  const p = document.getElementById('chatPanel');
+  p.classList.toggle('open');
+  document.getElementById('closeChatBtn').style.display = p.classList.contains('open') ? '' : 'none';
+}
+function closeChat() { document.getElementById('chatPanel').classList.remove('open'); }
+
+// ─── END SESSION ───
+function openEndModal() {
+  const m = document.getElementById(elapsedSeconds < 60 ? 'endModal' : 'endModal');
+  const earned = ((elapsedSeconds / TOTAL_SECONDS) * 3).toFixed(2);
+  const mins = Math.floor(elapsedSeconds / 60);
+  document.getElementById('endDetails').innerHTML = `
+    <div class="md-row"><span>Duration</span><strong>${mins} min ${elapsedSeconds%60} sec</strong></div>
+    <div class="md-row"><span>Coins to release</span><strong style="color:var(--coin)">🪙 ${earned}</strong></div>
+    <div class="md-row"><span>Topic covered</span><strong>React Hooks</strong></div>
+  `;
+  document.getElementById('endModal').classList.add('open');
+}
+
+function closeEndModal() { document.getElementById('endModal').classList.remove('open'); }
+
+// Star rating
+document.getElementById('starRow').querySelectorAll('.star').forEach((s,i,arr) => {
+  s.onclick = () => { rating = i+1; arr.forEach((a,j)=>a.classList.toggle('lit',j<=i)); };
+  s.onmouseover = () => arr.forEach((a,j)=>a.classList.toggle('lit',j<=i));
+  s.onmouseout = () => arr.forEach((a,j)=>a.classList.toggle('lit',j<rating));
+});
+
+async function finishSession() {
+  clearInterval(timerInterval);
+  document.getElementById('endModal').classList.remove('open');
+  
+  const urlParams = new URLSearchParams(window.location.search);
+  const sessionId = urlParams.get('id');
+
+  if (sessionId) {
+    showToast('🔄', 'Finalizing session securely on backend...');
+    try {
+      await VS.sessions.complete(sessionId, elapsedSeconds, { rating: rating > 0 ? rating : null });
+      showToast('🎉','Session complete! Coins released to ' + (window._teacherFirstName || 'Teacher') + '.');
+    } catch(err) {
+      console.error(err);
+      showToast('⚠️', 'Failed to finalize session: ' + err.message);
+      return;
+    }
+  } else {
+    showToast('🎉','Preview complete! Coins not transferred.');
+  }
+
+  setTimeout(() => window.location.replace('03_dashboard.html'), 2000);
+}
+
+// ─── DARK MODE ───
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('themeBtn').textContent = isDark ? '🌙' : '☀️';
+  localStorage.setItem('vs-theme', isDark ? 'light' : 'dark');
+}
+(()=>{ const t=localStorage.getItem('vs-theme'); if(t==='dark'){document.documentElement.setAttribute('data-theme','dark');document.getElementById('themeBtn').textContent='☀️';} })();
+
+// ─── TOAST ───
+function showToast(icon, text, duration=3000) {
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `<span style="font-size:1rem">${icon}</span><span>${text}</span>`;
+  wrap.appendChild(t);
+  setTimeout(()=>{ t.style.animation='toastOut .3s ease forwards'; setTimeout(()=>t.remove(),300); }, duration);
+}
+
+// ─── INIT ───
+initSession();
+showToast('🔒','Session starting — coins protecting both parties.',4000);
+// Fix panel initial states
+document.getElementById('notesPanel').style.display='none';
+document.getElementById('statsPanel').style.display='none';
+document.getElementById('chatMessages').style.display='flex';
+document.getElementById('chatMessages').style.flexDirection='column';
+document.getElementById('chatMessages').style.gap='.75rem';
+document.getElementById('chatMessages').style.flex='1';
+document.getElementById('chatMessages').style.overflowY='auto';
+document.getElementById('chatMessages').style.padding='1rem';
+if(window.innerWidth<=800){document.getElementById('closeChatBtn').style.display='';}
+</script>
+</body>
+</html>

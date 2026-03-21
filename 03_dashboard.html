@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vidyasetu — Dashboard</title>
+<link rel="icon" href="logo-v.png" type="image/png">
+<link rel="stylesheet" href="ui-system.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="api.js"></script>
+<script src="demo-data.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--indigo:#5B45E0;--indigo-dark:#3D2DB8;--indigo-light:#F0EEF9;--teal:#16A27B;--teal-light:#F0FAF6;--coin:#F5A623;--coin-light:#FFF9EF;--danger:#E84040;--ink:#0D0D1A;--body:#4B5563;--muted:#9CA3AF;--surface:#F7F8FA;--card:#FFFFFF;--border:#E5E7EB;--sidebar:256px}
+body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--ink);display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar);background:#fff;border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50;transition:transform .3s}
+.sb-top{padding:1.5rem 1.2rem 1rem;border-bottom:1px solid var(--border)}
+.sb-logo{font-family:'DM Serif Display',serif;font-size:1.35rem;color:var(--ink);display:flex;align-items:center;gap:8px;text-decoration:none}
+.sb-logo span{color:var(--indigo)}
+.sb-nav{flex:1;padding:1rem .8rem;overflow-y:auto}
+.sb-section{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:.4rem .6rem;margin-top:1rem;margin-bottom:.3rem}
+.sb-item{display:flex;align-items:center;gap:.75rem;padding:.65rem .8rem;border-radius:9px;text-decoration:none;color:var(--body);font-size:.9rem;font-weight:500;transition:all .18s;cursor:pointer;border:none;background:none;width:100%;text-align:left}
+.sb-item:hover{background:var(--surface);color:var(--ink)}
+.sb-item.active{background:var(--indigo-light);color:var(--indigo);font-weight:600}
+.sb-item .icon{width:20px;text-align:center;font-size:1rem;flex-shrink:0}
+.sb-item .badge{margin-left:auto;background:var(--indigo);color:#fff;font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:99px}
+.sb-bottom{padding:1rem 1.2rem;border-top:1px solid var(--border)}
+.sb-user{display:flex;align-items:center;gap:.75rem}
+.sb-avatar{width:40px;height:40px;border-radius:50%;background:var(--indigo);color:#fff;font-weight:700;font-size:.9rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-name{font-size:.88rem;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-coin{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--coin);font-weight:600}
+
+/* MAIN */
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-width:0}
+
+/* TOPBAR */
+.topbar{background:#fff;border-bottom:1px solid var(--border);padding:0 2rem;height:60px;display:flex;align-items:center;gap:1rem;position:sticky;top:0;z-index:40}
+.topbar-search{flex:1;max-width:420px;position:relative}
+.topbar-search input{width:100%;padding:.55rem 1rem .55rem 2.4rem;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);background:var(--surface);outline:none;transition:border-color .2s}
+.topbar-search input:focus{border-color:var(--indigo);background:#fff}
+.search-icon{position:absolute;left:.75rem;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.9rem}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:.75rem}
+.icon-btn{width:38px;height:38px;border-radius:9px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;position:relative;font-size:1rem;color:var(--body)}
+.icon-btn:hover{border-color:var(--indigo);color:var(--indigo)}
+.notif-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;background:var(--danger);border-radius:50%;border:2px solid #fff}
+.user-menu{display:flex;align-items:center;gap:.5rem;padding:.4rem .8rem .4rem .4rem;border:1.5px solid var(--border);border-radius:99px;cursor:pointer;transition:all .2s}
+.user-menu:hover{border-color:var(--indigo)}
+.user-menu .avatar{width:30px;height:30px;border-radius:50%;background:var(--indigo);color:#fff;font-weight:700;font-size:.78rem;display:flex;align-items:center;justify-content:center}
+.user-menu .uname{font-size:.85rem;font-weight:600;color:var(--ink)}
+
+/* CONTENT */
+.content{padding:2rem;flex:1}
+.page-header{margin-bottom:2rem}
+.greeting{font-family:'DM Serif Display',serif;font-size:1.8rem;color:var(--ink);margin-bottom:.3rem}
+.greeting-sub{font-size:.9rem;color:var(--body)}
+
+/* WELCOME BANNER */
+.welcome-banner{background:var(--indigo);border-radius:16px;padding:2rem 2.5rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;position:relative;overflow:hidden}
+.wb-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);background-size:32px 32px}
+.wb-left{position:relative;z-index:1}
+.wb-sub{color:rgba(255,255,255,.7);font-size:.9rem;margin-bottom:.4rem}
+.wb-title{color:#fff;font-family:'DM Serif Display',serif;font-size:2rem;margin-bottom:1.2rem}
+.wb-actions{display:flex;gap:.75rem;flex-wrap:wrap}
+.wb-btn{padding:.6rem 1.2rem;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s;border:none;font-family:'DM Sans',sans-serif!important;font-style:normal!important;text-decoration:none;display:inline-flex;align-items:center;gap:.35rem;letter-spacing:.01em;line-height:1.2}
+.wb-btn.primary{background:#fff;color:var(--indigo)}
+.wb-btn.primary:hover{background:rgba(255,255,255,.92);transform:translateY(-1px)}
+.wb-btn.outline{background:rgba(255,255,255,.18);color:#fff;border:1.5px solid rgba(255,255,255,.35);backdrop-filter:blur(4px)}
+.wb-btn.outline:hover{background:rgba(255,255,255,.28);border-color:rgba(255,255,255,.5);transform:translateY(-1px)}
+.wb-right{position:relative;z-index:1;text-align:center;flex-shrink:0}
+.coin-display{font-family:'JetBrains Mono',monospace;font-size:3.5rem;font-weight:600;color:#ffffff;line-height:1;text-shadow:0 0 40px rgba(245,166,35,.4)}
+.coin-label{color:#ffffff;font-size:.82rem;margin-top:.3rem}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+.stat-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:1.2rem 1.5rem;transition:all .2s}
+.stat-card:hover{border-color:rgba(91,69,224,.2);box-shadow:0 4px 16px rgba(91,69,224,.06)}
+.stat-icon{font-size:1.4rem;margin-bottom:.6rem}
+.stat-num{font-family:'JetBrains Mono',monospace;font-size:1.6rem;font-weight:600;color:var(--ink)}
+.stat-label{font-size:.8rem;color:var(--muted);margin-top:.2rem}
+.stat-change{font-size:.75rem;color:var(--teal);font-weight:600;margin-top:.3rem}
+
+/* SECTION HEADERS */
+.sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem}
+.sec-title{font-size:1rem;font-weight:700;color:var(--ink)}
+.sec-link{font-size:.82rem;color:var(--indigo);text-decoration:none;font-weight:600}
+.sec-link:hover{text-decoration:underline}
+
+/* SKILL CARDS ROW */
+.skill-scroll{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem}
+.skill-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:1.2rem;transition:all .25s;cursor:pointer}
+.skill-card:hover{border-color:rgba(91,69,224,.25);transform:translateY(-3px);box-shadow:0 8px 28px rgba(91,69,224,.08)}
+.sc-top{display:flex;align-items:center;gap:.75rem;margin-bottom:.9rem}
+.sc-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:.9rem;flex-shrink:0;position:relative}
+.online-dot{position:absolute;bottom:0;right:0;width:10px;height:10px;background:var(--teal);border-radius:50%;border:2px solid #fff}
+.sc-name{font-size:.9rem;font-weight:700;color:var(--ink)}
+.sc-college{font-size:.75rem;color:var(--muted)}
+.sc-skill{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;margin-bottom:.75rem}
+.pill{display:inline-flex;align-items:center;gap:4px;border-radius:99px;padding:.25rem .65rem;font-size:.72rem;font-weight:600}
+.pill-indigo{background:var(--indigo-light);color:var(--indigo)}
+.pill-teal{background:var(--teal-light);color:var(--teal)}
+.pill-gold{background:var(--coin-light);color:var(--vs-warning-text)}
+.pill-gray{background:var(--surface);color:var(--body);border:1px solid var(--border)}
+.sc-meta{display:flex;align-items:center;justify-content:space-between;font-size:.78rem;color:var(--muted)}
+.sc-rating{color:var(--coin);font-weight:600}
+.sc-rate{font-family:'JetBrains Mono',monospace;color:var(--coin);font-weight:700;font-size:.85rem}
+.sc-btn{width:100%;margin-top:.9rem;padding:.55rem;border:1.5px solid var(--indigo);border-radius:8px;color:var(--indigo);background:transparent;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s}
+.sc-btn:hover{background:var(--indigo);color:#fff}
+
+/* UPCOMING SESSIONS */
+.sessions-list{display:flex;flex-direction:column;gap:.75rem;margin-bottom:2rem}
+.session-row{background:#fff;border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem;display:flex;align-items:center;gap:1rem;transition:all .2s}
+.session-row:hover{border-color:rgba(91,69,224,.2)}
+.sr-avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:.88rem;flex-shrink:0}
+.sr-info{flex:1;min-width:0}
+.sr-name{font-size:.9rem;font-weight:600;color:var(--ink)}
+.sr-skill{font-size:.78rem;color:var(--body)}
+.sr-time{font-size:.78rem;color:var(--muted);margin-top:.2rem}
+.sr-status{flex-shrink:0}
+.badge{display:inline-flex;align-items:center;border-radius:99px;padding:.28rem .75rem;font-size:.72rem;font-weight:700}
+.badge-green{background:var(--teal-light);color:var(--teal)}
+.badge-amber{background:var(--coin-light);color:var(--vs-warning-text)}
+.badge-indigo{background:var(--indigo-light);color:var(--indigo)}
+.badge-gray{background:var(--surface);color:var(--muted);border:1px solid var(--border)}
+.join-btn{padding:.45rem 1rem;background:var(--indigo);color:#fff;border:none;border-radius:7px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.join-btn:hover{background:var(--indigo-dark)}
+.join-btn.disabled{background:var(--surface);color:var(--muted);border:1px solid var(--border);cursor:not-allowed}
+
+/* TWO COLS GRID */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem}
+
+/* COIN ACTIVITY */
+.tx-list{display:flex;flex-direction:column;gap:.5rem}
+.tx-row{display:flex;align-items:center;gap:.75rem;padding:.65rem 0;border-bottom:1px solid var(--border)}
+.tx-row:last-child{border-bottom:none}
+.tx-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+.tx-desc{flex:1;min-width:0}
+.tx-title{font-size:.85rem;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx-date{font-size:.72rem;color:var(--muted)}
+.tx-amount{font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:700;flex-shrink:0}
+.tx-plus{color:var(--teal)}
+.tx-minus{color:var(--danger)}
+
+/* LEADERBOARD */
+.lb-list{display:flex;flex-direction:column;gap:.5rem}
+.lb-row{display:flex;align-items:center;gap:.75rem;padding:.55rem .8rem;border-radius:9px;transition:background .2s}
+.lb-row:hover{background:var(--surface)}
+.lb-row.me{background:var(--indigo-light);border:1px solid rgba(91,69,224,.15)}
+.lb-rank{width:24px;font-size:.85rem;font-weight:700;color:var(--muted);text-align:center;flex-shrink:0}
+.lb-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:.72rem;flex-shrink:0}
+.lb-name{flex:1;font-size:.85rem;font-weight:500;color:var(--ink)}
+.lb-xp{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--indigo);font-weight:700}
+
+/* CARD WRAPPER */
+.card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:1.4rem}
+
+/* MOBILE */
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .skill-scroll{grid-template-columns:1fr 1fr}
+  .two-col{grid-template-columns:1fr}
+  .welcome-banner{flex-direction:column;gap:1.5rem;text-align:center}
+  .wb-actions{justify-content:center}
+  .ham{display:flex!important}
+}
+@media(max-width:560px){
+  .stats-row,.skill-scroll{grid-template-columns:1fr}
+  .content{padding:1rem}
+}
+.ham{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px}
+.ham span{width:22px;height:2px;background:var(--ink);border-radius:2px}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:49}
+.overlay.open{display:block}
+
+/* MATCHMAKING HUB */
+.match-hub { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; margin-bottom: 2rem; display: flex; flex-direction: column; gap: 1rem; position: relative; overflow: hidden; }
+.match-hub .hub-title { font-size: 1.1rem; font-weight: 700; color: var(--ink); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+.match-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.match-input-group { display: flex; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 0.4rem; transition: border-color 0.2s; }
+.match-input-group:focus-within { border-color: var(--indigo); background: #fff; }
+.match-input-group input { flex: 1; border: none; background: transparent; padding: 0.5rem; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: var(--ink); outline: none; }
+.match-btn { background: var(--indigo); color: #fff; border: none; border-radius: 6px; padding: 0.5rem 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+.match-btn:hover { background: var(--indigo-dark); }
+.match-btn.teach-btn { background: var(--teal); color: #fff; }
+.match-btn.teach-btn:hover { background: #128a68; }
+
+/* RECOMMENDATION POPUP */
+.match-popup-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
+.match-popup-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
+.match-popup { background: var(--card); border-radius: 16px; padding: 2rem; width: 100%; max-width: 420px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); border: 1px solid var(--border); text-align: center; position: relative; }
+@keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+.mp-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--muted); }
+.mp-icon { width: 64px; height: 64px; border-radius: 50%; background: var(--indigo-light); color: var(--indigo); font-size: 2rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.2rem; box-shadow: 0 0 0 6px var(--surface); }
+.mp-title { font-family: 'DM Serif Display', serif; font-size: 1.6rem; color: var(--ink); margin-bottom: 0.5rem; }
+.mp-sub { font-size: 0.95rem; color: var(--body); margin-bottom: 1.5rem; }
+.mp-match-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; text-align: left; }
+.mp-avatar { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; font-size: 1.1rem; }
+.mp-name { font-weight: 700; color: var(--ink); font-size: 1rem; }
+.mp-skill { font-size: 0.8rem; color: var(--indigo); font-weight: 600; margin-top: 0.2rem; }
+.mp-action { width: 100%; padding: 0.8rem; background: var(--indigo); color: #fff; border: none; border-radius: 9px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.2s; }
+.mp-action:hover { background: var(--indigo-dark); transform: translateY(-2px); }
+
+/* SECURE CHAT SLIDEOVER */
+.chat-slideover { position: fixed; right: -400px; top: 0; bottom: 0; width: 100%; max-width: 400px; background: var(--card); border-left: 1px solid var(--border); z-index: 90; display: flex; flex-direction: column; transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: -10px 0 30px rgba(0,0,0,0.05); }
+.chat-slideover.open { right: 0; }
+.cs-header { padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--surface); }
+.cs-user { display: flex; align-items: center; gap: 0.75rem; }
+.cs-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; font-size: 0.85rem; }
+.cs-name { font-weight: 600; color: var(--ink); font-size: 0.95rem; }
+.cs-status { font-size: 0.75rem; color: var(--teal); font-weight: 600; }
+.cs-status-lock { font-size: 0.75rem; color: var(--muted); margin-left: 5px; }
+.cs-close { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--muted); padding: 4px; }
+.cs-body { flex: 1; padding: 1.5rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; }
+.msg { display: flex; flex-direction: column; max-width: 85%; }
+.msg.you { align-self: flex-end; }
+.msg.them { align-self: flex-start; }
+.msg-bubble { padding: 0.75rem 1rem; border-radius: 12px; font-size: 0.9rem; line-height: 1.4; position: relative; }
+.msg.you .msg-bubble { background: var(--indigo); color: #fff; border-bottom-right-radius: 2px; }
+.msg.them .msg-bubble { background: var(--surface); color: var(--ink); border: 1px solid var(--border); border-bottom-left-radius: 2px; }
+.msg-time { font-size: 0.65rem; color: var(--muted); margin-top: 0.3rem; align-self: flex-end; }
+.msg.them .msg-time { align-self: flex-start; }
+.cs-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border); background: var(--surface); }
+.cs-input-wrap { display: flex; gap: 0.5rem; }
+.cs-input-wrap input { flex: 1; padding: 0.7rem 1rem; border: 1px solid var(--border); border-radius: 99px; outline: none; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; background: #fff; color: var(--ink); }
+.cs-input-wrap input:focus { border-color: var(--indigo); }
+.cs-send { width: 40px; height: 40px; border-radius: 50%; background: var(--indigo); color: #fff; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem; transition: background 0.2s; flex-shrink: 0; }
+.cs-send:hover { background: var(--indigo-dark); }
+.cs-sys { text-align: center; margin: 1rem 0; }
+.cs-sys span { background: var(--surface); padding: 0.3rem 0.8rem; border-radius: 99px; font-size: 0.75rem; color: var(--muted); border: 1px solid var(--border); }
+@media(max-width:900px){ .match-inputs { grid-template-columns: 1fr; } }
+</style>
+<style>
+[data-theme="dark"] {
+  --ink: #EBE5DF;
+  --indigo: #8A78E5;
+  --indigo-light: rgba(138, 120, 229, 0.15);
+  --indigo-dark: #7463D0;
+  --teal: #45B08C;
+  --teal-light: rgba(69, 176, 140, 0.15);
+  --coin: #E8B042;
+  --coin-light: rgba(232, 176, 66, 0.15);
+  --danger: #D96161;
+  --surface: #1C1A19;
+  --card: #252220;
+  --border: #36312E;
+  --muted: #8C8279;
+  --body: #BDB3A8;
+}
+</style>
+<script>
+  (() => {
+    const t = localStorage.getItem('vs-theme');
+    if (t === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+</script>
+</head>
+<body>
+
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-top">
+    <a href="index.html" class="sb-logo"><img src="logo-v.png" alt="V" class="logo-img"><span class="logo-text">vidyasetu</span></a>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-section">Main</div>
+    <a href="03_dashboard.html" class="sb-item active"><span class="icon">🏠</span> Dashboard</a>
+    <a href="04_explore.html" class="sb-item"><span class="icon">🔍</span> Explore Teachers</a>
+    <a href="09_bounty.html" class="sb-item"><span class="icon">🎯</span> Bounty Hub <span class="badge" id="sb-bounty-badge">0</span></a>
+    <a href="15_campus_collab.html" class="sb-item"><span class="icon">☕</span> Campus Collab <span class="badge" id="sb-campus-badge">0</span></a>
+    <a href="14_game_learn.html" class="sb-item"><span class="icon">🎮</span> Code Quest</a>
+    <div class="sb-section">My Learning</div>
+    <a href="11_my_sessions.html" class="sb-item"><span class="icon">📅</span> My Sessions <span class="badge" id="sb-sessions-badge">0</span></a>
+    <a href="13_skill_verify.html" class="sb-item"><span class="icon">🎓</span> Verify Skills</a>
+    <a href="08_wallet.html" class="sb-item"><span class="icon">🪙</span> Wallet</a>
+    <div class="sb-section">Account</div>
+    <a href="12_my_profile.html" class="sb-item"><span class="icon">👤</span> My Profile</a>
+    <a href="12_my_profile.html" class="sb-item"><span class="icon">⚙️</span> Settings</a>
+  </nav>
+  <div class="sb-bottom">
+    <div class="sb-user">
+      <div class="sb-avatar">?</div>
+      <div>
+        <div class="sb-name">Loading...</div>
+        <div class="sb-coin">🪙 <span id="sb-coin-count">0</span> coins</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <button class="ham" onclick="openSidebar()" style="display:none" id="hamBtn"><span></span><span></span><span></span></button>
+    <div class="topbar-search">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Search skills, teachers..." />
+    </div>
+    <div class="topbar-right">
+      <!-- Mode Toggle -->
+      <div style="display:flex;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:3px">
+        <a href="03_dashboard.html" style="padding:.4rem 1rem;border-radius:8px;font-size:.82rem;font-weight:600;text-decoration:none;background:var(--card);color:var(--indigo);box-shadow:0 1px 4px rgba(0,0,0,.08);display:flex;align-items:center;gap:.3rem">🎒 Student</a>
+        <a href="03_dashboard_teacher.html" style="padding:.4rem 1rem;border-radius:8px;font-size:.82rem;font-weight:600;text-decoration:none;color:var(--muted);display:flex;align-items:center;gap:.3rem">🎓 Teacher</a>
+      </div>
+      <div class="icon-btn" onclick="window.location.href='03_dashboard.html'">🔔<span class="notif-dot"></span></div>
+      <div class="user-menu" onclick="window.location.href='12_my_profile.html'">
+        <div class="avatar">?</div>
+        <span class="uname">User</span>
+        <span style="color:var(--muted);font-size:.8rem">▾</span>
+        <button onclick="event.stopPropagation(); doLogout()" style="background:none;border:none;margin-left:10px;font-size:.75rem;color:var(--danger);cursor:pointer;font-weight:600">Sign Out</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <main class="content">
+    <!-- GREETING -->
+    <div class="page-header">
+      <h1 class="greeting">Good morning, <span class="sb-name">User</span> 👋</h1>
+      <p class="greeting-sub">You have 2 upcoming sessions today. Ready to learn?</p>
+    </div>
+
+    <!-- WELCOME BANNER -->
+    <div class="welcome-banner">
+      <div class="wb-grid"></div>
+      <div class="wb-left">
+        <div class="wb-sub" id="wb-tier-label">Bronze Tier · 1.0x earning rate</div>
+        <div class="wb-title">Your Skill Economy</div>
+        <div class="wb-actions">
+          <a href="04_explore.html" class="wb-btn primary">🔍 Find a Teacher</a>
+          <a href="09_bounty.html" class="wb-btn outline" style="color: white !important;">🎯 Post a Bounty</a>
+          <a href="15_campus_collab.html" class="wb-btn outline" style="color: white !important;">☕ IRL Collab</a>
+          <a href="12_my_profile.html" class="wb-btn outline" style="color: white !important;">📚 Teach Now</a>
+        </div>
+      </div>
+      <div class="wb-right">
+        <div class="coin-display">🪙 <span id="wb-coin-count">0</span></div>
+        <div class="coin-label" id="wb-coin-tier">Time Coins · Bronze tier</div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon">📅</div>
+        <div class="stat-num">0</div>
+        <div class="stat-label">Sessions this month</div>
+        <div class="stat-change">↑ 0 from last month</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🪙</div>
+        <div class="stat-num" id="stat-coin-total">0</div>
+        <div class="stat-label">Total coins earned</div>
+        <div class="stat-change">↑ 0 this week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-num">0</div>
+        <div class="stat-label">Verified skills</div>
+        <div class="stat-change" style="color:var(--indigo)">+ Add new skill</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🥈</div>
+        <div class="stat-num">-</div>
+        <div class="stat-label">Current tier</div>
+        <div class="stat-change">Loading progression...</div>
+      </div>
+    </div>
+    
+    <!-- MATCHMAKING HUB -->
+    <div class="match-hub">
+      <div class="hub-title">🤝 Matchmaking Hub &nbsp;<span class="badge badge-amber">Live</span></div>
+      <p style="font-size: 0.9rem; color: var(--body); margin-bottom: 0.5rem;">Declare your skills to instantly match with peers for 1-on-1 sessions.</p>
+      <div class="match-inputs">
+        <div class="match-input-group">
+          <span style="font-size: 1.2rem; margin-left: 0.5rem; margin-right: 0.5rem;">🎒</span>
+          <input type="text" id="learnInput" placeholder="I want to learn (e.g., Python, React)...">
+          <button class="match-btn" onclick="triggerMatch('learn')">Search Matches</button>
+        </div>
+        <div class="match-input-group">
+          <span style="font-size: 1.2rem; margin-left: 0.5rem; margin-right: 0.5rem;">🎓</span>
+          <input type="text" id="teachInput" placeholder="I want to teach (e.g., UI Design)...">
+          <button class="match-btn teach-btn" onclick="triggerMatch('teach')">Broadcast Skill</button>
+        </div>
+      </div>
+    </div>
+    
+
+    <!-- SKILL MATCH SUGGESTIONS -->
+    <div class="sec-header">
+      <div class="sec-title">✨ People who teach what you need</div>
+      <a href="04_explore.html" class="sec-link">Browse all →</a>
+    </div>
+    <div class="skill-scroll">
+      <!-- Suggested teachers will load here -->
+    </div>
+
+    <!-- UPCOMING SESSIONS -->
+    <div class="sec-header">
+      <div class="sec-title">📅 Upcoming Sessions</div>
+      <a href="07_session.html" class="sec-link">View all →</a>
+    </div>
+    <div class="sessions-list">
+      <div style="padding:1rem;color:var(--muted)">No upcoming sessions.</div>
+    </div>
+
+    <!-- TWO COLUMN: COIN ACTIVITY + LEADERBOARD -->
+    <div class="two-col">
+      <!-- COIN ACTIVITY -->
+      <div class="card">
+        <div class="sec-header" style="margin-bottom:1rem">
+          <div class="sec-title">💳 Recent Coin Activity</div>
+          <a href="08_wallet.html" class="sec-link">View all →</a>
+        </div>
+        <div class="tx-list">
+          <div style="padding:1rem;color:var(--muted)">No recent activity.</div>
+        </div>
+      </div>
+
+      <!-- LEADERBOARD -->
+      <div class="card">
+        <div class="sec-header" style="margin-bottom:1rem">
+          <div class="sec-title">🏆 This Week's Leaderboard</div>
+          <a href="10_quest.html" class="sec-link">Full board →</a>
+        </div>
+        <div class="lb-list">
+          <!-- Loading... -->
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- MATCH RECOMMENDATION POP-UP -->
+<div class="match-popup-overlay" id="matchPopupOverlay">
+  <div class="match-popup">
+    <button class="mp-close" onclick="closeMatchPopup()">×</button>
+    <div class="mp-icon">✨</div>
+    <div class="mp-title">It's a Match!</div>
+    <div class="mp-sub" id="mpSubText">Someone is looking to teach what you want to learn.</div>
+    <div class="mp-match-card">
+      <div class="mp-avatar" id="mpAvatar" style="background: #16A27B">AJ</div>
+      <div>
+        <div class="mp-name" id="mpName">Aarav Joshi</div>
+        <div class="mp-skill" id="mpSkill">Expert in Python</div>
+      </div>
+    </div>
+    <p style="font-size:0.8rem; color:var(--muted); margin-bottom:1.5rem">
+      Start a secure chat to negotiate timing and details.
+    </p>
+    <button class="mp-action" onclick="openSecureChat()">💬 Chat to Schedule</button>
+  </div>
+</div>
+
+<!-- SECURE CHAT SLIDEOVER -->
+<div class="chat-slideover" id="secureChatPanel">
+  <div class="cs-header">
+    <div class="cs-user">
+      <div class="cs-avatar" id="csAvatar" style="background: #16A27B">AJ</div>
+      <div>
+        <div class="cs-name" id="csName">Aarav Joshi</div>
+        <div class="cs-status">🟢 Online <span class="cs-status-lock">🔒 End-to-end encrypted</span></div>
+      </div>
+    </div>
+    <button class="cs-close" onclick="closeSecureChat()">✕</button>
+  </div>
+  <div class="cs-body" id="csBody">
+    <div class="cs-sys"><span>Secure chat established</span></div>
+    <!-- Messages dynamic -->
+  </div>
+  <div class="cs-footer">
+    <form class="cs-input-wrap" onsubmit="event.preventDefault(); sendSecureMsg()">
+      <input type="text" id="csInput" placeholder="Type a message..." autocomplete="off">
+      <button type="submit" class="cs-send">➤</button>
+    </form>
+  </div>
+</div>
+
+<!-- SCRIPTS -->
+<script src="config.js"></script>
+<script src="api.js"></script>
+
+<script>
+async function initDashboard() {
+  if (typeof VS === 'undefined' || !VS.auth) return;
+  // VS.auth.requireLogin(); // Optional based on UX
+
+  try {
+    const [teachers, quests, sessions, txs, realCoins] = await Promise.all([
+      VS.teachers.getAll(),
+      VS.quests.getAll(),
+      VS.sessions.getAll(),
+      VS.transactions.getAll(),
+      VS.coins.balance()
+    ]);
+
+    renderDashboardTeachers(teachers);
+    renderDashboardLeaderboard();
+    renderDashboardSessions(sessions.upcoming);
+    renderDashboardStats(quests, sessions, realCoins);
+    renderDashboardTransactions(txs);
+
+  } catch (err) {
+    console.error('Dashboard load failed:', err);
+  }
+}
+
+function renderDashboardTeachers(teachers) {
+  const container = document.querySelector('.skill-scroll');
+  if (!container) return;
+  container.innerHTML = teachers && teachers.length ? teachers.slice(0, 4).map(t => `
+    <div class="skill-card" onclick="window.location.href='05_teacher_profile.html?id=${t.id}'">
+      <div class="sc-top">
+        <div class="sc-avatar" style="background:${t.color || 'var(--indigo-light)'};color:${t.color?'#fff':'var(--indigo)'}">${t.initials || t.name[0]}</div>
+        <div><div class="sc-name">${t.name}</div><div class="sc-college">${t.college}</div></div>
+      </div>
+      <div class="sc-skill">
+        <span class="pill pill-indigo">${t.category}</span>
+        <span class="pill pill-gold">${t.tier || 'New'}</span>
+      </div>
+      <div class="sc-meta">
+        <span class="sc-rating">⭐ ${t.rating.toFixed(1)}</span>
+        <span>· ${t.sessions} sessions</span>
+      </div>
+    </div>
+  `).join('') : '<div style="padding:1rem;color:var(--muted)">No teachers available.</div>';
+}
+
+function renderDashboardSessions(upcoming) {
+  const container = document.querySelector('.sessions-list');
+  if (!container) return;
+  container.innerHTML = upcoming && upcoming.length ? upcoming.slice(0, 3).map(s => `
+    <div class="session-row">
+      <div class="sr-avatar" style="background:${s.color || 'var(--indigo)'}">${s.initials || '??'}</div>
+      <div class="sr-info">
+        <div class="sr-name">${s.role === 'learning' ? s.name + ' teaches you' : 'You teach ' + s.name} ${s.skill ? '— ' + s.skill : ''}</div>
+        <div class="sr-time">⏰ ${s.date}</div>
+      </div>
+      <button class="join-btn ${s.canJoin ? '' : 'disabled'}" ${s.canJoin ? 'onclick="window.location.href=\'07_session.html\'"' : ''}>Join Room →</button>
+    </div>
+  `).join('') : '<div style="padding:1rem;color:var(--muted)">No upcoming sessions.</div>';
+}
+
+function renderDashboardTransactions(txs) {
+  const container = document.querySelector('.tx-list');
+  if (!container) return;
+  container.innerHTML = txs && txs.length ? txs.slice(0, 3).map(t => `
+    <div class="tx-row">
+      <div class="tx-icon" style="background:var(--teal-light)">${t.icon}</div>
+      <div class="tx-desc"><div class="tx-title">${t.title}</div><div class="tx-date">${t.date}</div></div>
+      <div class="tx-amount tx-${t.type}">${t.amount} 🪙</div>
+    </div>
+  `).join('') : '<div style="padding:1rem;color:var(--muted)">No recent activity.</div>';
+}
+
+function renderDashboardStats(quests, sessions, realCoins = null) {
+  const nums = document.querySelectorAll('.stat-num');
+  const changes = document.querySelectorAll('.stat-change');
+  // Hide feature card (formerly demo-only)
+  const featureCard = document.getElementById('featureCodeQuest');
+  if (featureCard) featureCard.style.display = 'none';
+
+  if (nums.length >= 4) {
+    // 1. Sessions
+    const sessionThisMonth = sessions.completed?.length || 0;
+    nums[0].textContent = sessionThisMonth;
+    // 2. Coins
+    const coins = realCoins !== null ? realCoins : (localStorage.getItem('vs_coins') || '0');
+    nums[1].textContent = coins;
+    
+    // Update Welcome Banner Coins/Tier
+    const wbCoins = document.getElementById('wb-coin-count');
+    if (wbCoins) wbCoins.textContent = coins;
+
+    // 3. Skills
+    const doneCount = quests.filter(q => q.done || q.completed).length;
+    nums[2].textContent = doneCount;
+    
+    // 4. Tier & Welcome Banner Tier
+    const level = parseInt(localStorage.getItem('vs_user_level') || '1');
+    const xp = parseInt(localStorage.getItem('vs_user_xp') || '0');
+    const tier = level >= 20 ? 'Gold' : level >= 10 ? 'Silver' : 'Bronze';
+    const multiplier = tier === 'Gold' ? '2.0x' : tier === 'Silver' ? '1.5x' : '1.0x';
+    const nextTier = level >= 20 ? 'Platinum' : level >= 10 ? 'Gold' : 'Silver';
+    const xpToNext = 500 - (xp % 500);
+    
+    nums[3].textContent = tier;
+    if (changes[3]) changes[3].textContent = xpToNext + ' XP to ' + nextTier + (nextTier === 'Gold' ? ' 🥇' : ' 🥈');
+
+    const tierLabel = document.getElementById('wb-tier-label');
+    if (tierLabel) tierLabel.textContent = `${tier} Tier · ${multiplier} earning rate`;
+    const coinTier = document.getElementById('wb-coin-tier');
+    if (coinTier) coinTier.textContent = `Time Coins · ${tier} tier`;
+  }
+}
+
+async function renderDashboardLeaderboard() {
+  const container = document.querySelector('.lb-list');
+  if (!container) return;
+  
+  const lbData = await VS.leaderboard.get();
+  
+  container.innerHTML = lbData && lbData.length ? lbData.slice(0, 3).map(p => `
+    <div class="lb-row ${p.me ? 'me' : ''}">
+      <div class="lb-rank">${p.rank <= 3 ? ['🥇', '🥈', '🥉'][p.rank - 1] : p.rank}</div>
+      <div class="lb-avatar" style="background:${p.bg}">${p.av}</div>
+      <div class="lb-name">${p.me ? 'You — ' + p.name : p.name}</div>
+      <div class="lb-xp">${p.xp} XP</div>
+    </div>
+  `).join('') : '<div style="padding:1rem;color:var(--muted)">No leaderboard data.</div>';
+}
+
+function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('open')}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('open')}
+function doLogout() {
+  if (confirm('Are you sure you want to sign out?')) {
+    VS.auth.logout();
+  }
+}
+if(window.innerWidth<=900){document.getElementById('hamBtn').style.display='flex'}
+window.addEventListener('resize',()=>{if(window.innerWidth<=900)document.getElementById('hamBtn').style.display='flex';else document.getElementById('hamBtn').style.display='none'})
+
+// ──────────────────────────────────────────────────────────
+// MATCHMAKING & SECURE CHAT (PRODUCTION)
+// ──────────────────────────────────────────────────────────
+let currentSecureBookingId = null;
+let currentChatSub = null;
+let currentMatchPeer = null;
+
+async function triggerMatch(type) {
+  const input = type === 'learn' ? document.getElementById('learnInput') : document.getElementById('teachInput');
+  const skill = input.value.trim();
+  if (!skill) return alert('Please enter a skill first.');
+  
+  const btn = input.nextElementSibling;
+  const originalText = btn.textContent;
+  btn.textContent = 'Searching...';
+  btn.disabled = true;
+
+  try {
+    const match = await VS.matchmaking.findMatch(type, skill);
+    btn.textContent = originalText;
+    btn.disabled = false;
+
+    if (!match) {
+       alert('Could not find anyone matching your request right now. Your skill has been broadcasted so others can find you!');
+       return;
+    }
+
+    currentMatchPeer = match;
+
+    document.getElementById('mpName').textContent = match.name;
+    document.getElementById('mpAvatar').textContent = match.initials;
+    document.getElementById('mpAvatar').style.background = match.color;
+    document.getElementById('mpSkill').textContent = match.skill;
+    
+    document.getElementById('mpSubText').textContent = type === 'learn' 
+      ? `Someone is looking to teach what you want to learn.`
+      : `Someone is looking to learn what you want to teach.`;
+      
+    document.getElementById('csName').textContent = match.name;
+    document.getElementById('csAvatar').textContent = match.initials;
+    document.getElementById('csAvatar').style.background = match.color;
+
+    input.value = '';
+    document.getElementById('matchPopupOverlay').classList.add('active');
+  } catch (err) {
+    btn.textContent = originalText;
+    btn.disabled = false;
+    alert(err.message);
+  }
+}
+
+function closeMatchPopup() {
+  document.getElementById('matchPopupOverlay').classList.remove('active');
+}
+
+async function openSecureChat() {
+  closeMatchPopup();
+  document.getElementById('secureChatPanel').classList.add('open');
+  const body = document.getElementById('csBody');
+  body.innerHTML = `<div class="cs-sys"><span>Creating secure room...</span></div>`;
+  
+  try {
+     currentSecureBookingId = await VS.matchmaking.createMatchBooking(currentMatchPeer.id, currentMatchPeer.skill_id);
+     body.innerHTML += `<div class="cs-sys"><span>Secure chat established</span></div>`;
+     
+     if (currentChatSub) VS.chat.unsubscribe(currentChatSub);
+     currentChatSub = VS.chat.subscribe(currentSecureBookingId, async (msg) => {
+        const myUser = await VS.auth.getUser();
+        if (msg.sender_id !== myUser.id) {
+            renderMessage(msg.content, 'them', msg.created_at);
+        }
+     });
+
+     setTimeout(() => { document.getElementById('csInput').focus(); }, 300);
+  } catch(e) {
+     body.innerHTML = `<div class="cs-sys"><span style="color:var(--danger)">Failed: ${e.message}</span></div>`;
+  }
+}
+
+function closeSecureChat() {
+  if (currentChatSub) VS.chat.unsubscribe(currentChatSub);
+  currentChatSub = null;
+  document.getElementById('secureChatPanel').classList.remove('open');
+}
+
+async function sendSecureMsg() {
+  const input = document.getElementById('csInput');
+  const text = input.value.trim();
+  if (!text || !currentSecureBookingId) return;
+  
+  renderMessage(text, 'you', new Date().toISOString());
+  input.value = '';
+  
+  try {
+     await VS.chat.send(currentSecureBookingId, text);
+  } catch(e) {
+     alert('Failed to send text: ' + e.message);
+  }
+}
+
+function renderMessage(text, senderCls, timestamp) {
+  const body = document.getElementById('csBody');
+  const timeStr = new Date(timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+  body.innerHTML += `
+    <div class="msg ${senderCls}">
+      <div class="msg-bubble">${text}</div>
+      <div class="msg-time">${timeStr}</div>
+    </div>
+  `;
+  body.scrollTop = body.scrollHeight;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initDashboard();
+  VS.ui.updateSidebar();
+});
+
+</script>
+<button onclick="toggleTheme()" id="globalThemeBtn" class="floating-theme-btn" title="Toggle Dark/Light Mode">🌙</button>
+<style>
+.floating-theme-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  color: var(--ink);
+}
+.floating-theme-btn:hover {
+  transform: scale(1.05);
+}
+</style>
+<script>
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    document.getElementById('globalThemeBtn').textContent = isDark ? '🌙' : '☀️';
+    localStorage.setItem('vs-theme', isDark ? 'light' : 'dark');
+  }
+  if (document.documentElement.getAttribute('data-theme') === 'dark') {
+    document.getElementById('globalThemeBtn').textContent = '☀️';
+  }
+</script>
+</body>
+</html>

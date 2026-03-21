@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="logo-v.png" type="image/png">
+<title>Vidyasetu — Book a Session</title>
+<link rel="stylesheet" href="ui-system.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#0D0D1A;--indigo:#5B45E0;--indigo-light:#F0EEF9;--indigo-dark:#3D2DB8;--teal:#16A27B;--teal-light:#F0FAF6;--coin:#F5A623;--coin-light:#FFF9EF;--danger:#E84040;--surface:#F7F8FA;--card:#FFFFFF;--border:#E5E7EB;--muted:#9CA3AF;--body:#4B5563;--sidebar:256px}
+body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--ink);display:flex;min-height:100vh}
+/* SIDEBAR */
+.sidebar{width:var(--sidebar);background:#fff;border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50;transition:transform .3s}
+.sb-top{padding:1.5rem 1.2rem 1rem;border-bottom:1px solid var(--border)}
+.sb-logo{font-family:'DM Serif Display',serif;font-size:1.35rem;color:var(--ink);display:flex;align-items:center;gap:8px;text-decoration:none}
+.sb-logo span{color:var(--indigo)}
+.sb-nav{flex:1;padding:1rem .8rem;overflow-y:auto}
+.sb-section{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:.4rem .6rem;margin-top:1rem;margin-bottom:.3rem}
+.sb-item{display:flex;align-items:center;gap:.75rem;padding:.65rem .8rem;border-radius:9px;text-decoration:none;color:var(--body);font-size:.9rem;font-weight:500;transition:all .18s;cursor:pointer;border:none;background:none;width:100%;text-align:left}
+.sb-item:hover{background:var(--surface);color:var(--ink)}
+.sb-item.active{background:var(--indigo-light);color:var(--indigo);font-weight:600}
+.sb-item .icon{width:20px;text-align:center;font-size:1rem;flex-shrink:0}
+.sb-item .badge{margin-left:auto;background:var(--indigo);color:#fff;font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:99px}
+.sb-bottom{padding:1rem 1.2rem;border-top:1px solid var(--border)}
+.sb-user{display:flex;align-items:center;gap:.75rem}
+.sb-avatar{width:40px;height:40px;border-radius:50%;background:var(--indigo);color:#fff;font-weight:700;font-size:.9rem;display:flex;align-items:center;justify-content:center}
+.sb-name{font-size:.88rem;font-weight:600;color:var(--ink)}
+.sb-coin{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--coin);font-weight:600}
+.main{margin-left:var(--sidebar);flex:1;min-width:0}
+.topbar{background:#fff;border-bottom:1px solid var(--border);padding:0 2rem;height:60px;display:flex;align-items:center;gap:1rem;position:sticky;top:0;z-index:40}
+.back-btn{display:flex;align-items:center;gap:.4rem;font-size:.88rem;font-weight:600;color:var(--body);text-decoration:none;transition:color .2s}
+.back-btn:hover{color:var(--indigo)}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:.75rem}
+.content{padding:2rem;max-width:980px}
+
+/* PAGE HEADER */
+.page-header{margin-bottom:2rem}
+.page-title{font-family:'DM Serif Display',serif;font-size:1.8rem;color:var(--ink);margin-bottom:.3rem}
+.page-sub{font-size:.9rem;color:var(--body)}
+
+/* PROGRESS STEPS */
+.progress-steps{display:flex;align-items:center;gap:.4rem;margin-bottom:2rem}
+.ps-step{display:flex;align-items:center;gap:.5rem;font-size:.82rem;font-weight:600;color:var(--muted)}
+.ps-step.active{color:var(--indigo)}
+.ps-step.done{color:var(--teal)}
+.ps-dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0}
+.ps-step.active .ps-dot{border-color:var(--indigo);background:var(--indigo);color:#fff}
+.ps-step.done .ps-dot{border-color:var(--teal);background:var(--teal);color:#fff}
+.ps-line{flex:1;height:2px;background:var(--border)}
+.ps-line.done{background:var(--teal)}
+
+/* GRID */
+.booking-grid{display:grid;grid-template-columns:1fr 360px;gap:1.5rem;align-items:start}
+.card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:1.4rem;margin-bottom:1.2rem}
+.card-title{font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:1.1rem;display:flex;align-items:center;gap:.5rem}
+
+/* TEACHER MINI CARD */
+.teacher-mini{display:flex;align-items:center;gap:1rem}
+.tm-avatar{width:56px;height:56px;border-radius:50%;background:#5B45E0;color:#fff;font-weight:700;font-size:1.1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tm-info{flex:1}
+.tm-name{font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:.2rem}
+.tm-college{font-size:.8rem;color:var(--muted)}
+.tm-rating{font-size:.8rem;color:var(--body);margin-top:.2rem}
+.tm-tags{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.5rem}
+.pill{display:inline-flex;align-items:center;gap:4px;border-radius:99px;padding:.22rem .65rem;font-size:.72rem;font-weight:600}
+.pill-gold{background:var(--coin-light);color:var(--vs-warning-text)}
+.pill-teal{background:var(--teal-light);color:var(--teal)}
+.pill-indigo{background:var(--indigo-light);color:var(--indigo)}
+.pill-green{background:rgba(22,162,123,.1);color:var(--teal)}
+
+/* CALENDAR */
+.calendar-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.cal-month{font-size:.95rem;font-weight:700;color:var(--ink)}
+.cal-nav{display:flex;gap:.4rem}
+.cal-nav button{width:30px;height:30px;border-radius:7px;border:1px solid var(--border);background:#fff;cursor:pointer;font-size:.9rem;transition:all .15s}
+.cal-nav button:hover{border-color:var(--indigo);color:var(--indigo)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-day-label{text-align:center;font-size:.7rem;font-weight:700;color:var(--muted);padding:.3rem 0;text-transform:uppercase}
+.cal-day{border-radius:8px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:500;cursor:pointer;transition:all .15s;border:1.5px solid transparent}
+.cal-day:hover:not(.empty):not(.past):not(.unavail){background:var(--indigo-light);color:var(--indigo)}
+.cal-day.empty{cursor:default}
+.cal-day.past{color:var(--muted);cursor:default;opacity:.4}
+.cal-day.unavail{color:var(--muted);cursor:default;background:none}
+.cal-day.has-slots{font-weight:600;color:var(--ink)}
+.cal-day.has-slots::after{content:'';display:block;width:4px;height:4px;background:var(--teal);border-radius:50%;margin:1px auto 0}
+.cal-day.selected{background:var(--indigo)!important;color:#fff!important;border-color:var(--indigo)!important}
+.cal-day.today{border-color:var(--indigo);color:var(--indigo)}
+
+/* TIME SLOTS */
+.slots-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem}
+.time-slot{padding:.55rem;border:1.5px solid var(--border);border-radius:9px;text-align:center;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;background:#fff;color:var(--body)}
+.time-slot:hover{border-color:rgba(91,69,224,.3);color:var(--indigo)}
+.time-slot.selected{background:var(--indigo-light);border-color:var(--indigo);color:var(--indigo)}
+.time-slot.busy{background:var(--surface);color:var(--muted);cursor:default;text-decoration:line-through}
+
+/* DURATION */
+.duration-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem}
+.dur-btn{padding:.6rem;border:1.5px solid var(--border);border-radius:9px;text-align:center;font-size:.82rem;font-weight:600;cursor:pointer;background:#fff;color:var(--body);transition:all .2s}
+.dur-btn:hover{border-color:rgba(91,69,224,.3);color:var(--indigo)}
+.dur-btn.active{background:var(--indigo-light);border-color:var(--indigo);color:var(--indigo)}
+.dur-sub{font-size:.68rem;color:var(--muted);font-weight:400;display:block;margin-top:.15rem}
+
+/* NOTE FIELD */
+.note-input{width:100%;padding:.7rem 1rem;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);resize:vertical;min-height:80px;outline:none;transition:border-color .2s}
+.note-input:focus{border-color:var(--indigo);box-shadow:0 0 0 3px rgba(91,69,224,.06)}
+.note-input::placeholder{color:var(--muted)}
+
+/* ORDER SUMMARY (right col) */
+.summary-row{display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--surface);font-size:.88rem}
+.summary-row:last-of-type{border-bottom:none}
+.sr-label{color:var(--body)}
+.sr-val{font-weight:600;color:var(--ink)}
+.summary-total{background:var(--coin-light);border:1px solid rgba(245,166,35,.2);border-radius:12px;padding:1rem;margin:1rem 0;display:flex;justify-content:space-between;align-items:center}
+.st-label{font-size:.85rem;color:var(--body)}
+.st-label span{display:block;font-size:.74rem;color:var(--muted);margin-top:.1rem}
+.st-amount{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700;color:var(--coin)}
+.coin-balance{background:var(--indigo-light);border-radius:10px;padding:.75rem 1rem;display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:1rem}
+.cb-label{color:var(--body)}
+.cb-val{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--indigo)}
+/* Escrow explainer */
+.escrow-info{background:rgba(22,162,123,.04);border:1px solid rgba(22,162,123,.15);border-radius:12px;padding:1rem;margin-bottom:1rem;font-size:.8rem;color:var(--body);line-height:1.7}
+.escrow-info h4{font-size:.82rem;font-weight:700;color:var(--teal);margin-bottom:.4rem}
+/* Guarantee chips */
+.guarantees{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1rem}
+.g-chip{display:flex;align-items:center;gap:.5rem;font-size:.78rem;color:var(--body)}
+.g-chip span{color:var(--teal);font-weight:700;font-size:.9rem}
+/* CTA */
+.btn-confirm{width:100%;padding:.9rem;background:var(--indigo);color:#fff;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:.5rem}
+.btn-confirm:hover{background:var(--indigo-dark);box-shadow:0 8px 28px rgba(91,69,224,.3);transform:translateY(-2px)}
+.btn-confirm:disabled{opacity:.55;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* SUCCESS MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:20px;padding:2.5rem;max-width:420px;width:100%;text-align:center;animation:popIn .3s ease}
+@keyframes popIn{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-icon{font-size:3.5rem;margin-bottom:1rem}
+.modal h2{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--ink);margin-bottom:.5rem}
+.modal p{font-size:.9rem;color:var(--body);line-height:1.7;margin-bottom:.3rem}
+.modal-details{background:var(--surface);border-radius:12px;padding:1rem;margin:1.2rem 0;text-align:left}
+.md-row{display:flex;justify-content:space-between;font-size:.85rem;padding:.3rem 0;color:var(--body)}
+.md-row strong{color:var(--ink)}
+.btn-go{width:100%;padding:.8rem;background:var(--indigo);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:600;cursor:pointer;margin-top:.5rem;transition:all .2s}
+.btn-go:hover{background:var(--indigo-dark)}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0}
+  .booking-grid{grid-template-columns:1fr}
+  .duration-grid{grid-template-columns:repeat(2,1fr)}
+  #hamBtn{display:flex!important}
+}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:49}.overlay.open{display:block}
+.ham-btn{display:none;width:38px;height:38px;border-radius:9px;border:1.5px solid var(--border);background:#fff;align-items:center;justify-content:center;cursor:pointer;flex-direction:column;gap:5px;flex-shrink:0}
+.ham-btn span{width:16px;height:1.5px;background:var(--ink);border-radius:2px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+</style>
+<style>
+[data-theme="dark"] {
+  --ink: #EBE5DF;
+  --indigo: #8A78E5;
+  --indigo-light: rgba(138, 120, 229, 0.15);
+  --indigo-dark: #7463D0;
+  --teal: #45B08C;
+  --teal-light: rgba(69, 176, 140, 0.15);
+  --coin: #E8B042;
+  --coin-light: rgba(232, 176, 66, 0.15);
+  --danger: #D96161;
+  --surface: #1C1A19;
+  --card: #252220;
+  --border: #36312E;
+  --muted: #8C8279;
+  --body: #BDB3A8;
+}
+</style>
+<script>
+  (() => {
+    const t = localStorage.getItem('vs-theme');
+    if (t === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="api.js"></script>
+<script src="demo-data.js"></script>
+</head>
+<body>
+
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sb-top"><a href="index.html" class="sb-logo"><img src="logo-v.png" alt="V" class="logo-img"><span class="logo-text">vidyasetu</span></a></div>
+  <nav class="sb-nav">
+    <div class="sb-section">Main</div>
+    <a href="03_dashboard.html" class="sb-item"><span class="icon">🏠</span> Dashboard</a>
+    <a href="04_explore.html" class="sb-item active"><span class="icon">🔍</span> Explore Teachers</a>
+    <a href="09_bounty.html" class="sb-item"><span class="icon">🎯</span> Bounty Hub <span class="badge" id="sb-bounty-badge">0</span></a>
+    <a href="14_game_learn.html" class="sb-item"><span class="icon">🎮</span> Code Quest</a>
+    <div class="sb-section">My Learning</div>
+    <a href="11_my_sessions.html" class="sb-item"><span class="icon">📅</span> My Sessions</a>
+    <a href="13_skill_verify.html" class="sb-item"><span class="icon">🎓</span> Verify Skills</a>
+    <a href="08_wallet.html" class="sb-item"><span class="icon">🪙</span> Wallet</a>
+    <div class="sb-section">Account</div>
+    <a href="12_my_profile.html" class="sb-item"><span class="icon">👤</span> My Profile</a>
+    <a href="12_my_profile.html" class="sb-item"><span class="icon">⚙️</span> Settings</a>
+  </nav>
+  <div class="sb-bottom" id="sb-user-area">
+    <div class="sb-user">
+      <div class="sb-avatar">...</div>
+      <div>
+        <div class="sb-name">Loading...</div>
+        <div class="sb-coin">...</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- SUCCESS MODAL -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal">
+    <div class="modal-icon">🎉</div>
+    <h2>Session Booked!</h2>
+    <p>Your session with <strong id="modalTeacherName">...</strong> is confirmed. Coins are safely in escrow.</p>
+    <div class="modal-details" id="modalDetails"></div>
+    <p style="font-size:.78rem;color:var(--muted)">A confirmation email has been sent. You'll also get a reminder 30 minutes before.</p>
+    <button class="btn-go" onclick="window.location.href='11_my_sessions.html'">View My Sessions →</button>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <button class="ham-btn" id="hamBtn" style="display:none" onclick="openSidebar()"><span></span><span></span><span></span></button>
+    <a href="05_teacher_profile.html" class="back-btn">← Back to Profile</a>
+    <div class="topbar-right">
+      <div style="font-size:.82rem;color:var(--muted)">Your balance:</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:700;color:var(--coin)" id="topbarBalance">🪙 ...</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="page-header">
+      <h1 class="page-title">Book a Session</h1>
+      <p class="page-sub">Pick a time that works for both of you. Coins go into escrow — safe until the session is done.</p>
+    </div>
+
+    <!-- PROGRESS -->
+    <div class="progress-steps" id="progressSteps">
+      <div class="ps-step active" id="ps1"><div class="ps-dot">1</div>Pick Date & Time</div>
+      <div class="ps-line" id="pl1"></div>
+      <div class="ps-step" id="ps2"><div class="ps-dot">2</div>Session Details</div>
+      <div class="ps-line" id="pl2"></div>
+      <div class="ps-step" id="ps3"><div class="ps-dot">3</div>Confirm & Pay</div>
+    </div>
+
+    <div class="booking-grid">
+      <!-- LEFT -->
+      <div>
+
+        <!-- TEACHER MINI CARD -->
+        <div class="card">
+          <div class="teacher-mini" id="teacherMini">
+            <div class="tm-avatar">...</div>
+            <div class="tm-info">
+              <div class="tm-name">Loading teacher...</div>
+              <div class="tm-college">...</div>
+              <div class="tm-rating">...</div>
+              <div class="tm-tags">...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 1: CALENDAR -->
+        <div class="card" id="step1card">
+          <div class="card-title">📅 Select Date</div>
+          <div class="calendar-header">
+            <span class="cal-month" id="calMonth">March 2026</span>
+            <div class="cal-nav">
+              <button onclick="prevMonth()">‹</button>
+              <button onclick="nextMonth()">›</button>
+            </div>
+          </div>
+          <div class="cal-grid" id="calGrid"></div>
+          <div style="margin-top:1.2rem;padding-top:1.1rem;border-top:1px solid var(--surface)">
+            <div class="card-title">⏰ Available Time Slots <span id="selectedDate" style="font-weight:400;color:var(--muted);font-size:.82rem">(pick a date first)</span></div>
+            <div class="slots-grid" id="timeSlotGrid">
+              <div style="grid-column:1/-1;text-align:center;color:var(--muted);font-size:.85rem;padding:1.5rem 0">Select a date to see available slots</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2: SESSION DETAILS -->
+        <div class="card" id="step2card" style="opacity:.5;pointer-events:none">
+          <div class="card-title">⚙️ Session Details</div>
+          <div style="margin-bottom:1.2rem">
+            <div style="font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.6rem">Duration</div>
+            <div class="duration-grid">
+              <div class="dur-btn" onclick="setDuration(this,1,'1 hour')">1h<span class="dur-sub">🪙 2 coins</span></div>
+              <div class="dur-btn active" onclick="setDuration(this,1.5,'1.5 hours')">1.5h<span class="dur-sub">🪙 3 coins</span></div>
+              <div class="dur-btn" onclick="setDuration(this,2,'2 hours')">2h<span class="dur-sub">🪙 4 coins</span></div>
+              <div class="dur-btn" onclick="setDuration(this,3,'3 hours')">3h<span class="dur-sub">🪙 6 coins</span></div>
+            </div>
+          </div>
+          <div style="margin-bottom:1.2rem">
+            <div style="font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.6rem">Skill / Topic <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted)">(what do you want to learn?)</span></div>
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap" id="topicChips">
+              <button class="pill pill-teal" style="cursor:pointer;border:1.5px solid rgba(22,162,123,.3);padding:.35rem .85rem;font-size:.8rem" onclick="selectTopic(this,'React Hooks')">React Hooks</button>
+              <button class="pill pill-indigo" style="cursor:pointer;border:1.5px solid rgba(91,69,224,.3);padding:.35rem .85rem;font-size:.8rem;background:#fff;color:var(--body)" onclick="selectTopic(this,'JavaScript Async')">JavaScript Async</button>
+              <button class="pill pill-indigo" style="cursor:pointer;border:1.5px solid rgba(91,69,224,.3);padding:.35rem .85rem;font-size:.8rem;background:#fff;color:var(--body)" onclick="selectTopic(this,'TypeScript Basics')">TypeScript Basics</button>
+              <button class="pill pill-indigo" style="cursor:pointer;border:1.5px solid rgba(91,69,224,.3);padding:.35rem .85rem;font-size:.8rem;background:#fff;color:var(--body)" onclick="selectTopic(this,'Custom topic')">+ Custom</button>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.6rem">Note for <span id="noteForName">Teacher</span> <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></div>
+            <textarea class="note-input" id="sessionNote" placeholder="e.g. I'm a complete beginner, I've watched a few YouTube videos. I want to build a todo app by the end of the session."></textarea>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: ORDER SUMMARY -->
+      <div>
+        <div class="card" style="position:sticky;top:76px">
+          <div class="card-title">🪙 Booking Summary</div>
+
+          <div class="summary-row">
+            <span class="sr-label">Teacher</span>
+            <span class="sr-val" id="sumTeacher">...</span>
+          </div>
+          <div class="summary-row">
+            <span class="sr-label">Date</span>
+            <span class="sr-val" id="sumDate">Not selected</span>
+          </div>
+          <div class="summary-row">
+            <span class="sr-label">Time</span>
+            <span class="sr-val" id="sumTime">Not selected</span>
+          </div>
+          <div class="summary-row">
+            <span class="sr-label">Duration</span>
+            <span class="sr-val" id="sumDuration">1.5 hours</span>
+          </div>
+          <div class="summary-row">
+            <span class="sr-label">Topic</span>
+            <span class="sr-val" id="sumTopic">React Hooks</span>
+          </div>
+
+          <div class="summary-total">
+            <div class="st-label">
+              Total to escrow
+              <span id="sumCalc">1.5h × 🪙2/hr</span>
+            </div>
+            <span class="st-amount" id="sumTotal">🪙 3</span>
+          </div>
+
+          <div class="coin-balance">
+            <span class="cb-label">Your balance after booking</span>
+            <span class="cb-val" id="sumBalance">🪙 ...</span>
+          </div>
+
+          <div class="escrow-info">
+            <h4>🔒 How Escrow Works</h4>
+            Coins are locked when you book. They release to <span id="escrowTeacherName">the teacher</span> after your session completes. If they disconnect, coins release <em>pro-rata</em> based on time taught. If you're unsatisfied in the first 15 minutes, you get a <strong>full refund</strong>.
+          </div>
+
+          <div class="guarantees">
+            <div class="g-chip"><span>✓</span> 15-min free trial protection</div>
+            <div class="g-chip"><span>✓</span> Pro-rata refund on disconnect</div>
+            <div class="g-chip"><span>✓</span> Dispute resolution within 48h</div>
+            <div class="g-chip"><span>✓</span> AI attention monitoring</div>
+          </div>
+
+          <button class="btn-confirm" id="confirmBtn" onclick="confirmBooking()" disabled>
+            <span id="confirmLabel">Select a date & time to continue</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const urlParams = new URLSearchParams(window.location.search);
+const teacherId = urlParams.get('id');
+
+let RATE = 0;
+let BALANCE = 0;
+let teacherName = 'Teacher';
+
+async function initBooking() {
+  VS.ui.updateSidebar();
+  
+  if (!teacherId) {
+    window.location.href = '04_explore.html';
+    return;
+  }
+
+  try {
+    const t = await VS.api.getTeacher(teacherId);
+    if (!t) throw new Error('Teacher not found');
+
+    RATE = t.rate || 0;
+    teacherName = t.name;
+    document.getElementById('modalTeacherName').textContent = t.name;
+    document.getElementById('sumTeacher').textContent = t.name;
+    // Update dynamic name references
+    const noteForEl = document.getElementById('noteForName');
+    if (noteForEl) noteForEl.textContent = t.name.split(' ')[0];
+    const escrowNameEl = document.getElementById('escrowTeacherName');
+    if (escrowNameEl) escrowNameEl.textContent = t.name.split(' ')[0];
+    
+    // Update teacher mini card
+    const mini = document.getElementById('teacherMini');
+    mini.querySelector('.tm-avatar').textContent = t.initials || t.name[0];
+    mini.querySelector('.tm-avatar').style.background = t.color || 'var(--indigo)';
+    mini.querySelector('.tm-name').textContent = t.name;
+    mini.querySelector('.tm-college').textContent = (t.college || 'Verified Student') + ' · ' + (t.year || '');
+    mini.querySelector('.tm-rating').textContent = `⭐ ${t.rating || '0.0'} · ${t.sessions || 0} sessions`;
+    mini.querySelector('.tm-tags').innerHTML = `
+      <span class="pill pill-gold">${t.tier === 'gold' ? '🥇 Gold Expert' : t.tier === 'silver' ? '🥈 Silver' : '🥉 Bronze'}</span>
+      ${t.online ? '<span class="pill pill-green">🟢 Online Now</span>' : ''}
+    `;
+
+    // Get user balance
+    const user = await VS.api.getCurrentUser();
+    if (user) {
+      BALANCE = user.coins || 0;
+      document.getElementById('topbarBalance').textContent = `🪙 ${BALANCE} coins`;
+    }
+
+    updateSummary();
+
+    // Load availability after teacher data
+    await loadTeacherAvailability(teacherId);
+
+  } catch (err) {
+    console.error('Booking init error:', err);
+    alert('Failed to load booking details.');
+  }
+}
+
+function updateSummary() {
+  const total = RATE * duration;
+  document.getElementById('sumCalc').textContent = `${duration}h × 🪙${RATE}/hr`;
+  document.getElementById('sumTotal').textContent = '🪙 ' + total.toFixed(1);
+  document.getElementById('sumBalance').textContent = '🪙 ' + (BALANCE - total).toFixed(1);
+  
+  const confirmBtn = document.getElementById('confirmBtn');
+  const confirmLabel = document.getElementById('confirmLabel');
+  
+  if (selectedDate && selectedTime) {
+    confirmBtn.disabled = false;
+    confirmLabel.textContent = `Confirm & Lock 🪙 ${total.toFixed(1)} in Escrow →`;
+  } else {
+    confirmBtn.disabled = true;
+    confirmLabel.textContent = 'Select a date & time to continue';
+  }
+}
+
+function selectDay(d, el) {
+  document.querySelectorAll('.cal-day.selected').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedDate = d;
+  selectedTime = null;
+  document.getElementById('selectedDate').textContent = `— ${MONTH_NAMES[currentMonth]} ${d}`;
+  document.getElementById('sumDate').textContent = `${MONTH_NAMES[currentMonth]} ${d}, ${currentYear}`;
+  document.getElementById('sumTime').textContent = 'Not selected';
+  renderTimeSlots(d);
+  enableStep2();
+  updateSummary();
+}
+
+// Availability loaded from DB; fallback to defaults if teacher has no slots set
+let AVAILABLE_DAYS = new Set([]);
+let TIME_SLOTS = {};
+
+async function loadTeacherAvailability(teacherId) {
+  try {
+    const sb = window.supabase?.createClient
+      ? window.supabase.createClient(window.APP_CONFIG.SUPABASE_URL, window.APP_CONFIG.SUPABASE_ANON_KEY)
+      : null;
+    if (!sb) throw new Error('no supabase');
+    const { data } = await sb.from('availability_slots')
+      .select('*').eq('teacher_id', teacherId).eq('is_active', true);
+    if (data && data.length > 0) {
+      const today = new Date();
+      const thisMonth = today.getMonth();
+      const thisYear = today.getFullYear();
+      const daysInMonth = new Date(thisYear, thisMonth + 1, 0).getDate();
+      // Build available days from day_of_week recurring slots
+      for (let d = today.getDate(); d <= daysInMonth; d++) {
+        const dow = new Date(thisYear, thisMonth, d).getDay();
+        const slots = data.filter(s => s.is_recurring && s.day_of_week === dow);
+        if (slots.length > 0) {
+          AVAILABLE_DAYS.add(d);
+          TIME_SLOTS[d] = slots.map(s => {
+            const [h, m] = s.start_time.split(':');
+            const hour = parseInt(h);
+            return `${hour > 12 ? hour-12 : hour}:${m} ${hour >= 12 ? 'PM' : 'AM'}`;
+          });
+        }
+      }
+    }
+  } catch(e) {
+    console.warn('Availability load failed, using defaults');
+  }
+  // Fallback: if no slots loaded, use sensible defaults for upcoming weekdays
+  if (AVAILABLE_DAYS.size === 0) {
+    const today = new Date();
+    const month = today.getMonth();
+    const year = today.getFullYear();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    for (let d = today.getDate(); d <= daysInMonth; d++) {
+      const dow = new Date(year, month, d).getDay();
+      if (dow >= 1 && dow <= 6) { // Mon–Sat
+        AVAILABLE_DAYS.add(d);
+        TIME_SLOTS[d] = ['10:00 AM','2:00 PM','4:00 PM','7:00 PM'].slice(0, 2 + (d % 3));
+      }
+    }
+  }
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const grid = document.getElementById('calGrid');
+  document.getElementById('calMonth').textContent = MONTH_NAMES[currentMonth] + ' ' + currentYear;
+  grid.innerHTML = '';
+  DAY_LABELS.forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'cal-day-label';
+    el.textContent = d;
+    grid.appendChild(el);
+  });
+  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  for (let i = 0; i < firstDay; i++) {
+    const el = document.createElement('div');
+    el.className = 'cal-day empty';
+    grid.appendChild(el);
+  }
+  const today = new Date();
+  for (let d = 1; d <= daysInMonth; d++) {
+    const el = document.createElement('div');
+    const isPast = new Date(currentYear, currentMonth, d) < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const hasSlots = AVAILABLE_DAYS.has(d) && !isPast;
+    el.className = 'cal-day' + (isPast ? ' past' : '') + (hasSlots ? ' has-slots' : ' unavail') + (d === today.getDate() && currentMonth === today.getMonth() ? ' today' : '');
+    el.textContent = d;
+    if (hasSlots) el.onclick = () => selectDay(d, el);
+    grid.appendChild(el);
+  }
+}
+
+function selectDay(d, el) {
+  document.querySelectorAll('.cal-day.selected').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedDate = d;
+  selectedTime = null;
+  document.getElementById('selectedDate').textContent = `— ${MONTH_NAMES[currentMonth]} ${d}`;
+  document.getElementById('sumDate').textContent = `${MONTH_NAMES[currentMonth]} ${d}, ${currentYear}`;
+  document.getElementById('sumTime').textContent = 'Not selected';
+  renderTimeSlots(d);
+  enableStep2();
+  updateConfirmBtn();
+}
+
+function renderTimeSlots(d) {
+  const grid = document.getElementById('timeSlotGrid');
+  const slots = TIME_SLOTS[d] || [];
+  if (!slots.length) { grid.innerHTML = '<div style="text-align:center;color:var(--muted);padding:1rem">No slots available for this day.</div>'; return; }
+  grid.innerHTML = slots.map(t => `<div class="time-slot" onclick="selectTimeSlot(this,'${t}')">${t}</div>`).join('');
+}
+
+function selectTimeSlot(el, t) {
+  document.querySelectorAll('.time-slot').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedTime = t;
+  document.getElementById('sumTime').textContent = t;
+  updateConfirmBtn();
+}
+
+function prevMonth() { if(currentMonth === 0){currentMonth=11;currentYear--;}else{currentMonth--;} renderCalendar(); }
+function nextMonth() { if(currentMonth === 11){currentMonth=0;currentYear++;}else{currentMonth++;} renderCalendar(); }
+
+function enableStep2() {
+  const card = document.getElementById('step2card');
+  card.style.opacity = '1';
+  card.style.pointerEvents = 'auto';
+  setProgress(2);
+}
+
+function setDuration(btn, h, label) {
+  duration = h;
+  document.querySelectorAll('.duration-grid .dur-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('sumDuration').textContent = label;
+  updateSummary();
+}
+
+function selectTopic(btn, topic) {
+  selectedTopic = topic;
+  document.getElementById('sumTopic').textContent = topic;
+  document.querySelectorAll('#topicChips button').forEach(b => { b.style.background='#fff'; b.style.color='var(--body)'; });
+  btn.style.background = 'var(--indigo-light)';
+  btn.style.color = 'var(--indigo)';
+}
+
+function updateConfirmBtn() {
+  updateSummary();
+  if (selectedDate && selectedTime) setProgress(3);
+}
+
+function setProgress(step) {
+  [1,2,3].forEach(i => {
+    const s = document.getElementById('ps'+i);
+    s.classList.remove('active','done');
+    if (i < step) s.classList.add('done');
+    else if (i === step) s.classList.add('active');
+    const dot = s.querySelector('.ps-dot');
+    dot.textContent = i < step ? '✓' : i;
+    if (i < 3) {
+      const line = document.getElementById('pl'+i);
+      line.classList.toggle('done', i < step);
+    }
+  });
+}
+
+function confirmBooking() {
+  const btn = document.getElementById('confirmBtn');
+  const label = document.getElementById('confirmLabel');
+  btn.disabled = true;
+  label.innerHTML = '<div class="spinner"></div>';
+  setTimeout(() => {
+    document.getElementById('modalDetails').innerHTML = `
+      <div class="md-row"><span>Teacher</span><strong>${teacherName}</strong></div>
+      <div class="md-row"><span>Date & Time</span><strong>${MONTH_NAMES[currentMonth]} ${selectedDate} · ${selectedTime}</strong></div>
+      <div class="md-row"><span>Duration</span><strong>${duration}h</strong></div>
+      <div class="md-row"><span>Topic</span><strong>${selectedTopic}</strong></div>
+      <div class="md-row"><span>Coins Escrowed</span><strong style="color:var(--coin)">🪙 ${(RATE*duration).toFixed(1)}</strong></div>
+    `;
+    document.getElementById('successModal').classList.add('open');
+  }, 1500);
+}
+
+function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('open')}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('open')}
+if(window.innerWidth<=900){document.getElementById('hamBtn').style.display='flex'}
+window.addEventListener('resize',()=>{if(window.innerWidth<=900)document.getElementById('hamBtn').style.display='flex';else document.getElementById('hamBtn').style.display='none'})
+
+// Init topic selection
+document.querySelectorAll('#topicChips button')[0].style.background = 'var(--indigo-light)';
+document.querySelectorAll('#topicChips button')[0].style.color = 'var(--indigo)';
+renderCalendar();
+initBooking();
+</script>
+<button onclick="toggleTheme()" id="globalThemeBtn" class="floating-theme-btn" title="Toggle Dark/Light Mode">🌙</button>
+<style>
+.floating-theme-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  color: var(--ink);
+}
+.floating-theme-btn:hover {
+  transform: scale(1.05);
+}
+</style>
+<script>
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    document.getElementById('globalThemeBtn').textContent = isDark ? '🌙' : '☀️';
+    localStorage.setItem('vs-theme', isDark ? 'light' : 'dark');
+  }
+  if (document.documentElement.getAttribute('data-theme') === 'dark') {
+    document.getElementById('globalThemeBtn').textContent = '☀️';
+  }
+</script>
+</body>
+</html>

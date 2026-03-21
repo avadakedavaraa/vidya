@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="logo-v.png" type="image/png">
+<title>Vidyasetu — Explore Teachers</title>
+<link rel="stylesheet" href="ui-system.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#0D0D1A;--indigo:#5B45E0;--indigo-light:#F0EEF9;--indigo-dark:#3D2DB8;--teal:#16A27B;--teal-light:#F0FAF6;--coin:#F5A623;--coin-light:#FFF9EF;--danger:#E84040;--surface:#F7F8FA;--card:#FFFFFF;--border:#E5E7EB;--muted:#9CA3AF;--body:#4B5563;--sidebar:256px}
+body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--ink);display:flex;min-height:100vh}
+/* SIDEBAR (copied from dashboard) */
+.sidebar{width:var(--sidebar);background:#fff;border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50;transition:transform .3s}
+.sb-top{padding:1.5rem 1.2rem 1rem;border-bottom:1px solid var(--border)}
+.sb-logo{font-family:'DM Serif Display',serif;font-size:1.35rem;color:var(--ink);display:flex;align-items:center;gap:8px;text-decoration:none}
+.sb-logo span{color:var(--indigo)}
+.sb-nav{flex:1;padding:1rem .8rem;overflow-y:auto}
+.sb-section{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:.4rem .6rem;margin-top:1rem;margin-bottom:.3rem}
+.sb-item{display:flex;align-items:center;gap:.75rem;padding:.65rem .8rem;border-radius:9px;text-decoration:none;color:var(--body);font-size:.9rem;font-weight:500;transition:all .18s;cursor:pointer;border:none;background:none;width:100%;text-align:left}
+.sb-item:hover{background:var(--surface);color:var(--ink)}
+.sb-item.active{background:var(--indigo-light);color:var(--indigo);font-weight:600}
+.sb-item .icon{width:20px;text-align:center;font-size:1rem;flex-shrink:0}
+.sb-item .badge{margin-left:auto;background:var(--indigo);color:#fff;font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:99px}
+.sb-bottom{padding:1rem 1.2rem;border-top:1px solid var(--border)}
+.sb-user{display:flex;align-items:center;gap:.75rem}
+.sb-avatar{width:40px;height:40px;border-radius:50%;background:var(--indigo);color:#fff;font-weight:700;font-size:.9rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-name{font-size:.88rem;font-weight:600;color:var(--ink)}
+.sb-coin{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--coin);font-weight:600}
+/* MAIN */
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-width:0}
+.topbar{background:#fff;border-bottom:1px solid var(--border);padding:0 2rem;height:60px;display:flex;align-items:center;gap:1rem;position:sticky;top:0;z-index:40}
+.topbar-search{flex:1;max-width:500px;position:relative}
+.topbar-search input{width:100%;padding:.55rem 1rem .55rem 2.4rem;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);background:var(--surface);outline:none;transition:border-color .2s}
+.topbar-search input:focus{border-color:var(--indigo);background:#fff}
+.search-icon{position:absolute;left:.75rem;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.9rem}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:.75rem}
+.icon-btn{width:38px;height:38px;border-radius:9px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:1rem;color:var(--body)}
+.icon-btn:hover{border-color:var(--indigo);color:var(--indigo)}
+.content{padding:2rem;flex:1}
+/* EXPLORE PAGE */
+.explore-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}
+.explore-title{font-family:'DM Serif Display',serif;font-size:1.9rem;color:var(--ink)}
+.explore-sub{font-size:.9rem;color:var(--body);margin-top:.2rem}
+.result-count{font-size:.85rem;color:var(--muted);align-self:flex-end}
+/* FILTER BAR */
+.filter-bar{background:#fff;border:1px solid var(--border);border-radius:14px;padding:1rem 1.2rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap}
+.filter-label{font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;flex-shrink:0}
+.filter-chips{display:flex;gap:.5rem;flex-wrap:wrap;flex:1}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:.35rem .85rem;border-radius:99px;border:1.5px solid var(--border);font-size:.8rem;font-weight:500;cursor:pointer;transition:all .2s;background:#fff;color:var(--body);white-space:nowrap}
+.chip:hover{border-color:rgba(91,69,224,.3);color:var(--indigo)}
+.chip.active{background:var(--indigo-light);border-color:rgba(91,69,224,.4);color:var(--indigo);font-weight:600}
+.filter-select{padding:.4rem .75rem;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.82rem;color:var(--ink);background:#fff;outline:none;cursor:pointer;transition:border-color .2s}
+.filter-select:focus{border-color:var(--indigo)}
+.filter-divider{width:1px;height:20px;background:var(--border);flex-shrink:0}
+/* GRID */
+.teachers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.2rem}
+/* TEACHER CARD */
+.tc{background:#fff;border:1px solid var(--border);border-radius:16px;padding:1.4rem;transition:all .25s;cursor:pointer;position:relative;overflow:hidden}
+.tc:hover{border-color:rgba(91,69,224,.25);transform:translateY(-3px);box-shadow:0 12px 36px rgba(91,69,224,.08)}
+.tc-top{display:flex;align-items:flex-start;gap:.9rem;margin-bottom:1rem}
+.tc-avatar{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:1rem;flex-shrink:0;position:relative}
+.tc-online{position:absolute;bottom:1px;right:1px;width:11px;height:11px;background:var(--teal);border-radius:50%;border:2px solid #fff}
+.tc-offline{position:absolute;bottom:1px;right:1px;width:11px;height:11px;background:var(--muted);border-radius:50%;border:2px solid #fff}
+.tc-info{flex:1;min-width:0}
+.tc-name{font-size:.95rem;font-weight:700;color:var(--ink);margin-bottom:.15rem}
+.tc-college{font-size:.75rem;color:var(--muted)}
+.tc-rating{display:flex;align-items:center;gap:.3rem;font-size:.78rem;font-weight:600;color:var(--ink);margin-top:.25rem}
+.tc-stars{color:var(--coin)}
+.tc-count{color:var(--muted);font-weight:400}
+.tc-badges{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.85rem}
+.pill{display:inline-flex;align-items:center;gap:4px;border-radius:99px;padding:.22rem .65rem;font-size:.72rem;font-weight:600}
+.pill-indigo{background:var(--indigo-light);color:var(--indigo)}
+.pill-teal{background:var(--teal-light);color:var(--teal)}
+.pill-gold{background:var(--coin-light);color:var(--vs-warning-text)}
+.pill-gray{background:var(--surface);color:var(--body);border:1px solid var(--border)}
+.tc-skills{margin-bottom:.85rem}
+.tc-skill-label{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.4rem}
+.tc-skill-tags{display:flex;gap:.4rem;flex-wrap:wrap}
+.skill-tag{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:.2rem .55rem;font-size:.76rem;color:var(--body);font-weight:500}
+.skill-tag.teach{background:var(--teal-light);border-color:rgba(22,162,123,.2);color:var(--teal)}
+.tc-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:.85rem;border-top:1px solid var(--surface)}
+.tc-rate{font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:700;color:var(--coin)}
+.tc-rate span{font-family:'DM Sans',sans-serif;font-size:.72rem;font-weight:400;color:var(--muted)}
+.tc-sessions{font-size:.75rem;color:var(--muted)}
+.tc-btn{padding:.48rem 1.1rem;background:var(--indigo);color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s}
+.tc-btn:hover{background:var(--indigo-dark)}
+/* Verified badge overlay */
+.tc-verified{position:absolute;top:12px;right:12px;background:var(--teal-light);border:1px solid rgba(22,162,123,.3);border-radius:6px;padding:2px 8px;font-size:.68rem;font-weight:700;color:var(--teal)}
+/* Available now strip */
+.tc-available{background:rgba(22,162,123,.06);border-radius:8px;padding:.4rem .7rem;font-size:.74rem;color:var(--teal);font-weight:600;display:flex;align-items:center;gap:.4rem;margin-bottom:.8rem}
+/* EMPTY STATE */
+.empty-state{grid-column:1/-1;text-align:center;padding:4rem 2rem;color:var(--muted)}
+.empty-state .es-icon{font-size:3rem;margin-bottom:1rem}
+.empty-state h3{font-size:1.1rem;font-weight:600;color:var(--ink);margin-bottom:.5rem}
+/* LOAD MORE */
+.load-more-wrap{text-align:center;margin-top:2rem}
+.btn-load{padding:.75rem 2rem;border:1.5px solid var(--border);border-radius:10px;background:#fff;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;color:var(--ink);transition:all .2s}
+.btn-load:hover{border-color:var(--indigo);color:var(--indigo)}
+/* Sidebar overlay for mobile */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:49}
+.overlay.open{display:block}
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .teachers-grid{grid-template-columns:1fr}
+  #hamBtn{display:flex!important}
+}
+.ham-btn{display:none;width:38px;height:38px;border-radius:9px;border:1.5px solid var(--border);background:#fff;align-items:center;justify-content:center;cursor:pointer;flex-direction:column;gap:5px;flex-shrink:0}
+.ham-btn span{width:16px;height:1.5px;background:var(--ink);border-radius:2px}
+/* Offer to teach button */
+.btn-offer{padding:.6rem 1.3rem;border:none;border-radius:9px;background:var(--teal);color:#fff;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:.4rem;white-space:nowrap}
+.btn-offer:hover{background:#128a68;transform:translateY(-1px)}
+.tc-msg-btn{padding:.48rem .9rem;background:none;border:1.5px solid var(--teal);color:var(--teal);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:.3rem}
+.tc-msg-btn:hover{background:var(--teal);color:#fff}
+/* DM SLIDEOVER */
+.dm-slideover{position:fixed;top:0;right:-440px;width:420px;max-width:100vw;height:100vh;background:var(--card);border-left:1px solid var(--border);z-index:200;display:flex;flex-direction:column;transition:right .35s cubic-bezier(.4,0,.2,1);box-shadow:-8px 0 32px rgba(0,0,0,.1)}
+.dm-slideover.open{right:0}
+.dm-header{padding:1rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.75rem}
+.dm-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:.88rem;flex-shrink:0}
+.dm-name{font-size:.95rem;font-weight:700;color:var(--ink)}
+.dm-status{font-size:.72rem;color:var(--teal);display:flex;align-items:center;gap:.3rem}
+.dm-close{margin-left:auto;width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--muted);transition:all .2s}
+.dm-close:hover{color:var(--danger);border-color:var(--danger)}
+.dm-body{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.6rem}
+.dm-sys{text-align:center;font-size:.75rem;color:var(--muted);padding:.5rem;background:var(--surface);border-radius:8px}
+.dm-msg{display:flex;flex-direction:column;max-width:85%}
+.dm-msg.you{align-self:flex-end}
+.dm-msg.them{align-self:flex-start}
+.dm-bubble{padding:.6rem 1rem;border-radius:14px;font-size:.85rem;line-height:1.5;word-break:break-word}
+.dm-msg.you .dm-bubble{background:var(--indigo);color:#fff;border-bottom-right-radius:4px}
+.dm-msg.them .dm-bubble{background:var(--surface);color:var(--ink);border-bottom-left-radius:4px}
+.dm-time{font-size:.68rem;color:var(--muted);margin-top:.15rem;text-align:right}
+.dm-footer{padding:.8rem 1rem;border-top:1px solid var(--border)}
+.dm-input-wrap{display:flex;gap:.5rem}
+.dm-input-wrap input{flex:1;padding:.6rem 1rem;border:1.5px solid var(--border);border-radius:10px;background:var(--surface);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none;transition:all .2s}
+.dm-input-wrap input:focus{border-color:var(--indigo)}
+.dm-send{width:40px;height:40px;border-radius:10px;background:var(--indigo);color:#fff;border:none;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.dm-send:hover{background:var(--indigo-dark);transform:scale(1.05)}
+/* Offer modal */
+.offer-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;align-items:center;justify-content:center}
+.offer-modal-overlay.active{display:flex}
+.offer-modal{background:var(--card);border-radius:16px;padding:2rem;max-width:440px;width:90%;box-shadow:0 12px 40px rgba(0,0,0,.15)}
+.offer-modal h3{font-size:1.15rem;font-weight:700;color:var(--ink);margin-bottom:.4rem}
+.offer-modal p{font-size:.82rem;color:var(--muted);margin-bottom:1.2rem}
+.of-field{margin-bottom:1rem}
+.of-field label{display:block;font-size:.78rem;font-weight:600;color:var(--ink);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.04em}
+.of-field input,.of-field select{width:100%;padding:.6rem 1rem;border:1.5px solid var(--border);border-radius:9px;background:var(--surface);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none}
+.of-field input:focus,.of-field select:focus{border-color:var(--indigo)}
+.of-actions{display:flex;gap:.75rem;justify-content:flex-end}
+.of-cancel{padding:.5rem 1.2rem;border:1.5px solid var(--border);border-radius:9px;background:none;color:var(--body);font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer}
+.of-submit{padding:.5rem 1.2rem;border:none;border-radius:9px;background:var(--teal);color:#fff;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s}
+.of-submit:hover{background:#128a68}
+</style>
+<style>
+[data-theme="dark"] {
+  --ink: #EBE5DF;
+  --indigo: #8A78E5;
+  --indigo-light: rgba(138, 120, 229, 0.15);
+  --indigo-dark: #7463D0;
+  --teal: #45B08C;
+  --teal-light: rgba(69, 176, 140, 0.15);
+  --coin: #E8B042;
+  --coin-light: rgba(232, 176, 66, 0.15);
+  --danger: #D96161;
+  --surface: #1C1A19;
+  --card: #252220;
+  --border: #36312E;
+  --muted: #8C8279;
+  --body: #BDB3A8;
+}
+</style>
+<script>
+  (() => {
+    const t = localStorage.getItem('vs-theme');
+    if (t === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="api.js"></script>
+<script src="demo-data.js"></script>
+</head>
+<body>
+
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-top">
+    <a href="index.html" class="sb-logo"><img src="logo-v.png" alt="V" class="logo-img"><span class="logo-text">vidyasetu</span></a>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-section">Main</div>
+    <a href="03_dashboard.html" class="sb-item"><span class="icon">🏠</span> Dashboard</a>
+    <a href="04_explore.html" class="sb-item active"><span class="icon">🔍</span> Explore Teachers</a>
+    <a href="09_bounty.html" class="sb-item"><span class="icon">🎯</span> Bounty Hub <span class="badge" id="sb-bounty-badge">0</span></a>
+    <a href="15_campus_collab.html" class="sb-item"><span class="icon">☕</span> Campus Collab <span class="badge" id="sb-campus-badge">0</span></a>
+    <a href="14_game_learn.html" class="sb-item"><span class="icon">🎮</span> Code Quest</a>
+    <div class="sb-section">My Learning</div>
+    <a href="11_my_sessions.html" class="sb-item"><span class="icon">📅</span> My Sessions</a>
+    <a href="13_skill_verify.html" class="sb-item"><span class="icon">🎓</span> Verify Skills</a>
+    <a href="08_wallet.html" class="sb-item"><span class="icon">🪙</span> Wallet</a>
+    <div class="sb-section">Account</div>
+    <a href="12_my_profile.html" class="sb-item"><span class="icon">👤</span> My Profile</a>
+    <a href="12_my_profile.html" class="sb-item"><span class="icon">⚙️</span> Settings</a>
+  </nav>
+  <div class="sb-bottom">
+    <div class="sb-user">
+      <div class="sb-avatar">?</div>
+      <div>
+        <div class="sb-name">Loading...</div>
+        <div class="sb-coin">🪙 0 coins</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <button class="ham-btn" id="hamBtn" style="display:none" onclick="openSidebar()"><span></span><span></span><span></span></button>
+    <div class="topbar-search">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Search by skill, name, or college…" id="searchInput" oninput="filterTeachers()">
+    </div>
+    <div class="topbar-right">
+      <button class="icon-btn" title="Notifications">🔔<div style="position:absolute;top:6px;right:6px;width:8px;height:8px;background:var(--danger);border-radius:50%;border:2px solid #fff"></div></button>
+      <button class="icon-btn" title="Messages">💬</button>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+    <div class="explore-header">
+      <div>
+        <h1 class="explore-title">Explore Teachers</h1>
+        <p class="explore-sub">Find verified experts ready to teach. Pay with Time Coins, not money.</p>
+      </div>
+      <div style="display:flex;align-items:center;gap:1rem">
+        <button class="btn-offer" onclick="openOfferModal()">🎓 Offer to Teach</button>
+        <div class="result-count" id="resultCount">Loading teachers...</div>
+      </div>
+    </div>
+
+    <!-- FILTER BAR -->
+    <div class="filter-bar">
+      <span class="filter-label">Category</span>
+      <div class="filter-chips" id="categoryChips">
+        <button class="chip active" onclick="setCategory(this,'all')">All Skills</button>
+        <button class="chip" onclick="setCategory(this,'programming')">💻 Programming</button>
+        <button class="chip" onclick="setCategory(this,'design')">🎨 Design</button>
+        <button class="chip" onclick="setCategory(this,'language')">🌐 Languages</button>
+        <button class="chip" onclick="setCategory(this,'music')">🎵 Music</button>
+        <button class="chip" onclick="setCategory(this,'data')">📊 Data Science</button>
+        <button class="chip" onclick="setCategory(this,'other')">✨ Other</button>
+      </div>
+      <div class="filter-divider"></div>
+      <select class="filter-select" id="sortSelect" onchange="filterTeachers()">
+        <option value="rating">Top Rated</option>
+        <option value="rate">Lowest Rate</option>
+        <option value="sessions">Most Sessions</option>
+        <option value="online">Online Now</option>
+      </select>
+      <select class="filter-select" id="tierSelect" onchange="filterTeachers()">
+        <option value="all">All Tiers</option>
+        <option value="gold">🥇 Gold</option>
+        <option value="silver">🥈 Silver</option>
+        <option value="bronze">🥉 Bronze</option>
+      </select>
+    </div>
+
+    <!-- TEACHERS GRID -->
+    <div class="teachers-grid" id="teachersGrid"></div>
+
+    <div class="load-more-wrap">
+      <button class="btn-load" onclick="loadMore()">Load more teachers →</button>
+    </div>
+
+<!-- DM SLIDEOVER -->
+<div class="dm-slideover" id="dmPanel">
+  <div class="dm-header">
+    <div class="dm-avatar" id="dmAvatar" style="background:var(--indigo)">?</div>
+    <div>
+      <div class="dm-name" id="dmName">Teacher</div>
+      <div class="dm-status">🔒 Encrypted · Direct Message</div>
+    </div>
+    <button class="dm-close" onclick="closeDM()">✕</button>
+  </div>
+  <div class="dm-body" id="dmBody">
+    <div class="dm-sys">Start a conversation...</div>
+  </div>
+  <div class="dm-footer">
+    <form class="dm-input-wrap" onsubmit="event.preventDefault(); sendDM()">
+      <input type="text" id="dmInput" placeholder="Type a message..." autocomplete="off">
+      <button type="submit" class="dm-send">➤</button>
+    </form>
+  </div>
+</div>
+
+<!-- OFFER TO TEACH MODAL -->
+<div class="offer-modal-overlay" id="offerOverlay">
+  <div class="offer-modal">
+    <h3>🎓 Offer to Teach</h3>
+    <p>Broadcast your skill so students can find and book you.</p>
+    <div class="of-field">
+      <label>Skill Name</label>
+      <input type="text" id="offerSkillName" placeholder="e.g. React, Python, UI Design...">
+    </div>
+    <div class="of-field">
+      <label>Category</label>
+      <select id="offerSkillCat">
+        <option value="programming">💻 Programming</option>
+        <option value="design">🎨 Design</option>
+        <option value="language">🌐 Languages</option>
+        <option value="music">🎵 Music</option>
+        <option value="data">📊 Data Science</option>
+        <option value="other">✨ Other</option>
+      </select>
+    </div>
+    <div class="of-actions">
+      <button class="of-cancel" onclick="closeOfferModal()">Cancel</button>
+      <button class="of-submit" onclick="submitOffer()">🎓 Broadcast</button>
+    </div>
+  </div>
+</div>
+  </div>
+</div>
+
+<!-- SCRIPTS -->
+<script src="config.js"></script>
+<script src="api.js"></script>
+
+<script>
+let ALL_TEACHERS = [];
+let currentCategory = 'all';
+let visibleCount = 9;
+
+async function initExplore() {
+  try {
+    ALL_TEACHERS = await VS.teachers.getAll();
+    filterTeachers();
+  } catch (err) {
+    console.error('Failed to load teachers:', err);
+    document.getElementById('teachersGrid').innerHTML = `<div class="empty-state"><h3>Failed to load teachers</h3><p>${err.message}</p></div>`;
+  }
+}
+
+function setCategory(el, cat) {
+  currentCategory = cat;
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  visibleCount = 9;
+  filterTeachers();
+}
+
+function filterTeachers() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const sort = document.getElementById('sortSelect').value;
+  const tier = document.getElementById('tierSelect').value;
+
+  let filtered = ALL_TEACHERS.filter(t => {
+    const matchCat = currentCategory === 'all' || t.category === currentCategory;
+    const matchTier = tier === 'all' || t.tier === tier;
+    const matchQ = !q || t.name.toLowerCase().includes(q) || t.teaches.some(s => s.toLowerCase().includes(q)) || t.college.toLowerCase().includes(q);
+    return matchCat && matchTier && matchQ;
+  });
+
+  if (sort === 'rating') filtered.sort((a,b) => b.rating - a.rating);
+  else if (sort === 'rate') filtered.sort((a,b) => a.rate - b.rate);
+  else if (sort === 'sessions') filtered.sort((a,b) => b.sessions - a.sessions);
+  else if (sort === 'online') filtered.sort((a,b) => (b.online?1:0) - (a.online?1:0));
+
+  renderGrid(filtered.slice(0, visibleCount), filtered.length);
+}
+
+function loadMore() {
+  visibleCount += 6;
+  filterTeachers();
+}
+
+function renderGrid(teachers, totalCount) {
+  const grid = document.getElementById('teachersGrid');
+  document.getElementById('resultCount').textContent = `Showing ${teachers.length} of ${totalCount} teachers`;
+
+  if (!teachers.length) {
+    grid.innerHTML = `<div class="empty-state"><div class="es-icon">🔍</div><h3>No teachers found</h3><p>Try adjusting your filters or search term.</p></div>`;
+    return;
+  }
+
+  const tierBadge = {gold:'🥇 Gold Expert',silver:'🥈 Silver',bronze:'🥉 Bronze'};
+  const tierPill = {gold:'pill-gold',silver:'pill-teal',bronze:'pill-gray'};
+
+  grid.innerHTML = teachers.map(t => `
+    <div class="tc" onclick="window.location.href='05_teacher_profile.html?id=${t.id}'">
+      <div class="tc-verified">${tierBadge[t.tier]}</div>
+      <div class="tc-top">
+        <div class="tc-avatar" style="background:${t.color}">
+          ${t.initials}
+          <div class="${t.online?'tc-online':'tc-offline'}"></div>
+        </div>
+        <div class="tc-info">
+          <div class="tc-name">${t.name}</div>
+          <div class="tc-college">${t.college}</div>
+          <div class="tc-rating">
+            <span class="tc-stars">${'★'.repeat(Math.floor(t.rating))}${t.rating%1>=.5?'½':''}</span>
+            <span>${t.rating}</span>
+            <span class="tc-count">(${t.reviews} reviews)</span>
+          </div>
+        </div>
+      </div>
+      ${t.online ? `<div class="tc-available">🟢 Available now</div>` : ''}
+      <div class="tc-skills">
+        <div class="tc-skill-label">Teaches</div>
+        <div class="tc-skill-tags">${t.teaches.map(s=>`<span class="skill-tag teach">${s}</span>`).join('')}</div>
+      </div>
+      <div class="tc-skills">
+        <div class="tc-skill-label">Wants to learn</div>
+        <div class="tc-skill-tags">${t.wants.map(s=>`<span class="skill-tag">${s}</span>`).join('')}</div>
+      </div>
+      <div class="tc-bottom">
+        <div>
+          <div class="tc-rate">🪙 ${t.rate} coin<span> / hour</span></div>
+          <div class="tc-sessions">${t.sessions} sessions completed</div>
+        </div>
+        <div style="display:flex;gap:.5rem">
+          <button class="tc-msg-btn" onclick="event.stopPropagation();openDM('${t.id}','${(t.name||'').replace(/'/g,"\\'")}','${t.color||'var(--indigo)'}','${t.initials||'?'}')">💬</button>
+          <button class="tc-btn" onclick="event.stopPropagation();window.location.href='06_booking.html?teacher=${t.id}'">Book Now</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('open')}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('open')}
+if(window.innerWidth<=900){document.getElementById('hamBtn').style.display='flex'}
+window.addEventListener('resize',()=>{if(window.innerWidth<=900)document.getElementById('hamBtn').style.display='flex';else document.getElementById('hamBtn').style.display='none'})
+
+// ── DM CHAT ──
+let currentDMPeer = null;
+let dmSub = null;
+
+function openDM(peerId, peerName, peerColor, peerInitials) {
+  currentDMPeer = { id: peerId, name: peerName };
+  document.getElementById('dmName').textContent = peerName;
+  document.getElementById('dmAvatar').textContent = peerInitials;
+  document.getElementById('dmAvatar').style.background = peerColor;
+  document.getElementById('dmBody').innerHTML = '<div class="dm-sys">Loading messages...</div>';
+  document.getElementById('dmPanel').classList.add('open');
+
+  loadDMHistory(peerId);
+
+  if (dmSub) VS.dm.unsubscribe(dmSub);
+  dmSub = VS.dm.subscribe(peerId, (msg) => {
+    renderDMMsg(msg.content, 'them', msg.created_at);
+  });
+
+  VS.dm.markRead(peerId).catch(() => {});
+  setTimeout(() => document.getElementById('dmInput').focus(), 300);
+}
+
+function closeDM() {
+  document.getElementById('dmPanel').classList.remove('open');
+  if (dmSub) { VS.dm.unsubscribe(dmSub); dmSub = null; }
+  currentDMPeer = null;
+}
+
+async function loadDMHistory(peerId) {
+  try {
+    const msgs = await VS.dm.list(peerId);
+    const body = document.getElementById('dmBody');
+    const myId = localStorage.getItem('vs_user_id');
+    if (!msgs.length) {
+      body.innerHTML = '<div class="dm-sys">No messages yet. Say hello! 👋</div>';
+      return;
+    }
+    body.innerHTML = '<div class="dm-sys">🔒 Messages are secured with RLS</div>';
+    msgs.forEach(m => {
+      renderDMMsg(m.content, m.sender_id === myId ? 'you' : 'them', m.created_at);
+    });
+  } catch(e) {
+    document.getElementById('dmBody').innerHTML = '<div class="dm-sys" style="color:var(--danger)">Failed to load messages.</div>';
+  }
+}
+
+async function sendDM() {
+  const input = document.getElementById('dmInput');
+  const text = input.value.trim();
+  if (!text || !currentDMPeer) return;
+  renderDMMsg(text, 'you', new Date().toISOString());
+  input.value = '';
+  try {
+    await VS.dm.send(currentDMPeer.id, text);
+  } catch(e) {
+    alert('Failed to send: ' + e.message);
+  }
+}
+
+function renderDMMsg(text, cls, timestamp) {
+  const body = document.getElementById('dmBody');
+  const time = new Date(timestamp).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  const div = document.createElement('div');
+  div.className = 'dm-msg ' + cls;
+  div.innerHTML = '<div class="dm-bubble">' + escapeHTML(text) + '</div><div class="dm-time">' + time + '</div>';
+  body.appendChild(div);
+  body.scrollTop = body.scrollHeight;
+}
+
+function escapeHTML(s){ return s ? s.replace(/[&<>'"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])) : ''; }
+
+// ── OFFER TO TEACH ──
+function openOfferModal() { document.getElementById('offerOverlay').classList.add('active'); }
+function closeOfferModal() { document.getElementById('offerOverlay').classList.remove('active'); }
+async function submitOffer() {
+  const skill = document.getElementById('offerSkillName').value.trim();
+  const cat = document.getElementById('offerSkillCat').value;
+  if (!skill) return alert('Please enter a skill name.');
+  try {
+    const result = await VS.teachers.broadcast(skill, cat);
+
+    if (result && result.qualified === false) {
+      closeOfferModal();
+      const go = confirm('⚠️ Verification Required!\n\nYou must pass the skill verification for "' + skill + '" before you can teach it.\n\nThis ensures quality for students.\n\nGo to Skill Verification now?');
+      if (go) window.location.href = '13_skill_verify.html';
+      return;
+    }
+
+    alert('🎓 "' + skill + '" (' + (result.tier || 'verified') + ' tier) is now live! Students can find you on Explore.');
+    closeOfferModal();
+    document.getElementById('offerSkillName').value = '';
+    initExplore();
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initExplore();
+  VS.ui.updateSidebar();
+});
+</script>
+<button onclick="toggleTheme()" id="globalThemeBtn" class="floating-theme-btn" title="Toggle Dark/Light Mode">🌙</button>
+<style>
+.floating-theme-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  color: var(--ink);
+}
+.floating-theme-btn:hover {
+  transform: scale(1.05);
+}
+</style>
+<script>
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    document.getElementById('globalThemeBtn').textContent = isDark ? '🌙' : '☀️';
+    localStorage.setItem('vs-theme', isDark ? 'light' : 'dark');
+  }
+  if (document.documentElement.getAttribute('data-theme') === 'dark') {
+    document.getElementById('globalThemeBtn').textContent = '☀️';
+  }
+</script>
+</body>
+</html>

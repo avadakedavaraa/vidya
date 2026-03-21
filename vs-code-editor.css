@@ -1,0 +1,101 @@
+/* vs-code-editor.css */
+.vce-container {
+  display: flex;
+  flex-direction: column;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 1.1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.vce-container:focus-within {
+  border-color: var(--violet);
+  box-shadow: 0 0 0 2px var(--violet-glow);
+}
+
+.vce-header {
+  background: var(--card2);
+  border-bottom: 1px solid var(--border);
+  padding: 0.5rem 1rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--ink3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.vce-body {
+  display: flex;
+  position: relative;
+}
+
+.vce-lines {
+  padding: 1rem 0;
+  background: rgba(10, 3, 24, 0.6);
+  border-right: 1px solid var(--border);
+  overflow: hidden;
+  user-select: none;
+  min-width: 38px;
+  text-align: right;
+}
+[data-theme="light"] .vce-lines {
+  background: rgba(240, 236, 255, 0.6);
+}
+
+.vce-line-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  line-height: 1.6;
+  color: var(--muted, #6b5a8a);
+  padding: 0 0.5rem;
+  opacity: 0.6;
+}
+
+.vce-textarea {
+  flex: 1;
+  min-height: 140px;
+  padding: 1rem;
+  background: rgba(10, 3, 24, 0.4);
+  border: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: #c4b5fd;
+  line-height: 1.6;
+  resize: vertical;
+  outline: none;
+  min-width: 0;
+  tab-size: 2;
+}
+[data-theme="light"] .vce-textarea {
+  background: rgba(240, 236, 255, 0.4);
+  color: #5b21b6;
+}
+
+.vce-textarea:focus {
+  background: rgba(10, 3, 24, 0.8);
+}
+[data-theme="light"] .vce-textarea:focus {
+  background: #ffffff;
+}
+
+.vce-textarea::placeholder {
+  color: var(--muted);
+  font-style: italic;
+  opacity: 0.6;
+}
+
+/* Syntax highlight colors (used by preview overlay) */
+.vce-kw { color: #c084fc; font-weight: 600; }
+.vce-str { color: #34d399; }
+.vce-num { color: #fbbf24; }
+.vce-cmt { color: #6b5a8a; font-style: italic; }
+
+[data-theme="light"] .vce-kw { color: #7c3aed; }
+[data-theme="light"] .vce-str { color: #059669; }
+[data-theme="light"] .vce-num { color: #d97706; }
+[data-theme="light"] .vce-cmt { color: #9ca3af; }

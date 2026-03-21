@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vidyasetu — Campus Collab</title>
+<link rel="icon" href="logo-v.png" type="image/png">
+<link rel="stylesheet" href="ui-system.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#0D0D1A;--indigo:#5B45E0;--indigo-light:#F0EEF9;--indigo-dark:#3D2DB8;--teal:#16A27B;--teal-light:#F0FAF6;--coin:#F5A623;--coin-light:#FFF9EF;--danger:#E84040;--surface:#F7F8FA;--card:#FFFFFF;--border:#E5E7EB;--muted:#9CA3AF;--body:#4B5563;--sidebar:256px;--treat:#D94F3B;--treat-light:rgba(217,79,59,.08);--treat-dark:#B33A27}
+
+/* ─── Dark Theme ─── */
+[data-theme="dark"]{
+  --ink:#EBE5DF;--indigo:#8A78E5;--indigo-light:rgba(138,120,229,.15);--indigo-dark:#7463D0;
+  --teal:#45B08C;--teal-light:rgba(69,176,140,.15);--coin:#E8B042;--coin-light:rgba(232,176,66,.15);
+  --danger:#D96161;--surface:#1C1A19;--card:#252220;--border:#36312E;--muted:#8C8279;--body:#BDB3A8;
+  --treat:#E8654F;--treat-light:rgba(232,101,79,.12);--treat-dark:#D94F3B
+}
+
+body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--ink);display:flex;min-height:100vh;transition:background .3s,color .3s}
+
+/* ═══ SIDEBAR ═══ */
+.sidebar{width:var(--sidebar);background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50;transition:transform .3s,background .3s}
+.sb-top{padding:1.5rem 1.2rem 1rem;border-bottom:1px solid var(--border)}
+.sb-logo{font-family:'DM Serif Display',serif;font-size:1.35rem;color:var(--ink);display:flex;align-items:center;gap:8px;text-decoration:none}
+.sb-logo span{color:var(--indigo)}
+.sb-nav{flex:1;padding:1rem .8rem;overflow-y:auto}
+.sb-section{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:.4rem .6rem;margin-top:1rem;margin-bottom:.3rem}
+.sb-item{display:flex;align-items:center;gap:.75rem;padding:.65rem .8rem;border-radius:9px;text-decoration:none;color:var(--body);font-size:.9rem;font-weight:500;transition:all .18s;cursor:pointer;border:none;background:none;width:100%;text-align:left}
+.sb-item:hover{background:var(--surface);color:var(--ink)}
+.sb-item.active{background:var(--indigo-light);color:var(--indigo);font-weight:600}
+.sb-item .icon{width:20px;text-align:center;font-size:1rem;flex-shrink:0}
+.sb-item .badge{margin-left:auto;background:var(--indigo);color:#fff;font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:99px}
+.sb-bottom{padding:1rem 1.2rem;border-top:1px solid var(--border)}
+.sb-user{display:flex;align-items:center;gap:.75rem}
+.sb-avatar{width:40px;height:40px;border-radius:50%;background:var(--indigo);color:#fff;font-weight:700;font-size:.9rem;display:flex;align-items:center;justify-content:center}
+.sb-name{font-size:.88rem;font-weight:600;color:var(--ink)}
+.sb-coin{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--coin);font-weight:600}
+
+/* ═══ MAIN AREA ═══ */
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-width:0}
+.topbar{background:var(--card);border-bottom:1px solid var(--border);padding:0 2rem;height:60px;display:flex;align-items:center;gap:1rem;position:sticky;top:0;z-index:40;transition:background .3s}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:.75rem}
+.icon-btn{width:38px;height:38px;border-radius:9px;border:1.5px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:.95rem;color:var(--body)}
+.icon-btn:hover{border-color:var(--indigo);color:var(--indigo)}
+.content{padding:2rem;flex:1}
+
+/* ═══ HERO BANNER ═══ */
+.collab-hero{background:linear-gradient(135deg,var(--treat),var(--treat-dark));border-radius:20px;padding:2rem 2.5rem;margin-bottom:2rem;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden}
+.ch-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);background-size:32px 32px;pointer-events:none}
+.ch-left{position:relative;z-index:1;max-width:600px}
+.ch-sub{color:rgba(255,255,255,.65);font-size:.85rem;margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.ch-title{font-family:'DM Serif Display',serif;font-size:2.2rem;color:#fff;line-height:1.2;margin-bottom:.6rem}
+.ch-desc{color:rgba(255,255,255,.7);font-size:.9rem;line-height:1.6;margin-bottom:1.2rem}
+.ch-actions{display:flex;gap:.75rem;flex-wrap:wrap}
+.ch-btn{padding:.6rem 1.3rem;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem}
+.ch-btn.primary{background:#fff;color:var(--treat)}
+.ch-btn.primary:hover{background:rgba(255,255,255,.9);transform:translateY(-1px)}
+.ch-btn.outline{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.25)}
+.ch-btn.outline:hover{background:rgba(255,255,255,.2)}
+.ch-right{position:relative;z-index:1;text-align:center;flex-shrink:0}
+.ch-emoji{font-size:4.5rem;line-height:1;filter:drop-shadow(0 6px 20px rgba(0,0,0,.2));animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+/* ═══ STATS ROW ═══ */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.2rem 1.5rem;transition:all .2s}
+.stat-card:hover{border-color:rgba(217,79,59,.2);box-shadow:0 4px 16px rgba(217,79,59,.06)}
+.stat-icon{font-size:1.3rem;margin-bottom:.5rem}
+.stat-num{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:600;color:var(--ink)}
+.stat-label{font-size:.78rem;color:var(--muted);margin-top:.2rem}
+
+/* ═══ SECTION HEADERS ═══ */
+.sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem}
+.sec-title{font-size:1.1rem;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:.5rem}
+.sec-subtitle{font-size:.82rem;color:var(--muted)}
+
+/* ═══ FILTER TABS ═══ */
+.filter-tabs{display:flex;gap:.4rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.ft-btn{padding:.4rem .9rem;border-radius:99px;border:1.5px solid var(--border);font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;background:var(--card);color:var(--muted);transition:all .15s}
+.ft-btn:hover{border-color:rgba(217,79,59,.3);color:var(--treat)}
+.ft-btn.active{background:var(--treat-light);border-color:rgba(217,79,59,.3);color:var(--treat)}
+
+/* ═══ REQUEST GRID ═══ */
+.req-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.2rem;margin-bottom:2rem}
+
+.req-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;transition:all .25s;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.req-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--treat),var(--coin));border-radius:16px 16px 0 0;opacity:.6}
+.req-card:hover{border-color:rgba(217,79,59,.25);box-shadow:0 8px 28px rgba(217,79,59,.08);transform:translateY(-3px)}
+
+.rc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem;gap:.6rem}
+.treat-badge{display:inline-flex;align-items:center;gap:4px;background:var(--treat-light);color:var(--treat);padding:.3rem .7rem;border-radius:99px;font-size:.75rem;font-weight:700;letter-spacing:.02em;flex-shrink:0}
+.time-badge{font-size:.72rem;color:var(--muted);flex-shrink:0}
+
+.rc-title{font-family:'DM Serif Display',serif;font-size:1.08rem;color:var(--ink);margin-bottom:.5rem;line-height:1.35}
+.rc-desc{font-size:.88rem;color:var(--body);line-height:1.6;margin-bottom:1.2rem;flex-grow:1;display:-webkit-box;-webkit-line-clamp:3;line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+
+.rc-meta{background:var(--surface);border-radius:10px;padding:.85rem 1rem;margin-bottom:1.2rem;display:flex;flex-direction:column;gap:.4rem}
+.meta-row{display:flex;justify-content:space-between;align-items:center;font-size:.82rem}
+.meta-label{color:var(--muted);display:flex;align-items:center;gap:.3rem}
+.meta-val{color:var(--ink);font-weight:600}
+
+.rc-author{display:flex;align-items:center;gap:.75rem;margin-bottom:1.2rem}
+.author-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:.82rem;flex-shrink:0}
+.author-name{font-size:.88rem;font-weight:600;color:var(--ink)}
+.author-hint{font-size:.72rem;color:var(--muted);margin-top:.1rem}
+
+.btn-accept{width:100%;padding:.65rem;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s;border:1.5px solid var(--treat);background:transparent;color:var(--treat);display:flex;align-items:center;justify-content:center;gap:.3rem}
+.btn-accept:hover{background:var(--treat);color:#fff;transform:translateY(-1px)}
+.btn-accept.mine{background:var(--surface);color:var(--muted);border-color:var(--border);cursor:default}
+.btn-accept.mine:hover{transform:none}
+
+/* ═══ HOW IT WORKS PANEL ═══ */
+.how-panel{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.6rem;margin-bottom:2rem}
+.how-title{font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:1.2rem;display:flex;align-items:center;gap:.4rem}
+.how-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem}
+.how-step{text-align:center;padding:.8rem;border-radius:12px;background:var(--surface);transition:all .2s}
+.how-step:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.05)}
+.hs-num{width:28px;height:28px;border-radius:50%;background:var(--treat-light);color:var(--treat);font-weight:700;font-size:.78rem;display:flex;align-items:center;justify-content:center;margin:0 auto .6rem}
+.hs-emoji{font-size:1.8rem;margin-bottom:.5rem}
+.hs-label{font-size:.85rem;font-weight:600;color:var(--ink);margin-bottom:.2rem}
+.hs-desc{font-size:.75rem;color:var(--muted);line-height:1.4}
+
+/* ═══ EMPTY STATE ═══ */
+.empty-state{text-align:center;padding:4rem 2rem;background:var(--card);border:1px solid var(--border);border-radius:16px;grid-column:1/-1}
+.es-icon{font-size:3.5rem;margin-bottom:1rem}
+.empty-state h3{font-size:1.1rem;font-weight:700;color:var(--ink);margin-bottom:.4rem}
+.empty-state p{font-size:.88rem;color:var(--muted);line-height:1.6;max-width:360px;margin:0 auto 1.2rem}
+.es-btn{display:inline-block;padding:.6rem 1.3rem;background:var(--treat);color:#fff;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;text-decoration:none;transition:all .2s}
+.es-btn:hover{background:var(--treat-dark);transform:translateY(-1px)}
+
+/* ═══ MODAL ═══ */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:200;padding:1rem}
+.modal-overlay.active{display:flex;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+.modal-box{background:var(--card);border:1px solid var(--border);border-radius:20px;width:100%;max-width:520px;padding:2rem;box-shadow:0 24px 60px rgba(0,0,0,.2);position:relative}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.modal-title{font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--ink)}
+.btn-close{background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--muted);width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.btn-close:hover{background:var(--surface);color:var(--ink)}
+
+.form-group{margin-bottom:1.2rem}
+.form-label{display:block;font-size:.85rem;font-weight:600;color:var(--ink);margin-bottom:.5rem}
+.form-hint{font-size:.72rem;color:var(--muted);font-weight:400;margin-left:.3rem}
+.form-control{width:100%;padding:.7rem 1rem;border:1.5px solid var(--border);border-radius:10px;background:var(--surface);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:.92rem;outline:none;transition:all .2s}
+.form-control:focus{border-color:var(--treat);background:var(--card);box-shadow:0 0 0 3px rgba(217,79,59,.08)}
+select.form-control{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' fill='none' stroke='%239CA3AF' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+textarea.form-control{resize:vertical;min-height:80px}
+
+/* Treat selector */
+.treat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1.2rem}
+.treat-option{padding:.75rem .5rem;border:1.5px solid var(--border);border-radius:10px;text-align:center;cursor:pointer;transition:all .2s;background:var(--card)}
+.treat-option:hover{border-color:rgba(217,79,59,.3);background:var(--treat-light)}
+.treat-option.selected{border-color:var(--treat);background:var(--treat-light);box-shadow:0 0 0 2px rgba(217,79,59,.15)}
+.to-emoji{font-size:1.4rem;margin-bottom:.3rem}
+.to-label{font-size:.78rem;font-weight:600;color:var(--ink)}
+
+.btn-submit{width:100%;padding:.75rem 1.5rem;background:var(--treat);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:.3rem;margin-top:.5rem}
+.btn-submit:hover{background:var(--treat-dark);transform:translateY(-1px)}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* ═══ TOAST ═══ */
+.toast-wrap{position:fixed;bottom:24px;right:24px;z-index:400;display:flex;flex-direction:column;gap:.5rem;pointer-events:none}
+.toast{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.7rem 1rem;font-size:.83rem;font-weight:500;color:var(--ink);box-shadow:0 8px 24px rgba(0,0,0,.12);display:flex;align-items:center;gap:.5rem;animation:toastIn .35s cubic-bezier(.34,1.56,.64,1) both;pointer-events:auto;max-width:280px}
+@keyframes toastIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* ═══ FLOATING THEME BTN ═══ */
+.floating-theme-btn{position:fixed;bottom:24px;right:24px;width:48px;height:48px;border-radius:50%;background:var(--card);border:1px solid var(--border);box-shadow:0 4px 12px rgba(0,0,0,.1);font-size:20px;cursor:pointer;z-index:1000;display:flex;align-items:center;justify-content:center;transition:all .2s;color:var(--ink)}
+.floating-theme-btn:hover{transform:scale(1.05)}
+
+/* ═══ MOBILE ═══ */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:49}.overlay.open{display:block}
+.ham-btn{display:none;width:38px;height:38px;border-radius:9px;border:1.5px solid var(--border);background:var(--card);align-items:center;justify-content:center;cursor:pointer;flex-direction:column;gap:5px;flex-shrink:0}
+.ham-btn span{width:16px;height:1.5px;background:var(--ink);border-radius:2px}
+
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0}
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .how-steps{grid-template-columns:repeat(2,1fr)}
+  .collab-hero{flex-direction:column;gap:1.5rem;text-align:center;padding:2rem 1.5rem}
+  .ch-actions{justify-content:center}
+  #hamBtn{display:flex!important}
+}
+@media(max-width:560px){
+  .stats-row{grid-template-columns:1fr}
+  .how-steps{grid-template-columns:1fr}
+  .content{padding:1rem}
+  .req-grid{grid-template-columns:1fr}
+  .treat-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+<script>
+  /* Early theme init – light is default */
+  (() => {
+    const t = localStorage.getItem('vs-theme');
+    if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  })();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="api.js"></script>
+</head>
+<body>
+
+<div class="toast-wrap" id="toastWrap"></div>
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-top"><a href="index.html" class="sb-logo"><img src="logo-v.png" alt="V" class="logo-img"><span class="logo-text">vidyasetu</span></a></div>
+  <nav class="sb-nav">
+    <div class="sb-section">Main</div>
+    <a href="03_dashboard.html" class="sb-item"><span class="icon">🏠</span> Dashboard</a>
+    <a href="04_explore.html" class="sb-item"><span class="icon">🔍</span> Explore Teachers</a>
+    <a href="09_bounty.html" class="sb-item"><span class="icon">🎯</span> Bounty Hub <span class="badge" id="sb-bounty-badge">0</span></a>
+    <a href="15_campus_collab.html" class="sb-item active"><span class="icon">☕</span> Campus Collab <span class="badge" id="sb-campus-badge">0</span></a>
+    <a href="14_game_learn.html" class="sb-item"><span class="icon">🎮</span> Code Quest</a>
+    <div class="sb-section">My Learning</div>
+    <a href="11_my_sessions.html" class="sb-item"><span class="icon">📅</span> My Sessions</a>
+    <a href="13_skill_verify.html" class="sb-item"><span class="icon">🎓</span> Verify Skills</a>
+    <a href="08_wallet.html" class="sb-item"><span class="icon">🪙</span> Wallet</a>
+    <div class="sb-section">Account</div>
+    <a href="12_my_profile.html" class="sb-item"><span class="icon">👤</span> My Profile</a>
+    <a href="12_my_profile.html" class="sb-item"><span class="icon">⚙️</span> Settings</a>
+  </nav>
+  <div class="sb-bottom" id="sb-user-area">
+    <div class="sb-user">
+      <div class="sb-avatar">...</div>
+      <div>
+        <div class="sb-name">Loading...</div>
+        <div class="sb-coin">...</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══ MAIN CONTENT ═══ -->
+<div class="main">
+  <div class="topbar">
+    <button class="ham-btn" id="hamBtn" style="display:none" onclick="openSidebar()"><span></span><span></span><span></span></button>
+    <div style="font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--ink)">Campus Collab</div>
+    <div class="topbar-right">
+      <button class="icon-btn" title="Notifications">🔔</button>
+      <button class="ch-btn primary" style="background:var(--treat);color:#fff;border:none;padding:.45rem 1rem;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer" onclick="openPostModal()">+ Drop Request</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- HERO BANNER -->
+    <div class="collab-hero">
+      <div class="ch-grid"></div>
+      <div class="ch-left">
+        <div class="ch-sub">☕ IRL Connect</div>
+        <h1 class="ch-title">Campus Coffee Collab</h1>
+        <p class="ch-desc">Stuck on a bug? Post an IRL request for someone in your college to swing by and help — in exchange for a coffee, chai, or snack. Build real friendships, not just code.</p>
+        <div class="ch-actions">
+          <button class="ch-btn primary" onclick="openPostModal()">☕ Drop a Request</button>
+          <a href="#how" class="ch-btn outline">How it works →</a>
+        </div>
+      </div>
+      <div class="ch-right">
+        <div class="ch-emoji">☕</div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row" id="campusStats">
+      <div class="stat-card">
+        <div class="stat-icon">📋</div>
+        <div class="stat-num" id="stat-open">-</div>
+        <div class="stat-label">Open requests</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-num" id="stat-accepted">-</div>
+        <div class="stat-label">Accepted today</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">☕</div>
+        <div class="stat-num" id="stat-treats">-</div>
+        <div class="stat-label">Treats exchanged</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-num" id="stat-users">-</div>
+        <div class="stat-label">Active on campus</div>
+      </div>
+    </div>
+
+    <!-- HOW IT WORKS -->
+    <div class="how-panel" id="how">
+      <div class="how-title">📋 How It Works</div>
+      <div class="how-steps">
+        <div class="how-step">
+          <div class="hs-num">1</div>
+          <div class="hs-emoji">📝</div>
+          <div class="hs-label">Post</div>
+          <div class="hs-desc">Describe your error and where you are on campus.</div>
+        </div>
+        <div class="how-step">
+          <div class="hs-num">2</div>
+          <div class="hs-emoji">☕</div>
+          <div class="hs-label">Treat</div>
+          <div class="hs-desc">Offer Coffee, Tea, or a Snack as a thank you.</div>
+        </div>
+        <div class="how-step">
+          <div class="hs-num">3</div>
+          <div class="hs-emoji">🤝</div>
+          <div class="hs-label">Match</div>
+          <div class="hs-desc">A peer from your college accepts and meets you.</div>
+        </div>
+        <div class="how-step">
+          <div class="hs-num">4</div>
+          <div class="hs-emoji">🎉</div>
+          <div class="hs-label">Connect</div>
+          <div class="hs-desc">Solve the bug together and make a new friend!</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FILTER + REQUESTS -->
+    <div class="sec-header">
+      <div class="sec-title">🔥 Live Requests near you</div>
+      <div class="sec-subtitle" id="reqCount">Loading...</div>
+    </div>
+
+    <div class="filter-tabs" id="filterTabs">
+      <button class="ft-btn active" onclick="setFilter(this,'all')">🌐 All</button>
+      <button class="ft-btn" onclick="setFilter(this,'coffee')">☕ Coffee</button>
+      <button class="ft-btn" onclick="setFilter(this,'tea')">🫖 Tea</button>
+      <button class="ft-btn" onclick="setFilter(this,'snack')">🍕 Snack</button>
+      <button class="ft-btn" onclick="setFilter(this,'lunch')">🥗 Lunch</button>
+      <button class="ft-btn" onclick="setFilter(this,'other')">🎁 Other</button>
+    </div>
+
+    <div class="req-grid" id="req-grid">
+      <div class="empty-state">
+        <div class="es-icon">⏳</div>
+        <h3>Loading requests...</h3>
+        <p>Connecting to your campus securely.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ POST MODAL ═══ -->
+<div class="modal-overlay" id="postModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2 class="modal-title">☕ Ask for IRL Help</h2>
+      <button class="btn-close" onclick="closePostModal()">✕</button>
+    </div>
+    <form id="postForm" onsubmit="submitPost(event)">
+      <div class="form-group">
+        <label class="form-label">What do you need help with? <span class="form-hint">(be specific)</span></label>
+        <input type="text" id="reqTitle" class="form-control" placeholder="e.g. React Router V6 crashing on page refresh" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">📍 Where are you right now?</label>
+        <input type="text" id="reqLocation" class="form-control" placeholder="e.g. Library 2nd Floor / CC Building" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">What's the treat? <span class="form-hint">(you pay IRL)</span></label>
+        <div class="treat-grid" id="treatGrid">
+          <div class="treat-option selected" data-treat="coffee" onclick="selectTreat(this)">
+            <div class="to-emoji">☕</div>
+            <div class="to-label">Coffee</div>
+          </div>
+          <div class="treat-option" data-treat="tea" onclick="selectTreat(this)">
+            <div class="to-emoji">🫖</div>
+            <div class="to-label">Chai / Tea</div>
+          </div>
+          <div class="treat-option" data-treat="snack" onclick="selectTreat(this)">
+            <div class="to-emoji">🍕</div>
+            <div class="to-label">Snack</div>
+          </div>
+          <div class="treat-option" data-treat="lunch" onclick="selectTreat(this)">
+            <div class="to-emoji">🥗</div>
+            <div class="to-label">Lunch</div>
+          </div>
+          <div class="treat-option" data-treat="other" onclick="selectTreat(this)">
+            <div class="to-emoji">🎁</div>
+            <div class="to-label">Surprise</div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Describe the problem briefly</label>
+        <textarea id="reqDesc" class="form-control" rows="3" placeholder="I've been stuck trying to fix this nested route issue for 2 hours..."></textarea>
+      </div>
+      <button type="submit" class="btn-submit" id="postSubmitBtn">☕ Drop Request</button>
+    </form>
+  </div>
+</div>
+
+<!-- ═══ SCRIPTS ═══ -->
+<script>
+let ALL_REQS = [];
+let activeFilter = 'all';
+let selectedTreat = 'coffee';
+let currentUserId = null;
+
+// ── Loading & Rendering ──
+async function loadRequests() {
+  const grid = document.getElementById('req-grid');
+  try {
+    const user = VS.auth.currentUser();
+    currentUserId = user ? user.id : null;
+
+    const reqs = await VS.campus.list();
+    ALL_REQS = reqs || [];
+
+    updateStats();
+    renderRequests();
+
+  } catch (err) {
+    console.error('Campus load error:', err);
+    grid.innerHTML = `
+      <div class="empty-state">
+        <div class="es-icon">❌</div>
+        <h3>Connection Failed</h3>
+        <p>Unable to load campus requests. Please check your connection and try again.</p>
+        <button class="es-btn" onclick="loadRequests()">Retry →</button>
+      </div>`;
+  }
+}
+
+function renderRequests() {
+  const grid = document.getElementById('req-grid');
+  const filtered = activeFilter === 'all'
+    ? ALL_REQS
+    : ALL_REQS.filter(r => r.treat_type === activeFilter);
+
+  document.getElementById('reqCount').textContent = `${filtered.length} request${filtered.length !== 1 ? 's' : ''}`;
+
+  if (!filtered.length) {
+    grid.innerHTML = `
+      <div class="empty-state">
+        <div class="es-icon">☕</div>
+        <h3>No requests${activeFilter !== 'all' ? ' for ' + activeFilter : ''} right now</h3>
+        <p>Be the first to drop an IRL request and connect with your campus buddies!</p>
+        <button class="es-btn" onclick="openPostModal()">☕ Drop a Request</button>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(req => {
+    const isMine = req.creator && req.creator.id === currentUserId;
+    const emoji = getTreatEmoji(req.treat_type);
+    const initials = req.creator && req.creator.name ? req.creator.name.charAt(0).toUpperCase() : 'U';
+    const colors = ['#5B45E0','#16A27B','#F5A623','#D94F3B','#3D8BD9','#9B59B6','#E67E22'];
+    const color = colors[Math.abs(hashCode(req.creator?.id || '')) % colors.length];
+
+    return `
+      <div class="req-card">
+        <div class="rc-top">
+          <span class="treat-badge">${emoji} ${capitalize(req.treat_type)}</span>
+          <span class="time-badge">${timeAgo(req.created_at)}</span>
+        </div>
+        <h3 class="rc-title">${escapeHTML(req.title)}</h3>
+        <p class="rc-desc">${escapeHTML(req.description || 'No description provided.')}</p>
+        <div class="rc-meta">
+          <div class="meta-row">
+            <span class="meta-label">📍 Location</span>
+            <span class="meta-val">${escapeHTML(req.location_hint)}</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">🏷️ Status</span>
+            <span class="meta-val" style="color:var(--teal)">Open</span>
+          </div>
+        </div>
+        <div class="rc-author">
+          <div class="author-avatar" style="background:${color}">${initials}</div>
+          <div>
+            <div class="author-name">${escapeHTML(req.creator?.name || 'Anonymous')}</div>
+            <div class="author-hint">needs your help!</div>
+          </div>
+        </div>
+        ${isMine
+          ? '<button class="btn-accept mine" disabled>Your Request (Waiting...)</button>'
+          : `<button class="btn-accept" onclick="acceptReq('${req.id}')">🤝 Accept & Meet IRL</button>`
+        }
+      </div>`;
+  }).join('');
+}
+
+function updateStats() {
+  const open = ALL_REQS.filter(r => r.status === 'open').length;
+  document.getElementById('stat-open').textContent = open;
+
+  const today = new Date().toDateString();
+  const accepted = ALL_REQS.filter(r => r.status === 'accepted' && new Date(r.updated_at || r.created_at).toDateString() === today).length;
+  document.getElementById('stat-accepted').textContent = accepted;
+
+  const treats = ALL_REQS.filter(r => r.status === 'accepted').length;
+  document.getElementById('stat-treats').textContent = treats;
+
+  const users = new Set(ALL_REQS.map(r => r.creator?.id)).size;
+  document.getElementById('stat-users').textContent = users;
+}
+
+// ── Filters ──
+function setFilter(btn, filter) {
+  activeFilter = filter;
+  document.querySelectorAll('.ft-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderRequests();
+}
+
+// ── Treat Selector (Modal) ──
+function selectTreat(el) {
+  document.querySelectorAll('.treat-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedTreat = el.dataset.treat;
+}
+
+// ── Post Request ──
+async function submitPost(e) {
+  e.preventDefault();
+  const btn = document.getElementById('postSubmitBtn');
+  btn.textContent = 'Dropping...';
+  btn.disabled = true;
+
+  try {
+    await VS.campus.post({
+      title: document.getElementById('reqTitle').value,
+      location_hint: document.getElementById('reqLocation').value,
+      treat_type: selectedTreat,
+      description: document.getElementById('reqDesc').value
+    });
+    closePostModal();
+    showToast('☕', 'Request dropped! Someone nearby will pick it up.');
+    await loadRequests();
+  } catch (err) {
+    showToast('❌', err.message);
+  } finally {
+    btn.textContent = '☕ Drop Request';
+    btn.disabled = false;
+  }
+}
+
+// ── Accept Request ──
+async function acceptReq(id) {
+  if (!confirm("Accept this request? You'll be expected to meet them at the specified location!")) return;
+  try {
+    await VS.campus.accept(id);
+    showToast('🤝', 'Accepted! Coordinate via My Sessions.');
+    window.location.href = '11_my_sessions.html';
+  } catch (err) {
+    showToast('❌', err.message);
+  }
+}
+
+// ── Modal ──
+function openPostModal() { document.getElementById('postModal').classList.add('active'); }
+function closePostModal() { document.getElementById('postModal').classList.remove('active'); document.getElementById('postForm').reset(); selectedTreat='coffee'; document.querySelectorAll('.treat-option').forEach(o=>o.classList.remove('selected')); document.querySelector('.treat-option[data-treat="coffee"]').classList.add('selected'); }
+
+// ── Helpers ──
+function getTreatEmoji(type) {
+  const map = { coffee:'☕', tea:'🫖', snack:'🍕', lunch:'🥗', other:'🎁' };
+  return map[type] || '☕';
+}
+
+function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+
+function timeAgo(dateString) {
+  const seconds = Math.floor((new Date() - new Date(dateString)) / 1000);
+  if (seconds < 60) return 'just now';
+  const minutes = seconds / 60;
+  if (minutes < 60) return Math.floor(minutes) + 'm ago';
+  const hours = minutes / 60;
+  if (hours < 24) return Math.floor(hours) + 'h ago';
+  const days = hours / 24;
+  if (days < 30) return Math.floor(days) + 'd ago';
+  return Math.floor(days / 30) + 'mo ago';
+}
+
+function escapeHTML(str) {
+  if (!str) return '';
+  return str.replace(/[&<>'"]/g, tag => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[tag]));
+}
+
+function hashCode(s) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  return h;
+}
+
+function showToast(icon, text) {
+  const wrap = document.getElementById('toastWrap');
+  if (!wrap) return;
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `<span style="font-size:1rem">${icon}</span><span>${text}</span>`;
+  wrap.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+// ── Sidebar mobile ──
+function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('open')}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('open')}
+if(window.innerWidth<=900){document.getElementById('hamBtn').style.display='flex'}
+window.addEventListener('resize',()=>{if(window.innerWidth<=900)document.getElementById('hamBtn').style.display='flex';else document.getElementById('hamBtn').style.display='none'})
+
+// ── Theme Toggle ──
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('globalThemeBtn').textContent = isDark ? '🌙' : '☀️';
+  localStorage.setItem('vs-theme', isDark ? 'light' : 'dark');
+}
+
+// ── Init ──
+document.addEventListener('DOMContentLoaded', async () => {
+  // Theme button icon sync
+  if (document.documentElement.getAttribute('data-theme') === 'dark') {
+    document.getElementById('globalThemeBtn').textContent = '☀️';
+  }
+
+  // Sidebar
+  if (typeof VS !== 'undefined' && VS.ui) VS.ui.updateSidebar();
+
+  // Auth guard + load
+  if (typeof VS !== 'undefined' && VS.auth) {
+    const user = VS.auth.currentUser();
+    if (!user) {
+      window.location.replace('02_login.html?redirect=15_campus_collab.html');
+      return;
+    }
+    await loadRequests();
+  }
+});
+</script>
+
+<!-- Floating Theme Button -->
+<button onclick="toggleTheme()" id="globalThemeBtn" class="floating-theme-btn" title="Toggle Dark/Light Mode">🌙</button>
+
+</body>
+</html>

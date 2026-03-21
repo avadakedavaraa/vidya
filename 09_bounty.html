@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="logo-v.png" type="image/png">
+<title>Vidyasetu — Bounty Hub</title>
+<link rel="stylesheet" href="ui-system.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#0D0D1A;--indigo:#5B45E0;--indigo-light:#F0EEF9;--indigo-dark:#3D2DB8;--teal:#16A27B;--teal-light:#F0FAF6;--coin:#F5A623;--coin-light:#FFF9EF;--danger:#E84040;--surface:#F7F8FA;--card:#FFFFFF;--border:#E5E7EB;--muted:#9CA3AF;--body:#4B5563;--sidebar:256px}
+[data-theme="dark"] {
+  --ink: #EBE5DF;
+  --indigo: #8A78E5;
+  --indigo-light: rgba(138, 120, 229, 0.15);
+  --indigo-dark: #7463D0;
+  --teal: #45B08C;
+  --teal-light: rgba(69, 176, 140, 0.15);
+  --coin: #E8B042;
+  --coin-light: rgba(232, 176, 66, 0.15);
+  --danger: #D96161;
+  --surface: #1C1A19;
+  --card: #252220;
+  --border: #36312E;
+  --muted: #8C8279;
+  --body: #BDB3A8;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--ink);display:flex;min-height:100vh;transition:background .3s,color .3s}
+/* SIDEBAR */
+.sidebar{width:var(--sidebar);background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50;transition:transform .3s,background .3s}
+.sb-top{padding:1.5rem 1.2rem 1rem;border-bottom:1px solid var(--border)}
+.sb-logo{font-family:'DM Serif Display',serif;font-size:1.35rem;color:var(--ink);display:flex;align-items:center;gap:8px;text-decoration:none}
+.sb-logo span{color:var(--indigo)}
+.sb-nav{flex:1;padding:1rem .8rem;overflow-y:auto}
+.sb-section{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:.4rem .6rem;margin-top:1rem;margin-bottom:.3rem}
+.sb-item{display:flex;align-items:center;gap:.75rem;padding:.65rem .8rem;border-radius:9px;text-decoration:none;color:var(--body);font-size:.9rem;font-weight:500;transition:all .18s;cursor:pointer;border:none;background:none;width:100%;text-align:left}
+.sb-item:hover{background:var(--surface);color:var(--ink)}
+.sb-item.active{background:var(--indigo-light);color:var(--indigo);font-weight:600}
+.sb-item .icon{width:20px;text-align:center;font-size:1rem;flex-shrink:0}
+.sb-item .bdg{margin-left:auto;background:var(--indigo);color:#fff;font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:99px}
+.sb-bottom{padding:1rem 1.2rem;border-top:1px solid var(--border)}
+.sb-user{display:flex;align-items:center;gap:.75rem}
+.sb-avatar{width:40px;height:40px;border-radius:50%;background:var(--indigo);color:#fff;font-weight:700;font-size:.9rem;display:flex;align-items:center;justify-content:center}
+.sb-name{font-size:.88rem;font-weight:600;color:var(--ink)}
+.sb-coin{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--coin);font-weight:600}
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-width:0}
+.topbar{background:var(--card);border-bottom:1px solid var(--border);padding:0 2rem;height:60px;display:flex;align-items:center;gap:1rem;position:sticky;top:0;z-index:40;transition:background .3s}
+.topbar-search{flex:1;max-width:420px;position:relative}
+.topbar-search input{width:100%;padding:.5rem 1rem .5rem 2.4rem;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);background:var(--surface);outline:none;transition:border-color .2s}
+.topbar-search input:focus{border-color:var(--indigo);background:var(--card)}
+.si{position:absolute;left:.75rem;top:50%;transform:translateY(-50%);color:var(--muted)}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:.75rem}
+.icon-btn{width:38px;height:38px;border-radius:9px;border:1.5px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:.9rem;color:var(--body)}
+.icon-btn:hover{border-color:var(--indigo);color:var(--indigo)}
+.btn-post{background:var(--indigo);color:#fff;padding:.5rem 1.2rem;border-radius:9px;border:none;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn-post:hover{background:var(--indigo-dark);transform:translateY(-1px)}
+.content{padding:2rem;flex:1}
+/* PAGE HEADER */
+.page-header{margin-bottom:1.5rem}
+.page-title{font-family:'DM Serif Display',serif;font-size:1.9rem;color:var(--ink)}
+.page-sub{font-size:.9rem;color:var(--body);margin-top:.2rem}
+/* STATS */
+.hub-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem}
+.hs-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.1rem 1.3rem;display:flex;align-items:center;gap:.85rem}
+.hs-icon{font-size:1.4rem;flex-shrink:0}
+.hs-num{font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:600;color:var(--ink)}
+.hs-label{font-size:.75rem;color:var(--muted)}
+/* CATEGORY TABS */
+.cat-tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.2rem}
+.cat-tab{padding:.4rem .95rem;border-radius:99px;border:1.5px solid var(--border);font-size:.8rem;font-weight:600;cursor:pointer;background:var(--card);color:var(--muted);transition:all .15s;white-space:nowrap}
+.cat-tab:hover{border-color:rgba(91,69,224,.3);color:var(--indigo)}
+.cat-tab.active{background:var(--indigo-light);border-color:rgba(91,69,224,.4);color:var(--indigo)}
+/* FILTER ROW */
+.filter-row{display:flex;align-items:center;gap:.75rem;margin-bottom:1.2rem;flex-wrap:wrap}
+.filter-row select{padding:.4rem .75rem;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.82rem;color:var(--ink);background:var(--card);outline:none;cursor:pointer;transition:border-color .2s}
+.filter-row select:focus{border-color:var(--indigo)}
+.result-info{font-size:.82rem;color:var(--muted);margin-left:auto}
+/* MAIN GRID */
+.bounty-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.1rem}
+/* BOUNTY CARD */
+.bc{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.3rem;transition:all .25s;cursor:pointer;position:relative;overflow:hidden}
+.bc:hover{border-color:rgba(91,69,224,.25);transform:translateY(-3px);box-shadow:0 12px 32px rgba(91,69,224,.08)}
+.bc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.8rem;gap:.75rem}
+.bc-category{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--indigo);background:var(--indigo-light);border-radius:6px;padding:.25rem .6rem}
+.bc-reward{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;color:var(--coin);display:flex;align-items:center;gap:.3rem}
+.bc-title{font-size:.95rem;font-weight:700;color:var(--ink);margin-bottom:.4rem;line-height:1.4}
+.bc-desc{font-size:.82rem;color:var(--body);line-height:1.6;margin-bottom:.9rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.bc-tags{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.9rem}
+.bc-tag{font-size:.72rem;font-weight:500;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:.2rem .5rem;color:var(--body)}
+.bc-footer{display:flex;align-items:center;gap:.75rem;padding-top:.85rem;border-top:1px solid var(--surface);flex-wrap:wrap}
+.bc-poster{display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--muted)}
+.bc-poster-av{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:.58rem;flex-shrink:0}
+.bc-meta{display:flex;gap:.75rem;margin-left:auto;font-size:.74rem;color:var(--muted);flex-wrap:wrap}
+.bc-bids{display:flex;align-items:center;gap:.25rem}
+.bc-deadline{color:var(--danger);font-weight:600}
+.bc-deadline.safe{color:var(--teal)}
+.bc-btn{width:100%;margin-top:.85rem;padding:.55rem;background:transparent;border:1.5px solid var(--indigo);border-radius:8px;color:var(--indigo);font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s}
+.bc-btn:hover{background:var(--indigo);color:#fff}
+/* STATUS BADGES */
+.bc-status{position:absolute;top:12px;right:12px;border-radius:6px;padding:.2rem .6rem;font-size:.68rem;font-weight:700}
+.status-open{background:var(--teal-light);color:var(--teal)}
+.status-hot{background:rgba(232,64,64,.1);color:var(--danger)}
+.status-new{background:var(--indigo-light);color:var(--indigo)}
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--card);border-radius:20px;padding:2rem;max-width:560px;width:100%;animation:popIn .3s ease;margin:auto}
+@keyframes popIn{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.4rem;gap:1rem}
+.modal h2{font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--ink);line-height:1.2}
+.modal-close{background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--muted);flex-shrink:0;padding:4px;transition:color .2s}
+.modal-close:hover{color:var(--ink)}
+.form-group{margin-bottom:1.1rem}
+.form-label{display:block;font-size:.82rem;font-weight:600;color:var(--ink);margin-bottom:.4rem}
+.form-input{width:100%;padding:.65rem 1rem;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);background:var(--card);outline:none;transition:border-color .2s}
+.form-input:focus{border-color:var(--indigo);box-shadow:0 0 0 3px rgba(91,69,224,.07)}
+.form-textarea{width:100%;padding:.65rem 1rem;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);background:var(--card);outline:none;resize:vertical;min-height:90px;transition:border-color .2s;line-height:1.6}
+.form-textarea:focus{border-color:var(--indigo)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.blind-bid-note{background:var(--indigo-light);border:1px solid rgba(91,69,224,.2);border-radius:10px;padding:.8rem 1rem;font-size:.8rem;color:var(--body);line-height:1.6;margin-bottom:1rem}
+.blind-bid-note strong{color:var(--indigo)}
+.btn-submit{width:100%;padding:.85rem;background:var(--indigo);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:.5rem}
+.btn-submit:hover{background:var(--indigo-dark);transform:translateY(-1px);box-shadow:0 6px 20px rgba(91,69,224,.28)}
+/* TOAST */
+.toast-wrap{position:fixed;bottom:24px;right:24px;z-index:400;display:flex;flex-direction:column;gap:.5rem;pointer-events:none}
+.toast{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.7rem 1rem;font-size:.83rem;font-weight:500;color:var(--ink);box-shadow:0 8px 24px rgba(0,0,0,.12);display:flex;align-items:center;gap:.6rem;animation:toastIn .35s cubic-bezier(.34,1.56,.64,1) both;pointer-events:auto}
+@keyframes toastIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+/* RESPONSIVE */
+@media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.hub-stats{grid-template-columns:repeat(2,1fr)}#hamBtn{display:flex!important}}
+@media(max-width:600px){.bounty-grid{grid-template-columns:1fr}.hub-stats{grid-template-columns:1fr 1fr}}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:49}.overlay.open{display:block}
+.ham-btn{display:none;width:38px;height:38px;border-radius:9px;border:1.5px solid var(--border);background:var(--card);align-items:center;justify-content:center;cursor:pointer;flex-direction:column;gap:5px;flex-shrink:0}
+.ham-btn span{width:16px;height:1.5px;background:var(--ink);border-radius:2px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+</style>
+<script>
+  (() => {
+    const t = localStorage.getItem('vs-theme');
+    if (t === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="api.js"></script>
+<script src="demo-data.js"></script>
+</head>
+<body>
+
+<div class="toast-wrap" id="toastWrap"></div>
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- POST BOUNTY MODAL -->
+<div class="modal-overlay" id="postModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Post a Bounty 🎯</h2>
+      <button class="modal-close" onclick="closeModal('postModal')">✕</button>
+    </div>
+    <div class="blind-bid-note">🔒 <strong>Blind Bidding:</strong> Your bounty details are visible, but submitted proposals are encrypted — only you can see them. Protects freelancers from idea theft.</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Title</label>
+        <input class="form-input" placeholder="e.g. Design a startup logo" id="postTitle">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select class="form-input" id="postCat">
+          <option>Design</option><option>Programming</option><option>Content Writing</option>
+          <option>Data Science</option><option>Marketing</option><option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description <span style="font-weight:400;color:var(--muted)">(be specific — better briefs get better bids)</span></label>
+      <textarea class="form-textarea" placeholder="Describe exactly what you need, style references, deliverables, file formats…" id="postDesc"></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Coin Reward 🪙</label>
+        <input class="form-input" type="number" min="1" placeholder="e.g. 5" id="postReward">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Deadline</label>
+        <input class="form-input" type="date" id="postDeadline">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Required Skills (comma separated)</label>
+      <input class="form-input" placeholder="e.g. Figma, Illustrator, Branding" id="postSkills">
+    </div>
+    <button class="btn-submit" onclick="submitPost()"><span id="postLabel">Post Bounty & Lock Coins →</span></button>
+    <p style="text-align:center;font-size:.75rem;color:var(--muted);margin-top:.75rem">Your coins are locked in escrow until a winner is selected. 10% platform fee applies.</p>
+  </div>
+</div>
+
+<!-- BID MODAL -->
+<div class="modal-overlay" id="bidModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Submit Blind Bid 🔒</h2>
+      <button class="modal-close" onclick="closeModal('bidModal')">✕</button>
+    </div>
+    <div id="bidBountyInfo" style="background:var(--surface);border-radius:12px;padding:1rem;margin-bottom:1.2rem;font-size:.85rem;color:var(--body);line-height:1.6"></div>
+    <div class="blind-bid-note">🔐 <strong>Your proposal is encrypted end-to-end.</strong> Other bidders see only "🔒 Encrypted bid" — they cannot read your approach or idea. Only the poster can decrypt it.</div>
+    <div class="form-group">
+      <label class="form-label">Your approach <span style="font-weight:400;color:var(--muted)">(encrypted — only poster sees this)</span></label>
+      <textarea class="form-textarea" placeholder="Describe your approach, methodology, timeline, and why you're the best fit…" id="bidApproach"></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Your coin quote 🪙</label>
+        <input class="form-input" type="number" min="1" placeholder="e.g. 3" id="bidQuote">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Delivery in</label>
+        <select class="form-input" id="bidDelivery">
+          <option>1 day</option><option>2 days</option><option>3 days</option>
+          <option>5 days</option><option>1 week</option><option>2 weeks</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Relevant portfolio link (optional)</label>
+      <input class="form-input" placeholder="https://your-portfolio.com" id="bidPortfolio">
+    </div>
+    <button class="btn-submit" onclick="submitBid()"><span id="bidLabel">Submit Encrypted Bid →</span></button>
+    <p style="text-align:center;font-size:.75rem;color:var(--muted);margin-top:.75rem">10% deposit (1 coin) required. Returned if not selected.</p>
+  </div>
+</div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sb-top"><a href="index.html" class="sb-logo"><img src="logo-v.png" alt="V" class="logo-img"><span class="logo-text">vidyasetu</span></a></div>
+  <nav class="sb-nav">
+    <div class="sb-section">Main</div>
+    <a href="03_dashboard.html" class="sb-item"><span class="icon">🏠</span> Dashboard</a>
+    <a href="04_explore.html" class="sb-item"><span class="icon">🔍</span> Explore Teachers</a>
+    <a href="09_bounty.html" class="sb-item active"><span class="icon">🎯</span> Bounty Hub</a>
+    <a href="15_campus_collab.html" class="sb-item"><span class="icon">☕</span> Campus Collab <span class="badge" id="sb-campus-badge">0</span></a>
+    <a href="14_game_learn.html" class="sb-item"><span class="icon">🎮</span> Code Quest</a>
+    <div class="sb-section">My Learning</div>
+    <a href="11_my_sessions.html" class="sb-item"><span class="icon">📅</span> My Sessions</a>
+    <a href="13_skill_verify.html" class="sb-item"><span class="icon">🎓</span> Verify Skills</a>
+    <a href="08_wallet.html" class="sb-item"><span class="icon">🪙</span> Wallet</a>
+    <div class="sb-section">Account</div>
+    <a href="12_my_profile.html" class="sb-item"><span class="icon">👤</span> My Profile</a>
+    <a href="12_my_profile.html" class="sb-item"><span class="icon">⚙️</span> Settings</a>
+  </nav>
+  <div class="sb-bottom" id="sb-user-area">
+    <div class="sb-user">
+      <div class="sb-avatar">...</div>
+      <div>
+        <div class="sb-name">Loading...</div>
+        <div class="sb-coin">...</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <button class="ham-btn" id="hamBtn" style="display:none" onclick="openSidebar()"><span></span><span></span><span></span></button>
+    <div class="topbar-search"><span class="si">🔍</span><input type="text" placeholder="Search bounties…" oninput="searchBounties(this.value)"></div>
+    <div class="topbar-right">
+<!-- theme btn removed -->
+      <button class="icon-btn">🔔</button>
+      <button class="btn-post" onclick="openModal('postModal')">+ Post Bounty</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="page-header">
+      <h1 class="page-title">Bounty Hub 🎯</h1>
+      <p class="page-sub">Post tasks. Bid with encrypted proposals. Build your portfolio. Earn coins.</p>
+    </div>
+
+    <div class="hub-stats">
+      <div class="hs-card"><span class="hs-icon">🎯</span><div><div class="hs-num">-</div><div class="hs-label">Active bounties</div></div></div>
+      <div class="hs-card"><span class="hs-icon">🪙</span><div><div class="hs-num">-</div><div class="hs-label">Total coins at stake</div></div></div>
+      <div class="hs-card"><span class="hs-icon">✅</span><div><div class="hs-num">-</div><div class="hs-label">Completed bounties</div></div></div>
+      <div class="hs-card"><span class="hs-icon">👤</span><div><div class="hs-num">-</div><div class="hs-label">Active bidders</div></div></div>
+    </div>
+
+    <div class="cat-tabs" id="catTabs">
+      <button class="cat-tab active" onclick="setCategory(this,'all')">🌐 All</button>
+      <button class="cat-tab" onclick="setCategory(this,'design')">🎨 Design</button>
+      <button class="cat-tab" onclick="setCategory(this,'programming')">💻 Programming</button>
+      <button class="cat-tab" onclick="setCategory(this,'content')">✍️ Content</button>
+      <button class="cat-tab" onclick="setCategory(this,'data')">📊 Data</button>
+      <button class="cat-tab" onclick="setCategory(this,'marketing')">📣 Marketing</button>
+    </div>
+
+    <div class="filter-row">
+      <select onchange="filterBounties()">
+        <option>Newest first</option><option>Highest reward</option><option>Closing soon</option><option>Most bids</option>
+      </select>
+      <select id="statusFilter" onchange="filterBounties()">
+        <option value="all">All status</option><option value="open">Open</option><option value="hot">Hot 🔥</option><option value="new">New ✨</option>
+      </select>
+      <span class="result-info" id="resultInfo">Showing all bounties</span>
+    </div>
+
+    <div class="bounty-grid" id="bountyGrid"></div>
+  </div>
+</div>
+
+<!-- SCRIPTS -->
+<script src="config.js"></script>
+<script src="api.js"></script>
+
+<script>
+let ALL_BOUNTIES = [];
+let currentCat = 'all';
+let searchQ = '';
+
+async function initBountyHub() {
+  try {
+    ALL_BOUNTIES = await VS.bounties.getAll();
+    renderBounties();
+  } catch (err) {
+    console.error('Failed to load bounties:', err);
+    document.getElementById('bountyGrid').innerHTML = `<div class="empty-state"><h3>Failed to load bounties</h3><p>${err.message}</p></div>`;
+  }
+}
+
+function setCategory(el, cat) {
+  currentCat = cat;
+  document.querySelectorAll('.cat-tab').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderBounties();
+}
+
+function searchBounties(q) { searchQ = q.toLowerCase(); renderBounties(); }
+function filterBounties() { renderBounties(); }
+
+function renderBounties() {
+  const statusFilter = document.getElementById('statusFilter').value;
+  let data = ALL_BOUNTIES.filter(b => {
+    const matchCat = currentCat === 'all' || b.category === currentCat;
+    const matchStatus = statusFilter === 'all' || b.status === statusFilter;
+    const matchQ = !searchQ || b.title.toLowerCase().includes(searchQ) || b.tags.some(t=>t.toLowerCase().includes(searchQ));
+    return matchCat && matchStatus && matchQ;
+  });
+
+  document.getElementById('resultInfo').textContent = `Showing ${data.length} bounties`;
+  const grid = document.getElementById('bountyGrid');
+
+  if (!data.length) { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--muted)">No bounties found. <a href="#" onclick="openModal(\'postModal\');return false" style="color:var(--indigo);text-decoration:none">Post the first one →</a></div>'; return; }
+
+  const statBadge = {hot:'🔥 Hot',open:'Open',new:'✨ New'};
+  const statCls = {hot:'status-hot',open:'status-open',new:'status-new'};
+  const deadlineSafe = (d) => !['1 day','2 days'].includes(d);
+
+  grid.innerHTML = data.map(b => `
+    <div class="bc" onclick="openBidModal(${b.id})">
+      <div class="bc-status ${statCls[b.status]}">${statBadge[b.status]}</div>
+      <div class="bc-top">
+        <div>
+          <div class="bc-category">${b.category}</div>
+          <div style="height:.4rem"></div>
+          <div class="bc-title">${b.title}</div>
+        </div>
+        <div class="bc-reward">🪙 ${b.reward}</div>
+      </div>
+      <div class="bc-desc">${b.desc}</div>
+      <div class="bc-tags">${b.tags.map(t=>`<span class="bc-tag">${t}</span>`).join('')}</div>
+      <div class="bc-footer">
+        <div class="bc-poster">
+          <div class="bc-poster-av" style="background:${b.posterBg}">${b.poster}</div>
+          Posted by ${b.poster}
+        </div>
+        <div class="bc-meta">
+          <span class="bc-bids">👥 ${b.bids} bids</span>
+          <span class="bc-deadline ${deadlineSafe(b.deadline)?'safe':''}">⏰ ${b.deadline} left</span>
+        </div>
+      </div>
+      <button class="bc-btn" onclick="event.stopPropagation();openBidModal(${b.id})">Submit Blind Bid 🔒</button>
+    </div>
+  `).join('');
+}
+
+let activeBountyId = null;
+function openBidModal(id) {
+  activeBountyId = id;
+  const b = BOUNTIES.find(x => x.id === id);
+  document.getElementById('bidBountyInfo').innerHTML = `<strong style="color:var(--ink)">${b.title}</strong><br>Reward: <strong style="color:var(--coin)">🪙 ${b.reward}</strong> · ${b.bids} other bids · Closes in ${b.deadline}`;
+  openModal('bidModal');
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+
+async function submitPost() {
+  const title = document.getElementById('postTitle').value;
+  const reward = document.getElementById('postReward').value;
+  const category = document.getElementById('postCat').value;
+  const desc = document.getElementById('postDesc').value;
+  const deadline = document.getElementById('postDeadline').value;
+  const tagsStr = document.getElementById('postSkills').value;
+  
+  if (!title || !reward || !desc || !deadline) { showToast('⚠️','Please fill in all required fields.'); return; }
+  
+  const tags = tagsStr.split(',').map(s=>s.trim()).filter(Boolean);
+  const btn = document.getElementById('postLabel');
+  btn.innerHTML = '<div class="spinner" style="border-color:rgba(255,255,255,.3);border-top-color:#fff"></div>';
+  
+  try {
+    const payload = {
+      title, description: desc, category: category.toLowerCase().split(' ')[0], // map to simple str
+      tags, coin_reward: Number(reward), deadline_at: new Date(deadline).toISOString()
+    };
+    await VS.bounties.post(payload);
+    
+    closeModal('postModal');
+    showToast('🎯',`Bounty posted! 🪙${reward} locked in escrow.`);
+    document.getElementById('postTitle').value='';
+    document.getElementById('postDesc').value='';
+    document.getElementById('postReward').value='';
+    document.getElementById('postSkills').value='';
+    
+    initBountyHub();
+  } catch(err) {
+    console.error(err);
+    showToast('⚠️', 'Error posting bounty: ' + err.message);
+  } finally {
+    btn.textContent = 'Post Bounty & Lock Coins →';
+  }
+}
+
+async function submitBid() {
+  const approach = document.getElementById('bidApproach').value;
+  const quote = document.getElementById('bidQuote').value;
+  const delivery = document.getElementById('bidDelivery').value;
+  const portfolio = document.getElementById('bidPortfolio').value;
+  
+  if (!approach || !quote) { showToast('⚠️','Please describe your approach and quote.'); return; }
+  
+  const btn = document.getElementById('bidLabel');
+  btn.innerHTML = '<div class="spinner" style="border-color:rgba(255,255,255,.3);border-top-color:#fff"></div>';
+  
+  try {
+    const mapDays = {'1 day':1, '2 days':2, '3 days':3, '5 days':5, '1 week':7, '2 weeks':14};
+    const deliveryDays = mapDays[delivery] || 3;
+    
+    // Encrypt proposal client-side dynamically
+    const { encrypted_proposal, encryption_iv } = await VS.bounties.encryptProposal(approach, 'dummy-key');
+    
+    const payload = {
+      bounty_id: activeBountyId,
+      encrypted_proposal,
+      encryption_iv,
+      coin_quote: Number(quote),
+      delivery_days: deliveryDays,
+      portfolio_url: portfolio || null,
+      deposit_amount: 1
+    };
+    
+    await VS.bounties.submitBid(payload);
+    
+    closeModal('bidModal');
+    showToast('🔒','Your bid is encrypted and submitted! 1 coin deposited.');
+    document.getElementById('bidApproach').value='';
+    document.getElementById('bidQuote').value='';
+    
+    initBountyHub();
+  } catch(err) {
+    console.error(err);
+    showToast('⚠️', 'Error submitting bid: ' + err.message);
+  } finally {
+    btn.textContent = 'Submit Encrypted Bid →';
+  }
+}
+
+
+
+function showToast(icon, text) {
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `<span style="font-size:1.1rem">${icon}</span><span>${text}</span>`;
+  wrap.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('open')}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('open')}
+if(window.innerWidth<=900){document.getElementById('hamBtn').style.display='flex'}
+window.addEventListener('resize',()=>{if(window.innerWidth<=900)document.getElementById('hamBtn').style.display='flex';else document.getElementById('hamBtn').style.display='none'})
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)closeModal(m.id)}));
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  initBountyHub();
+  VS.ui.updateSidebar();
+});
+</script>
+<button onclick="toggleTheme()" id="globalThemeBtn" class="floating-theme-btn" title="Toggle Dark/Light Mode">🌙</button>
+<style>
+.floating-theme-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  color: var(--ink);
+}
+.floating-theme-btn:hover {
+  transform: scale(1.05);
+}
+</style>
+<script>
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    document.getElementById('globalThemeBtn').textContent = isDark ? '🌙' : '☀️';
+    localStorage.setItem('vs-theme', isDark ? 'light' : 'dark');
+  }
+  if (document.documentElement.getAttribute('data-theme') === 'dark') {
+    document.getElementById('globalThemeBtn').textContent = '☀️';
+  }
+</script>
+</body>
+</html>

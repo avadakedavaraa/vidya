@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="logo-v.png" type="image/png">
+<title>Vidyasetu — My Sessions</title>
+<link rel="stylesheet" href="ui-system.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#0D0D1A;--indigo:#5B45E0;--indigo-light:#F0EEF9;--indigo-dark:#3D2DB8;--teal:#16A27B;--teal-light:#F0FAF6;--coin:#F5A623;--coin-light:#FFF9EF;--danger:#E84040;--surface:#F7F8FA;--card:#FFFFFF;--border:#E5E7EB;--muted:#9CA3AF;--body:#4B5563;--sidebar:256px}
+body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--ink);display:flex;min-height:100vh}
+.sidebar{width:var(--sidebar);background:#fff;border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50;transition:transform .3s}
+.sb-top{padding:1.5rem 1.2rem 1rem;border-bottom:1px solid var(--border)}
+.sb-logo{font-family:'DM Serif Display',serif;font-size:1.35rem;color:var(--ink);display:flex;align-items:center;gap:8px;text-decoration:none}
+.sb-logo span{color:var(--indigo)}
+.sb-nav{flex:1;padding:1rem .8rem;overflow-y:auto}
+.sb-section{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:.4rem .6rem;margin-top:1rem;margin-bottom:.3rem}
+.sb-item{display:flex;align-items:center;gap:.75rem;padding:.65rem .8rem;border-radius:9px;text-decoration:none;color:var(--body);font-size:.9rem;font-weight:500;transition:all .18s;cursor:pointer;border:none;background:none;width:100%;text-align:left}
+.sb-item:hover{background:var(--surface);color:var(--ink)}
+.sb-item.active{background:var(--indigo-light);color:var(--indigo);font-weight:600}
+.sb-item .icon{width:20px;text-align:center;font-size:1rem;flex-shrink:0}
+.sb-item .badge{margin-left:auto;background:var(--indigo);color:#fff;font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:99px}
+.sb-bottom{padding:1rem 1.2rem;border-top:1px solid var(--border)}
+.sb-user{display:flex;align-items:center;gap:.75rem}
+.sb-avatar{width:40px;height:40px;border-radius:50%;background:var(--indigo);color:#fff;font-weight:700;font-size:.9rem;display:flex;align-items:center;justify-content:center}
+.sb-name{font-size:.88rem;font-weight:600;color:var(--ink)}
+.sb-coin{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--coin);font-weight:600}
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-width:0}
+.topbar{background:#fff;border-bottom:1px solid var(--border);padding:0 2rem;height:60px;display:flex;align-items:center;gap:1rem;position:sticky;top:0;z-index:40}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:.75rem}
+.icon-btn{width:38px;height:38px;border-radius:9px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:.95rem;color:var(--body)}
+.icon-btn:hover{border-color:var(--indigo);color:var(--indigo)}
+.content{padding:2rem;flex:1}
+
+/* PAGE HEADER */
+.page-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}
+.page-title{font-family:'DM Serif Display',serif;font-size:1.9rem;color:var(--ink)}
+.page-sub{font-size:.9rem;color:var(--body);margin-top:.2rem}
+.btn-book{padding:.65rem 1.3rem;background:var(--indigo);color:#fff;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem}
+.btn-book:hover{background:var(--indigo-dark);transform:translateY(-1px)}
+
+/* TABS */
+.tabs{display:flex;gap:.4rem;margin-bottom:1.5rem;background:#fff;border:1px solid var(--border);border-radius:12px;padding:4px;width:fit-content}
+.tab{padding:.55rem 1.2rem;border-radius:9px;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;color:var(--muted);transition:all .15s;display:flex;align-items:center;gap:.4rem}
+.tab:hover{color:var(--ink)}
+.tab.active{background:var(--indigo-light);color:var(--indigo)}
+.tab .tab-count{background:var(--surface);border:1px solid var(--border);font-size:.68rem;padding:1px 6px;border-radius:99px;font-weight:700}
+.tab.active .tab-count{background:rgba(91,69,224,.15);border-color:rgba(91,69,224,.2);color:var(--indigo)}
+
+/* SESSION CARDS */
+.sessions-list{display:flex;flex-direction:column;gap:.85rem}
+.session-card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:1.4rem;transition:all .25s}
+.session-card:hover{border-color:rgba(91,69,224,.2);box-shadow:0 4px 16px rgba(91,69,224,.06)}
+.sc-top{display:flex;align-items:flex-start;gap:1rem;margin-bottom:.85rem}
+.sc-avatar{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:1rem;flex-shrink:0}
+.sc-info{flex:1;min-width:0}
+.sc-title{font-size:.95rem;font-weight:700;color:var(--ink);margin-bottom:.2rem}
+.sc-skill{font-size:.82rem;color:var(--body);margin-bottom:.3rem}
+.sc-time{font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:.3rem}
+.sc-badges{display:flex;gap:.4rem;flex-wrap:wrap;margin-left:auto;flex-shrink:0}
+.sc-badge{display:inline-flex;align-items:center;border-radius:99px;padding:.28rem .75rem;font-size:.72rem;font-weight:700}
+.badge-green{background:var(--teal-light);color:var(--teal)}
+.badge-amber{background:var(--coin-light);color:var(--vs-warning-text)}
+.badge-indigo{background:var(--indigo-light);color:var(--indigo)}
+.badge-gray{background:var(--surface);color:var(--muted);border:1px solid var(--border)}
+.badge-red{background:rgba(232,64,64,.08);color:var(--danger)}
+.sc-bottom{display:flex;align-items:center;gap:.6rem;padding-top:.85rem;border-top:1px solid var(--surface);flex-wrap:wrap}
+.sc-coin{font-family:'JetBrains Mono',monospace;font-size:.82rem;font-weight:700;color:var(--coin);margin-right:auto}
+.sc-btn{padding:.45rem 1rem;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;border:none}
+.sc-btn.primary{background:var(--indigo);color:#fff}
+.sc-btn.primary:hover{background:var(--indigo-dark)}
+.sc-btn.outline{background:transparent;color:var(--body);border:1.5px solid var(--border)}
+.sc-btn.outline:hover{border-color:var(--indigo);color:var(--indigo)}
+.sc-btn.danger{background:transparent;color:var(--danger);border:1.5px solid rgba(232,64,64,.3)}
+.sc-btn.danger:hover{background:rgba(232,64,64,.05)}
+.sc-btn.disabled{opacity:.4;cursor:not-allowed}
+
+/* RATING STARS (for completed sessions) */
+.sc-rating{display:flex;align-items:center;gap:.3rem;font-size:.85rem;color:var(--coin);font-weight:600}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:4rem 2rem;background:#fff;border:1px solid var(--border);border-radius:16px}
+.es-icon{font-size:3.5rem;margin-bottom:1rem}
+.empty-state h3{font-size:1.1rem;font-weight:700;color:var(--ink);margin-bottom:.4rem}
+.empty-state p{font-size:.88rem;color:var(--muted);line-height:1.6;max-width:360px;margin:0 auto 1.2rem}
+.es-btn{padding:.6rem 1.3rem;background:var(--indigo);color:#fff;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;transition:all .2s}
+.es-btn:hover{background:var(--indigo-dark)}
+
+/* Toast */
+.toast-wrap{position:fixed;bottom:24px;right:24px;z-index:400;display:flex;flex-direction:column;gap:.5rem;pointer-events:none}
+.toast{background:#fff;border:1px solid var(--border);border-radius:12px;padding:.7rem 1rem;font-size:.83rem;font-weight:500;color:var(--ink);box-shadow:0 8px 24px rgba(0,0,0,.12);display:flex;align-items:center;gap:.5rem;animation:toastIn .35s cubic-bezier(.34,1.56,.64,1) both;pointer-events:auto;max-width:280px}
+@keyframes toastIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* MOBILE */
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0}
+  #hamBtn{display:flex!important}
+  .tabs{width:100%;overflow-x:auto}
+}
+@media(max-width:560px){.content{padding:1rem}.tab{padding:.45rem .8rem;font-size:.78rem}}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:49}.overlay.open{display:block}
+.ham-btn{display:none;width:38px;height:38px;border-radius:9px;border:1.5px solid var(--border);background:#fff;align-items:center;justify-content:center;cursor:pointer;flex-direction:column;gap:5px;flex-shrink:0}
+.ham-btn span{width:16px;height:1.5px;background:var(--ink);border-radius:2px}
+</style>
+<style>
+[data-theme="dark"] {
+  --ink: #EBE5DF;
+  --indigo: #8A78E5;
+  --indigo-light: rgba(138, 120, 229, 0.15);
+  --indigo-dark: #7463D0;
+  --teal: #45B08C;
+  --teal-light: rgba(69, 176, 140, 0.15);
+  --coin: #E8B042;
+  --coin-light: rgba(232, 176, 66, 0.15);
+  --danger: #D96161;
+  --surface: #1C1A19;
+  --card: #252220;
+  --border: #36312E;
+  --muted: #8C8279;
+  --body: #BDB3A8;
+}
+</style>
+<script>
+  (() => {
+    const t = localStorage.getItem('vs-theme');
+    if (t === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="api.js"></script>
+<script src="demo-data.js"></script>
+</head>
+<body>
+
+<div class="toast-wrap" id="toastWrap"></div>
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sb-top"><a href="index.html" class="sb-logo"><img src="logo-v.png" alt="V" class="logo-img"><span class="logo-text">vidyasetu</span></a></div>
+  <nav class="sb-nav">
+    <div class="sb-section">Main</div>
+    <a href="03_dashboard.html" class="sb-item"><span class="icon">🏠</span> Dashboard</a>
+    <a href="04_explore.html" class="sb-item"><span class="icon">🔍</span> Explore Teachers</a>
+    <a href="09_bounty.html" class="sb-item"><span class="icon">🎯</span> Bounty Hub <span class="badge" id="sb-bounty-badge">0</span></a>
+    <a href="15_campus_collab.html" class="sb-item"><span class="icon">☕</span> Campus Collab <span class="badge" id="sb-campus-badge">0</span></a>
+    <a href="14_game_learn.html" class="sb-item"><span class="icon">🎮</span> Code Quest</a>
+    <div class="sb-section">My Learning</div>
+    <a href="11_my_sessions.html" class="sb-item active"><span class="icon">📅</span> My Sessions <span class="badge" id="sb-sessions-badge">0</span></a>
+    <a href="13_skill_verify.html" class="sb-item"><span class="icon">🎓</span> Verify Skills</a>
+    <a href="08_wallet.html" class="sb-item"><span class="icon">🪙</span> Wallet</a>
+    <div class="sb-section">Account</div>
+    <a href="12_my_profile.html" class="sb-item"><span class="icon">👤</span> My Profile</a>
+    <a href="12_my_profile.html" class="sb-item"><span class="icon">⚙️</span> Settings</a>
+  </nav>
+  <div class="sb-bottom"><div class="sb-user"><div class="sb-avatar">?</div><div><div class="sb-name">Loading...</div><div class="sb-coin">🪙 0 coins</div></div></div></div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <button class="ham-btn" id="hamBtn" style="display:none" onclick="openSidebar()"><span></span><span></span><span></span></button>
+    <div style="font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--ink)">My Sessions</div>
+    <div class="topbar-right">
+      <button class="icon-btn" title="Notifications">🔔</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">My Sessions</h1>
+        <p class="page-sub">Manage your upcoming sessions and review past ones.</p>
+      </div>
+      <a href="04_explore.html" class="btn-book">🔍 Find a Teacher</a>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab active" onclick="setTab(this,'upcoming')">📅 Upcoming <span class="tab-count">0</span></button>
+      <button class="tab" onclick="setTab(this,'completed')">✅ Completed <span class="tab-count">0</span></button>
+      <button class="tab" onclick="setTab(this,'cancelled')">❌ Cancelled <span class="tab-count">0</span></button>
+    </div>
+
+    <!-- SESSION LIST -->
+    <div class="sessions-list" id="sessionsList"></div>
+  </div>
+</div>
+
+<!-- SCRIPTS -->
+<script src="config.js"></script>
+<script src="api.js"></script>
+
+<script>
+let ALL_SESSIONS = { upcoming: [], completed: [], cancelled: [] };
+let currentTab = 'upcoming';
+
+async function initSessions() {
+  try {
+    ALL_SESSIONS = await VS.sessions.getAll();
+    renderSessions();
+    updateTabCounts();
+  } catch (err) {
+    console.error('Failed to load sessions:', err);
+  }
+}
+
+function updateTabCounts() {
+  const tabs = document.querySelectorAll('.tab');
+  tabs[0].querySelector('.tab-count').textContent = ALL_SESSIONS.upcoming.length;
+  tabs[1].querySelector('.tab-count').textContent = ALL_SESSIONS.completed.length;
+  tabs[2].querySelector('.tab-count').textContent = ALL_SESSIONS.cancelled.length;
+}
+
+function setTab(el, tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderSessions();
+}
+
+function renderSessions() {
+  const list = document.getElementById('sessionsList');
+  const data = ALL_SESSIONS[currentTab];
+
+  if (!data || !data.length) {
+    const msgs = {
+      upcoming: {icon:'📅',title:'No upcoming sessions',desc:'Browse teachers and book your next session.',btn:'Find a Teacher',href:'04_explore.html'},
+      completed: {icon:'✅',title:'No completed sessions yet',desc:'Your completed sessions will appear here after they finish.',btn:'Book a Session',href:'04_explore.html'},
+      cancelled: {icon:'🎉',title:'No cancelled sessions',desc:'Great — you haven\'t had to cancel anything!',btn:null}
+    };
+    const m = msgs[currentTab];
+    list.innerHTML = `<div class="empty-state"><div class="es-icon">${m.icon}</div><h3>${m.title}</h3><p>${m.desc}</p>${m.btn?`<a href="${m.href}" class="es-btn">${m.btn} →</a>`:''}</div>`;
+    return;
+  }
+
+  if (currentTab === 'upcoming') {
+    list.innerHTML = data.map(s => {
+      const statusClass = s.status==='soon'?'badge-green':s.status==='tomorrow'?'badge-amber':'badge-indigo';
+      return `
+        <div class="session-card">
+          <div class="sc-top">
+            <div class="sc-avatar" style="background:${s.color}">${s.initials}</div>
+            <div class="sc-info">
+              <div class="sc-title">${s.role==='learning'? s.name+' teaches you':'You teach '+s.name} ${s.skill}</div>
+              <div class="sc-skill">${s.duration} session · ${s.role==='learning'?'🪙 '+s.coins+' coins escrowed':'🪙 '+s.coins+' coins to earn'}</div>
+              <div class="sc-time">⏰ ${s.date}</div>
+            </div>
+            <div class="sc-badges"><span class="sc-badge ${statusClass}">${s.statusLabel}</span></div>
+          </div>
+          <div class="sc-bottom">
+            <span class="sc-coin">${s.role==='learning'?'🪙 -'+s.coins+' escrowed':'🪙 +'+s.coins+' expected'}</span>
+            <button class="sc-btn primary${s.canJoin?'':' disabled'}" ${s.canJoin?'onclick="window.location.href=\'07_session.html\'"':''}>Join Room →</button>
+            <button class="sc-btn outline" onclick="window.location.href='05_teacher_profile.html?id=${s.id}'">View Profile</button>
+            <button class="sc-btn danger" onclick="cancelSession(${s.id})">Cancel</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  else if (currentTab === 'completed') {
+    list.innerHTML = data.map(s => `
+      <div class="session-card">
+        <div class="sc-top">
+          <div class="sc-avatar" style="background:${s.color}">${s.initials}</div>
+          <div class="sc-info">
+            <div class="sc-title">${s.role==='learning'? s.name+' taught you':'You taught '+s.name} ${s.skill}</div>
+            <div class="sc-skill">${s.duration} session · ${s.date}</div>
+            <div class="sc-rating">${'★'.repeat(s.rating)}${'☆'.repeat(5-s.rating)} ${s.rating}.0</div>
+          </div>
+          <div class="sc-badges"><span class="sc-badge badge-green">✅ Completed</span></div>
+        </div>
+        <div class="sc-bottom">
+          <span class="sc-coin">${s.role==='learning'?'🪙 -'+s.coins+' spent':'🪙 +'+s.coins+' earned'}</span>
+          ${!s.reviewed?'<button class="sc-btn primary" onclick="showToast(\'⭐\',\'Review submitted — thank you!\')">Leave Review</button>':''}
+          <button class="sc-btn outline" onclick="window.location.href='06_booking.html'">Rebook →</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  else if (currentTab === 'cancelled') {
+    list.innerHTML = data.map(s => `
+      <div class="session-card">
+        <div class="sc-top">
+          <div class="sc-avatar" style="background:${s.color||'var(--danger)'}">${s.initials||'??'}</div>
+          <div class="sc-info">
+            <div class="sc-title">${s.role==='learning'? (s.name||'Teacher'):'You'} — ${s.skill||'Session'}</div>
+            <div class="sc-skill">${s.duration||'1h'} session · ${s.date||''}</div>
+            ${s.reason ? '<div class="sc-time">Reason: '+s.reason+'</div>' : ''}
+          </div>
+          <div class="sc-badges">
+            <span class="sc-badge badge-red">❌ Cancelled</span>
+            ${s.status==='refunded'||s.status==='partial_refund'?'<span class="sc-badge badge-green">🪙 Refunded</span>':''}
+          </div>
+        </div>
+        <div class="sc-bottom">
+          <span class="sc-coin">🪙 ${s.coins||0} coins ${s.status==='refunded'?'refunded':'pending'}</span>
+          <button class="sc-btn outline" onclick="window.location.href='04_explore.html'">Find Another Teacher</button>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+function cancelSession(id) {
+  if (confirm('Are you sure you want to cancel this session? Escrowed coins will be refunded.')) {
+    showToast('❌', 'Session cancelled. Coins will be refunded.');
+  }
+}
+
+function showToast(icon, text) {
+  const wrap = document.getElementById('toastWrap');
+  if (!wrap) return;
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `<span style="font-size:1rem">${icon}</span><span>${text}</span>`;
+  wrap.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('open')}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('open')}
+if(window.innerWidth<=900){document.getElementById('hamBtn').style.display='flex'}
+window.addEventListener('resize',()=>{if(window.innerWidth<=900)document.getElementById('hamBtn').style.display='flex';else document.getElementById('hamBtn').style.display='none'})
+
+document.addEventListener('DOMContentLoaded', () => {
+  initSessions();
+  VS.ui.updateSidebar();
+});
+</script>
+<button onclick="toggleTheme()" id="globalThemeBtn" class="floating-theme-btn" title="Toggle Dark/Light Mode">🌙</button>
+<style>
+.floating-theme-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  color: var(--ink);
+}
+.floating-theme-btn:hover {
+  transform: scale(1.05);
+}
+</style>
+<script>
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    document.getElementById('globalThemeBtn').textContent = isDark ? '🌙' : '☀️';
+    localStorage.setItem('vs-theme', isDark ? 'light' : 'dark');
+  }
+  if (document.documentElement.getAttribute('data-theme') === 'dark') {
+    document.getElementById('globalThemeBtn').textContent = '☀️';
+  }
+</script>
+</body>
+</html>

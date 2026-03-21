@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="logo-v.png" type="image/png">
+<title>Vidyasetu — Page Not Found</title>
+<link rel="stylesheet" href="ui-system.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#0D0D1A;--indigo:#5B45E0;--indigo-light:#F0EEF9;--indigo-dark:#3D2DB8;--teal:#16A27B;--surface:#F7F8FA;--border:#E5E7EB;--muted:#9CA3AF;--body:#4B5563}
+body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;position:relative;overflow:hidden}
+.grid-bg{position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:48px 48px;opacity:.4;pointer-events:none}
+.glow{position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(91,69,224,.1) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
+.logo{font-family:'DM Serif Display',serif;font-size:1.3rem;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:8px;position:absolute;top:2rem;left:2rem;z-index:1}
+.logo span{color:var(--indigo)}
+.content{position:relative;z-index:1;max-width:520px}
+.error-code{font-family:'JetBrains Mono',monospace;font-size:8rem;font-weight:700;line-height:1;color:var(--indigo);opacity:.15;margin-bottom:-1rem}
+.icon-404{font-size:4rem;margin-bottom:1.5rem;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+h1{font-family:'DM Serif Display',serif;font-size:2rem;color:var(--ink);margin-bottom:.6rem}
+p{font-size:1rem;color:var(--body);line-height:1.7;margin-bottom:2rem;max-width:400px;margin-left:auto;margin-right:auto}
+.btns{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+.btn{padding:.75rem 1.5rem;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.92rem;font-weight:600;cursor:pointer;transition:all .25s;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;border:none}
+.btn-primary{background:var(--indigo);color:#fff}.btn-primary:hover{background:var(--indigo-dark);transform:translateY(-2px);box-shadow:0 8px 25px rgba(91,69,224,.3)}
+.btn-outline{background:transparent;color:var(--ink);border:1.5px solid var(--border)}.btn-outline:hover{border-color:var(--indigo);color:var(--indigo);transform:translateY(-2px)}
+.suggestions{margin-top:2.5rem;padding-top:2rem;border-top:1px solid var(--border);display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center}
+.sug-link{font-size:.85rem;color:var(--body);text-decoration:none;transition:color .2s;display:flex;align-items:center;gap:.3rem}
+.sug-link:hover{color:var(--indigo)}
+</style>
+<style>
+[data-theme="dark"] {
+  --ink: #EBE5DF;
+  --indigo: #8A78E5;
+  --indigo-light: rgba(138, 120, 229, 0.15);
+  --indigo-dark: #7463D0;
+  --teal: #45B08C;
+  --teal-light: rgba(69, 176, 140, 0.15);
+  --coin: #E8B042;
+  --coin-light: rgba(232, 176, 66, 0.15);
+  --danger: #D96161;
+  --surface: #1C1A19;
+  --card: #252220;
+  --border: #36312E;
+  --muted: #8C8279;
+  --body: #BDB3A8;
+}
+</style>
+<script>
+  (() => {
+    const t = localStorage.getItem('vs-theme');
+    if (t === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+</script>
+</head>
+<body>
+<div class="grid-bg"></div>
+<div class="glow"></div>
+<a href="index.html" class="logo"><img src="logo-v.png" alt="V" class="logo-img"><span class="logo-text">vidyasetu</span></a>
+<div class="content">
+  <div class="error-code">404</div>
+  <img src="logo-v.png" alt="V" style="height:100px;width:auto;border-radius:12px;margin-bottom:24px;">
+  <h1>Bridge not found</h1>
+  <p>The page you're looking for doesn't exist or has been moved. Let's get you back on track.</p>
+  <div class="btns">
+    <a href="03_dashboard.html" class="btn btn-primary">🏠 Go to Dashboard</a>
+    <a href="index.html" class="btn btn-outline">← Back to Home</a>
+  </div>
+  <div class="suggestions">
+    <a href="04_explore.html" class="sug-link">🔍 Explore Teachers</a>
+    <a href="08_wallet.html" class="sug-link">🪙 Wallet</a>
+    <a href="11_my_sessions.html" class="sug-link">📅 My Sessions</a>
+    <a href="12_my_profile.html" class="sug-link">👤 My Profile</a>
+  </div>
+</div>
+<button onclick="toggleTheme()" id="globalThemeBtn" class="floating-theme-btn" title="Toggle Dark/Light Mode">🌙</button>
+<style>
+.floating-theme-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  color: var(--ink);
+}
+.floating-theme-btn:hover {
+  transform: scale(1.05);
+}
+</style>
+<script>
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    document.getElementById('globalThemeBtn').textContent = isDark ? '🌙' : '☀️';
+    localStorage.setItem('vs-theme', isDark ? 'light' : 'dark');
+  }
+  if (document.documentElement.getAttribute('data-theme') === 'dark') {
+    document.getElementById('globalThemeBtn').textContent = '☀️';
+  }
+</script>
+</body>
+</html>
