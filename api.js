@@ -44,7 +44,7 @@ async function edgeFn(endpoint, payload = {}, requireAuth = true) {
 
   try {
     const res = await fetch(
-      `${window.APP_CONFIG.SUPABASE_URL}/functions/v1/${endpoint}`,
+      `/api/${endpoint}`,
       { method: 'POST', headers, body: JSON.stringify(payload) }
     );
     const data = await res.json();

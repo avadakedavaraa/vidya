@@ -1,0 +1,11 @@
+{
+  "name": "vidyasetu-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "bash generate-config.sh"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0"
+  }
+}
