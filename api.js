@@ -244,22 +244,17 @@ window.VS = {
     async loginWithGoogle(redirectAfter = '03_dashboard.html') {
       const sb = getSupabase();
 
-      // Build a robust redirect URL that works for:
-      // 1. Local file:// (file protocol — use absolute path)
+      // 1. Local file:// (file protocol)
       // 2. localhost / dev server
-      // 3. Production domain
+      // 3. Production domain (Vercel with cleanUrls)
       let origin = window.location.origin;
-      let base = window.location.href.split('02_login.html')[0].replace(/\/$/, '');
+      let callbackPath = window.location.pathname.includes('.html') ? '/02_login.html' : '/02_login';
+      let callbackUrl = origin + callbackPath + '?auth_callback=1&redirect=' + encodeURIComponent(redirectAfter);
 
-      // file:// origin is "null" — build path from href instead
+      // file:// origin is "null" — fallback to Supabase URL so redirect completes
       if (!origin || origin === 'null' || origin === 'file://') {
-        // Use the Supabase project URL as redirect — it will redirect back via the hash
-        // This is the safest approach for local file-based development
-        origin = window.APP_CONFIG.SUPABASE_URL;
-        base = origin;
+        callbackUrl = window.APP_CONFIG.SUPABASE_URL + '/02_login.html?auth_callback=1&redirect=' + encodeURIComponent(redirectAfter);
       }
-
-      const callbackUrl = base + '/02_login.html?auth_callback=1&redirect=' + encodeURIComponent(redirectAfter);
 
       const { error } = await sb.auth.signInWithOAuth({
         provider: 'google',
