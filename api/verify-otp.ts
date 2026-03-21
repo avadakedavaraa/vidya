@@ -110,7 +110,7 @@ export default async function (req: Request) {
     });
     return ok({ success: true, reset_token: resetToken }, req);
   }
-});
+}
 
 // ─── Signup: create auth user + profile + welcome bonus ──────
 async function handleSignup(
@@ -126,7 +126,7 @@ async function handleSignup(
 
   // Check if user already exists
   const { data: existing } = await db.auth.admin.listUsers();
-  const alreadyExists = existing?.users?.some(u => u.email === email);
+  const alreadyExists = existing?.users?.some((u: any) => u.email === email);
   if (alreadyExists) return err('Account already exists. Please sign in.', req, 409);
 
   // Create Supabase Auth user (email confirmed = true since OTP verified)
@@ -191,7 +191,7 @@ async function handleLogin(
   const { data: { users }, error } = await db.auth.admin.listUsers();
   if (error) return err('Login failed. Try again.', req, 500);
 
-  const authUser = users.find(u => u.email === email);
+  const authUser = users.find((u: any) => u.email === email);
   if (!authUser) return err('No account found for this email.', req, 404);
 
   if (authUser.banned_until) return err('Your account has been suspended.', req, 403);

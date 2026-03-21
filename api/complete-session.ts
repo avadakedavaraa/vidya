@@ -179,7 +179,7 @@ export default async function (req: Request) {
       ? `Session ended early. 🪙 ${releaseAmount} released, 🪙 ${refundAmount} refunded.`
       : `Session complete! 🪙 ${releaseAmount} coins released to teacher.`,
   }, req);
-});
+}
 
 // ─── Increment quest progress helper ──────────────────────────
 async function incrementQuestProgress(

@@ -94,10 +94,10 @@ export default async function (req: Request) {
     return err('Email delivery failed. Check your email address.', req, 500);
   }
 
-  return ok({ success: true, message: 'OTP sent to your email.' }, req);
-});
+  return ok({ success: true, message: `OTP sent to ${email}` }, req);
+}
 
-// ─── Helpers ─────────────────────────────────────────────────
+// ─── Random code generator ─────────────────────────────────────────────────
 function getSubject(purpose: string): string {
   const subjects: Record<string, string> = {
     signup:         'Your Vidyasetu verification code',

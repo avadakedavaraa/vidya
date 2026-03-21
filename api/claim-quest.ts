@@ -121,7 +121,7 @@ export default async function (req: Request) {
     quest_title: quest.title,
     message:     `Quest complete! ⚡ +${quest.xp_reward} XP${Number(quest.coin_reward) > 0 ? ` · 🪙 +${quest.coin_reward}` : ''}`,
   }, req);
-});
+}
 
 // ─── Helpers ──────────────────────────────────────────────────
 const QUEST_BADGE_MAP: Record<string, string> = {
