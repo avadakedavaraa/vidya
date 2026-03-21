@@ -5,26 +5,14 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 // ─── CORS ────────────────────────────────────────────────────
-// Only allow requests from your frontend origin.
-// Update ALLOWED_ORIGINS before deploying to production.
-const ALLOWED_ORIGINS = [
-  'http://localhost:8080',
-  'http://localhost:3000',
-  'http://127.0.0.1:5500',   // VS Code Live Server
-  'http://127.0.0.1:5501',
-  'https://vidyasetu.in',
-  'https://www.vidyasetu.in',
-];
-
+// Allow all origins (*) so Vercel preview domains and custom domains work natively.
 export function getCorsHeaders(req: Request): Record<string, string> {
-  const origin = req.headers.get('Origin') ?? '';
-  const allowed = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  const origin = req.headers.get('Origin') ?? '*';
   return {
-    'Access-Control-Allow-Origin':  allowed,
+    'Access-Control-Allow-Origin':  '*',
     'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
     'Access-Control-Allow-Headers': 'Authorization, Content-Type, apikey, x-client-info',
     'Access-Control-Max-Age':       '86400',
-    'Vary':                         'Origin',
   };
 }
 
