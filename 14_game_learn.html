@@ -1233,18 +1233,29 @@ async function loadFromDB() {
     const headers = { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` };
 
     // 1. Exact match: language + theme + level
-    let qs = await sbFetch(`?language=eq.${state.lang}&theme=eq.${state.theme}&level=eq.${state.level}&select=*`, headers);
-    // 2. Same language, nearby levels
-    if (!qs.length) {
+    let qs = await sbFetch(`?language=eq.${state.lang}&theme=eq.${state.theme}&level=eq.${state.level}&select=*&limit=50`, headers);
+    
+    // 2. Expand pool if too small (less than 5 unique questions)
+    if (qs.length < 5) {
+      const moreQs = await sbFetch(`?language=eq.${state.lang}&level=eq.${state.level}&select=*&limit=50`, headers);
+      if (moreQs.length) qs = [...new Set([...qs, ...moreQs])];
+    }
+    
+    // 3. Same language, nearby levels
+    if (qs.length < 5) {
       const minLvl = Math.max(1, state.level - 2);
       const maxLvl = Math.min(10, state.level + 2);
-      qs = await sbFetch(`?language=eq.${state.lang}&level=gte.${minLvl}&level=lte.${maxLvl}&select=*&limit=20`, headers);
+      const moreQs = await sbFetch(`?language=eq.${state.lang}&level=gte.${minLvl}&level=lte.${maxLvl}&select=*&limit=50`, headers);
+      if (moreQs.length) qs = [...new Set([...qs, ...moreQs])];
     }
-    // 3. Same language, any level
-    if (!qs.length) qs = await sbFetch(`?language=eq.${state.lang}&select=*&limit=30`, headers);
-    // 4. Any question
-    if (!qs.length) qs = await sbFetch(`?select=*&limit=30`, headers);
-    // 5. Hard-coded dummy
+    
+    // 4. Any question in language
+    if (qs.length < 5) {
+      const moreQs = await sbFetch(`?language=eq.${state.lang}&select=*&limit=50`, headers);
+      if (moreQs.length) qs = [...new Set([...qs, ...moreQs])];
+    }
+    
+    // 5. Hard-coded dummy fallback
     if (!qs.length) { renderDummy(); return; }
 
     shuffle(qs);
@@ -1551,20 +1562,30 @@ function awardCoins(n) {
         return;
       }
       const sb = getSupabase();
-      sb.from('coin_ledger').insert({
-        user_id: user.id,
-        amount: n,
-        type: 'game_quest',
-        note: `Code Quest — Level ${state.level} in ${LANG_NAMES[state.lang] || 'unknown'}`
-      }).then(() => {
-        if (window.VS.coins) return VS.coins.balance();
+      // Record transaction via RPC for security/RLS bypass
+      sb.rpc('claim_game_reward', {
+        p_amount: Number(n),
+        p_lang: state.lang,
+        p_level: state.level,
+        p_note: `Code Quest — Level ${state.level} in ${LANG_NAMES[state.lang] || 'unknown'}`
+      }).then(({ data: realBalance, error }) => {
+        if (error) {
+          console.error('RPC claim_game_reward failed:', error);
+          // Fallback refresh
+          return VS.coins.balance();
+        }
+        return realBalance;
       }).then(realBalance => {
         if (realBalance !== undefined) {
-          state.coins = realBalance;
+          state.coins = Number(realBalance);
           document.getElementById('coin-count').textContent = state.coins;
+          localStorage.setItem('vs_coins', String(state.coins));
         }
-        if (window.VS && window.VS.ui) VS.ui.updateSidebar();
-      }).catch(console.error);
+        // Notify other UI components
+        if (window.VS && window.VS.ui && VS.ui.updateSidebar) VS.ui.updateSidebar();
+      }).catch(err => {
+        console.error('awardCoins persistence failed:', err);
+      });
     }).catch(() => localStorage.setItem('vs_coins', state.coins));
   } else {
     localStorage.setItem('vs_coins', state.coins);

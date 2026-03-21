@@ -1350,8 +1350,7 @@ window.VS = {
         const { data: profile } = await sb.from('users')
           .select('*').eq('id', user.id).single();
         if (!profile) return VS.auth.currentUser();
-        const name = profile.name || user.email.split('@')[0];
-        const coins = parseInt(localStorage.getItem('vs_coins') || '0');
+        const coins = await VS.coins.balance().catch(() => parseInt(localStorage.getItem('vs_coins') || '0'));
         return {
           id: profile.id,
           name,
