@@ -7,7 +7,7 @@ import {
   adminClient, requireAuth,
   rateLimit, debitCoins,
   sanitizeText, validateUUID, AuthError
-} from './_shared/utils.ts';
+} from './_shared/utils';
 
 export const config = { runtime: 'edge' };
 
@@ -110,4 +110,4 @@ export default async function (req: Request) {
     coin_reward: bounty.coin_reward,
     message:     `Bounty posted! 🪙 ${coinReward} coins locked in escrow.`,
   }, req, 201);
-});
+}

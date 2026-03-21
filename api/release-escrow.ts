@@ -4,7 +4,7 @@
 // Also auto-resolves disputes after 14 days.
 // This function uses SERVICE_ROLE — no user auth required.
 
-import { adminClient } from './_shared/utils.ts';
+import { adminClient } from './_shared/utils';
 
 const HEARTBEAT_TIMEOUT_MINS = 15;
 const DISPUTE_AUTO_RESOLVE_DAYS = 14;
@@ -192,4 +192,4 @@ export default async function (req: Request) {
   return new Response(JSON.stringify({ success: true, ...results }), {
     headers: { 'Content-Type': 'application/json' },
   });
-});
+}

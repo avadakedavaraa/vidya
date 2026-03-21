@@ -6,7 +6,7 @@ import {
   adminClient, requireAuth,
   creditCoins, awardXP,
   validateUUID, AuthError
-} from './_shared/utils.ts';
+} from './_shared/utils';
 
 export const config = { runtime: 'edge' };
 

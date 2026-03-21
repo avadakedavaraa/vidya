@@ -6,7 +6,7 @@ import {
   handleOptions, ok, err,
   adminClient, rateLimit,
   validateEmail, sanitizeText
-} from './_shared/utils.ts';
+} from './_shared/utils';
 
 const RESEND_API_KEY = process.env['RESEND_API_KEY']!;
 const FROM_EMAIL     = 'noreply@vidyasetu.in';

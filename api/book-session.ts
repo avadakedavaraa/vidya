@@ -7,7 +7,7 @@ import {
   adminClient, requireAuth,
   rateLimit, debitCoins,
   sanitizeText, validateUUID, AuthError
-} from './_shared/utils.ts';
+} from './_shared/utils';
 
 export const config = { runtime: 'edge' };
 
@@ -156,4 +156,4 @@ export default async function (req: Request) {
     teacher_name:   teacher.name,
     message:        `Session booked! 🪙 ${escrowAmount} coins locked in escrow.`,
   }, req, 201);
-});
+}

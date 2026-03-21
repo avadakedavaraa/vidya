@@ -7,7 +7,7 @@ import {
   adminClient, requireAuth,
   rateLimit, debitCoins,
   sanitizeText, validateUUID, AuthError
-} from './_shared/utils.ts';
+} from './_shared/utils';
 
 const DEPOSIT_AMOUNT = 1; // 1 coin deposit per bid
 
@@ -146,4 +146,4 @@ export default async function (req: Request) {
     deposit:   DEPOSIT_AMOUNT,
     message:   `Encrypted bid submitted! 🔒 ${DEPOSIT_AMOUNT} coin deposit held.`,
   }, req, 201);
-});
+}

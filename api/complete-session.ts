@@ -8,7 +8,7 @@ import {
   adminClient, requireAuth,
   creditCoins, awardXP,
   validateUUID, AuthError
-} from './_shared/utils.ts';
+} from './_shared/utils';
 
 export const config = { runtime: 'edge' };
 
@@ -103,7 +103,7 @@ export default async function (req: Request) {
     actual_mins:     Math.floor(elapsedSecs / 60),
     released_amount: releaseAmount,
   };
-  if (reason === 'completed' && !booking.actual_start_at) {
+  if (reason === 'completed' && !(booking as any).actual_start_at) {
     updateData.actual_start_at = new Date(Date.now() - elapsedSecs * 1000).toISOString();
   }
   if (rating && booking.learner_id === user.id) {

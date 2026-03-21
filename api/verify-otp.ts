@@ -8,7 +8,7 @@ import {
   adminClient, rateLimit,
   validateEmail, sanitizeText, validateUUID,
   creditCoins
-} from './_shared/utils.ts';
+} from './_shared/utils';
 
 export const config = { runtime: 'edge' };
 
