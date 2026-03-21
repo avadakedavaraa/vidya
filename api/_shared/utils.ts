@@ -42,8 +42,8 @@ export function err(message: string, req: Request, status = 400): Response {
 // Uses SERVICE_ROLE key — bypasses RLS for server-side operations.
 // NEVER expose this key to the client.
 export function adminClient() {
-  const url  = (() => { try { return process?.env ? process.env : Deno.env } catch { return {} } })().('SUPABASE_URL')!;
-  const key  = (() => { try { return process?.env ? process.env : Deno.env } catch { return {} } })().('SUPABASE_SERVICE_ROLE_KEY')!;
+  const url  = process.env['SUPABASE_URL']!;
+  const key  = process.env['SUPABASE_SERVICE_ROLE_KEY']!;
   return createClient(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
@@ -51,8 +51,8 @@ export function adminClient() {
 
 // ─── USER CLIENT (respects RLS) ──────────────────────────────
 export function userClient(req: Request) {
-  const url    = (() => { try { return process?.env ? process.env : Deno.env } catch { return {} } })().('SUPABASE_URL')!;
-  const anonKey = (() => { try { return process?.env ? process.env : Deno.env } catch { return {} } })().('SUPABASE_ANON_KEY')!;
+  const url    = process.env['SUPABASE_URL']!;
+  const anonKey = process.env['SUPABASE_ANON_KEY']!;
   const authHeader = req.headers.get('Authorization') ?? '';
   return createClient(url, anonKey, {
     global:  { headers: { Authorization: authHeader } },
