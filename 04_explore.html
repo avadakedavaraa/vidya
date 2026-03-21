@@ -201,6 +201,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--ink)
     <a href="09_bounty.html" class="sb-item"><span class="icon">🎯</span> Bounty Hub <span class="badge" id="sb-bounty-badge">0</span></a>
     <a href="15_campus_collab.html" class="sb-item"><span class="icon">☕</span> Campus Collab <span class="badge" id="sb-campus-badge">0</span></a>
     <a href="14_game_learn.html" class="sb-item"><span class="icon">🎮</span> Code Quest</a>
+    <div class="sb-section">Messages</div>
+    <a href="16_messages.html" class="sb-item"><span class="icon">💬</span> My Inbox <span class="badge" id="sb-unread-count" style="display:none">0</span></a>
     <div class="sb-section">My Learning</div>
     <a href="11_my_sessions.html" class="sb-item"><span class="icon">📅</span> My Sessions</a>
     <a href="13_skill_verify.html" class="sb-item"><span class="icon">🎓</span> Verify Skills</a>
@@ -231,7 +233,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--ink)
     </div>
     <div class="topbar-right">
       <button class="icon-btn" title="Notifications">🔔<div style="position:absolute;top:6px;right:6px;width:8px;height:8px;background:var(--danger);border-radius:50%;border:2px solid #fff"></div></button>
-      <button class="icon-btn" title="Messages">💬</button>
+      <button class="icon-btn" onclick="window.location.href='16_messages.html'" title="Messages">💬<span class="badge" id="sb-unread-count-top" style="display:none;position:absolute;top:-5px;right:-5px;background:var(--danger);color:#fff;font-size:10px;padding:2px 5px;border-radius:10px">0</span></button>
     </div>
   </div>
 

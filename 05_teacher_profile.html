@@ -183,6 +183,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--ink)
     <a href="04_explore.html" class="sb-item active"><span class="icon">🔍</span> Explore Teachers</a>
     <a href="09_bounty.html" class="sb-item"><span class="icon">🎯</span> Bounty Hub <span class="badge" id="sb-bounty-badge">0</span></a>
     <a href="14_game_learn.html" class="sb-item"><span class="icon">🎮</span> Code Quest</a>
+    <div class="sb-section">Messages</div>
+    <a href="16_messages.html" class="sb-item"><span class="icon">💬</span> My Inbox <span class="badge" id="sb-unread-count" style="display:none">0</span></a>
     <div class="sb-section">My Learning</div>
     <a href="11_my_sessions.html" class="sb-item"><span class="icon">📅</span> My Sessions</a>
     <a href="13_skill_verify.html" class="sb-item"><span class="icon">🎓</span> Verify Skills</a>
@@ -208,7 +210,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--ink)
     <a href="04_explore.html" class="back-btn">← Back to Explore</a>
     <div class="topbar-right">
       <button class="icon-btn">🔔</button>
-      <button class="icon-btn">💬</button>
+      <button class="icon-btn" onclick="window.location.href='16_messages.html'">💬</button>
     </div>
   </div>
 
@@ -231,7 +233,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--ink)
         </div>
         <div class="ph-actions">
           <button class="btn-book" onclick="window.location.href='06_booking.html'">Book a Session →</button>
-          <button class="btn-msg">💬 Send Message</button>
+          <button class="btn-msg" onclick="openMsgModal()">💬 Send Message</button>
           <div class="ph-rate" id="phRate">...</div>
         </div>
       </div>
@@ -359,6 +361,37 @@ body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--ink)
     </div>
   </div>
 </div>
+
+<!-- SEND MESSAGE MODAL -->
+<div id="msgModal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 id="modalTitle">Message Teacher</h3>
+      <button class="close-btn" onclick="closeMsgModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <textarea id="msgBody" class="modal-textarea" placeholder="Hi! I have a question about your React sessions..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeMsgModal()">Cancel</button>
+      <button class="btn-primary" id="sendMsgBtn" onclick="submitMsg()">Send Message</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+.modal-card { background: var(--card); border-radius: 16px; width: 90%; max-width: 480px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); border: 1px solid var(--border); overflow: hidden; }
+.modal-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.modal-header h3 { font-family: 'DM Serif Display', serif; font-size: 1.25rem; color: var(--ink); }
+.close-btn { background: none; border: none; font-size: 1.5rem; color: var(--muted); cursor: pointer; }
+.modal-body { padding: 1.5rem; }
+.modal-textarea { width: 100%; height: 120px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--surface); padding: 1rem; font-family: inherit; font-size: .95rem; outline: none; resize: none; color: var(--ink); }
+.modal-textarea:focus { border-color: var(--indigo); }
+.modal-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: .75rem; background: var(--surface); }
+.btn-primary { background: var(--indigo); color: #fff; border: none; padding: .6rem 1.5rem; border-radius: 9px; font-weight: 600; cursor: pointer; }
+.btn-secondary { background: transparent; color: var(--body); border: 1px solid var(--border); padding: .6rem 1.5rem; border-radius: 9px; font-weight: 600; cursor: pointer; }
+</style>
 
 <script>
 // ═══ TEACHERS DATA ═══
@@ -525,6 +558,36 @@ function selectTime(btn, t) {
   document.querySelectorAll('#timeSlots .dur-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 }
+
+// MESSAGE MODAL LOGIC
+function openMsgModal() {
+  document.getElementById('modalTitle').textContent = `Message ${document.getElementById('phName').textContent}`;
+  document.getElementById('msgModal').style.display = 'flex';
+  document.getElementById('msgBody').focus();
+}
+function closeMsgModal() {
+  document.getElementById('msgModal').style.display = 'none';
+}
+async function submitMsg() {
+  const content = document.getElementById('msgBody').value.trim();
+  if (!content) return;
+  
+  const btn = document.getElementById('sendMsgBtn');
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+  
+  try {
+    await VS.dm.send(teacherId, content);
+    closeMsgModal();
+    // Redirect to inbox
+    window.location.href = `16_messages.html?peer=${teacherId}`;
+  } catch (err) {
+    alert('Failed to send message: ' + err.message);
+    btn.disabled = false;
+    btn.textContent = 'Send Message';
+  }
+}
+
 function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('open')}
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('open')}
 initProfile();

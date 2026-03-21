@@ -1540,6 +1540,15 @@ window.VS = {
             .eq('college_id', profile.college_id);
           document.querySelectorAll('a[href="15_campus_collab.html"] .badge, #sb-campus-badge').forEach(el => el.textContent = cCount || 0);
         }
+
+        // 4. Messages Badge (Unread DMs)
+        const { count: dmCount } = await sb.from('direct_messages').select('id', { count: 'exact', head: true })
+          .eq('receiver_id', user.id)
+          .eq('is_read', false);
+        document.querySelectorAll('a[href="16_messages.html"] .badge, #sb-unread-count, #sb-unread-count-top').forEach(el => {
+          el.textContent = dmCount || 0;
+          el.style.display = dmCount > 0 ? 'block' : 'none';
+        });
       }
     }
   }
