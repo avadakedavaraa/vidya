@@ -1,264 +1,1246 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" href="logo-v.png" type="image/png">
-<title>Vidyasetu — Explore Students</title>
-<link rel="stylesheet" href="ui-system.css">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--ink:#0D0D1A;--primary:#16A27B;--primary-light:#F0FAF6;--primary-dark:#0D7A5B;--indigo:#5B45E0;--indigo-light:#F0EEF9;--teal:#16A27B;--teal-light:#F0FAF6;--coin:#F5A623;--coin-light:#FFF9EF;--danger:#E84040;--surface:#F7F8FA;--card:#FFFFFF;--border:#E5E7EB;--muted:#9CA3AF;--body:#4B5563;--sidebar:256px}
-[data-theme="dark"]{--ink:#EBE5DF;--primary:#45B08C;--primary-light:rgba(69,176,140,.15);--primary-dark:#2D8B6A;--indigo:#8A78E5;--indigo-light:rgba(138,120,229,.15);--teal:#45B08C;--teal-light:rgba(69,176,140,.15);--coin:#E8B042;--coin-light:rgba(232,176,66,.15);--danger:#D96161;--surface:#1C1A19;--card:#252220;--border:#36312E;--muted:#8C8279;--body:#BDB3A8}
-body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--ink);display:flex;min-height:100vh;transition:background .3s,color .3s}
-.logo-img{height:22px;width:22px;border-radius:4px}
-.logo-text{font-family:'DM Serif Display',serif;font-size:1.2rem;color:var(--ink)}
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="logo-v.png" type="image/png" />
+    <title>Vidyasetu — Explore Students</title>
+    <link rel="stylesheet" href="ui-system.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --ink: #0d0d1a;
+        --primary: #16a27b;
+        --primary-light: #f0faf6;
+        --primary-dark: #0d7a5b;
+        --indigo: #5b45e0;
+        --indigo-light: #f0eef9;
+        --teal: #16a27b;
+        --teal-light: #f0faf6;
+        --coin: #f5a623;
+        --coin-light: #fff9ef;
+        --danger: #e84040;
+        --surface: #f7f8fa;
+        --card: #ffffff;
+        --border: #e5e7eb;
+        --muted: #9ca3af;
+        --body: #4b5563;
+        --sidebar: 256px;
+      }
+      /* ═══════════════════════════════════════════
+   DARK MODE — Explore Students
+   ui-ux-pro-max | OLED Navy + Teal accent
+═══════════════════════════════════════════ */
 
-/* SIDEBAR */
-.sidebar{width:var(--sidebar);background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50;transition:transform .3s,background .3s}
-.sb-top{padding:1.5rem 1.2rem 1rem;border-bottom:1px solid var(--border)}
-.sb-logo{font-family:'DM Serif Display',serif;font-size:1.35rem;color:var(--ink);display:flex;align-items:center;gap:8px;text-decoration:none}
-.sb-nav{flex:1;padding:1rem .8rem;overflow-y:auto}
-.sb-section{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:.4rem .6rem;margin-top:1rem;margin-bottom:.3rem}
-.sb-item{display:flex;align-items:center;gap:.75rem;padding:.65rem .8rem;border-radius:9px;text-decoration:none;color:var(--body);font-size:.9rem;font-weight:500;transition:all .18s;cursor:pointer;border:none;background:none;width:100%;text-align:left}
-.sb-item:hover{background:var(--surface);color:var(--ink)}
-.sb-item.active{background:var(--primary-light);color:var(--primary);font-weight:600}
-.sb-item .icon{width:20px;text-align:center;font-size:1rem;flex-shrink:0}
-.sb-bottom{padding:1rem 1.2rem;border-top:1px solid var(--border)}
-.sb-user{display:flex;align-items:center;gap:.75rem}
-.sb-avatar{width:40px;height:40px;border-radius:50%;background:var(--primary);color:#fff;font-weight:700;font-size:.9rem;display:flex;align-items:center;justify-content:center}
-.sb-name{font-size:.88rem;font-weight:600;color:var(--ink)}
-.sb-coin{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--coin);font-weight:600}
-.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-width:0}
-.topbar{background:var(--card);border-bottom:1px solid var(--border);padding:0 2rem;height:60px;display:flex;align-items:center;gap:1rem;position:sticky;top:0;z-index:40;transition:background .3s}
-.topbar-right{margin-left:auto;display:flex;align-items:center;gap:.75rem}
-.icon-btn{width:38px;height:38px;border-radius:9px;border:1.5px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:.95rem;color:var(--body)}
-.icon-btn:hover{border-color:var(--primary);color:var(--primary)}
-.content{padding:2rem;flex:1}
+      /* Smooth theme transitions */
+      *,
+      *::before,
+      *::after {
+        transition:
+          background-color 0.22s ease,
+          border-color 0.22s ease,
+          color 0.18s ease,
+          box-shadow 0.22s ease;
+      }
 
-/* PAGE HEADER */
-.page-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}
-.page-title{font-family:'DM Serif Display',serif;font-size:1.9rem;color:var(--ink)}
-.page-sub{font-size:.9rem;color:var(--body);margin-top:.2rem}
+      [data-theme="dark"] {
+        --ink: #e8eeff;
+        --primary: #34d399;
+        --primary-light: rgba(52, 211, 153, 0.13);
+        --primary-dark: #10b981;
+        --indigo: #818cf8;
+        --indigo-light: rgba(129, 140, 248, 0.14);
+        --teal: #34d399;
+        --teal-light: rgba(52, 211, 153, 0.13);
+        --coin: #fbbf24;
+        --coin-light: rgba(251, 191, 36, 0.14);
+        --danger: #f87171;
+        --surface: #060d1a;
+        --card: #0d1829;
+        --border: #1a2d4a;
+        --muted: #4a5568;
+        --body: #94a3b8;
+      }
 
-/* SEARCH BAR */
-.search-bar{display:flex;gap:.75rem;margin-bottom:1.5rem;flex-wrap:wrap}
-.search-input{flex:1;min-width:200px;padding:.7rem 1rem;border:1.5px solid var(--border);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--ink);background:var(--card);outline:none;transition:border-color .2s}
-.search-input:focus{border-color:var(--primary)}
-.search-input::placeholder{color:var(--muted)}
+      /* Body — OLED navy with teal/indigo ambient glows */
+      [data-theme="dark"] body {
+        background:
+          radial-gradient(
+            ellipse 900px 600px at -5% -10%,
+            rgba(52, 211, 153, 0.06) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse 700px 500px at 110% 5%,
+            rgba(99, 102, 241, 0.06) 0%,
+            transparent 55%
+          ),
+          #060d1a;
+        color: var(--ink);
+      }
 
-/* CATEGORY FILTERS */
-.cat-filters{display:flex;gap:.4rem;margin-bottom:1.5rem;flex-wrap:wrap}
-.cat-btn{padding:.4rem .9rem;border-radius:99px;border:1.5px solid var(--border);font-size:.8rem;font-weight:600;cursor:pointer;background:var(--card);color:var(--muted);transition:all .15s}
-.cat-btn:hover{border-color:rgba(22,162,123,.3);color:var(--primary)}
-.cat-btn.active{background:var(--primary-light);border-color:rgba(22,162,123,.3);color:var(--primary)}
+      /* SIDEBAR — glassmorphism */
+      [data-theme="dark"] .sidebar {
+        background: rgba(10, 18, 38, 0.92);
+        border-right: 1px solid rgba(52, 211, 153, 0.1);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        box-shadow: 2px 0 24px rgba(0, 0, 0, 0.4);
+      }
+      [data-theme="dark"] .sb-top,
+      [data-theme="dark"] .sb-bottom {
+        border-color: rgba(52, 211, 153, 0.09);
+      }
+      [data-theme="dark"] .sb-section {
+        color: rgba(52, 211, 153, 0.45);
+      }
+      [data-theme="dark"] .sb-item {
+        color: var(--body);
+      }
+      [data-theme="dark"] .sb-item:hover {
+        background: rgba(52, 211, 153, 0.07);
+        color: var(--ink);
+      }
+      [data-theme="dark"] .sb-item.active {
+        background: rgba(52, 211, 153, 0.13);
+        color: var(--primary);
+        border-left: 3px solid var(--primary);
+      }
+      [data-theme="dark"] .sb-name {
+        color: var(--ink);
+      }
+      [data-theme="dark"] .sb-coin {
+        color: var(--coin);
+      }
+      [data-theme="dark"] .ham-btn span {
+        background: var(--ink);
+      }
+      [data-theme="dark"] .ham-btn {
+        background: rgba(13, 24, 41, 0.9);
+        border-color: rgba(52, 211, 153, 0.15);
+      }
 
-/* STUDENT CARDS GRID */
-.students-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem}
-.student-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.4rem;transition:all .25s;position:relative;overflow:hidden}
-.student-card:hover{border-color:rgba(22,162,123,.25);box-shadow:0 6px 20px rgba(22,162,123,.08);transform:translateY(-2px)}
-.stc-top{display:flex;align-items:center;gap:.85rem;margin-bottom:.85rem}
-.stc-avatar{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:1.05rem;flex-shrink:0}
-.stc-info{flex:1;min-width:0}
-.stc-name{font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:.15rem}
-.stc-college{font-size:.8rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.stc-level{display:inline-flex;align-items:center;gap:.3rem;font-size:.72rem;font-weight:700;color:var(--primary);background:var(--primary-light);padding:.15rem .55rem;border-radius:99px;margin-top:.3rem}
+      /* TOPBAR — frosted glass */
+      [data-theme="dark"] .topbar {
+        background: rgba(6, 13, 26, 0.88);
+        border-bottom: 1px solid rgba(52, 211, 153, 0.09);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+      }
+      [data-theme="dark"] .icon-btn {
+        background: rgba(13, 24, 41, 0.9);
+        border-color: rgba(52, 211, 153, 0.15);
+        color: var(--body);
+      }
+      [data-theme="dark"] .icon-btn:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+        box-shadow: 0 0 10px rgba(52, 211, 153, 0.2);
+      }
 
-/* WANTS TO LEARN TAGS */
-.stc-learnlabel{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.45rem}
-.stc-skills{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.85rem}
-.stc-skill-tag{display:inline-flex;align-items:center;gap:.25rem;padding:.3rem .65rem;border-radius:8px;font-size:.78rem;font-weight:600;background:var(--primary-light);color:var(--primary);border:1px solid rgba(22,162,123,.12)}
+      /* SEARCH INPUT */
+      [data-theme="dark"] .search-input {
+        background: rgba(13, 24, 41, 0.9);
+        border-color: rgba(52, 211, 153, 0.15);
+        color: var(--ink);
+      }
+      [data-theme="dark"] .search-input:focus {
+        border-color: var(--primary);
+        background: rgba(13, 24, 41, 1);
+        box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.15);
+      }
+      [data-theme="dark"] .search-input::placeholder {
+        color: var(--muted);
+      }
 
-/* BIO */
-.stc-bio{font-size:.82rem;color:var(--body);line-height:1.5;margin-bottom:.85rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+      /* CATEGORY FILTERS */
+      [data-theme="dark"] .cat-btn {
+        background: rgba(13, 24, 41, 0.9);
+        border-color: rgba(52, 211, 153, 0.12);
+        color: var(--body);
+      }
+      [data-theme="dark"] .cat-btn:hover {
+        border-color: rgba(52, 211, 153, 0.4);
+        color: var(--primary);
+      }
+      [data-theme="dark"] .cat-btn.active {
+        background: rgba(52, 211, 153, 0.13);
+        border-color: rgba(52, 211, 153, 0.35);
+        color: var(--primary);
+      }
 
-/* ACTIONS */
-.stc-actions{display:flex;gap:.5rem;flex-wrap:wrap;padding-top:.75rem;border-top:1px solid var(--surface)}
-.stc-btn{padding:.45rem 1rem;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;border:none;display:inline-flex;align-items:center;gap:.3rem}
-.stc-btn.primary{background:var(--primary);color:#fff}
-.stc-btn.primary:hover{background:var(--primary-dark);transform:translateY(-1px)}
-.stc-btn.outline{background:transparent;color:var(--body);border:1.5px solid var(--border)}
-.stc-btn.outline:hover{border-color:var(--primary);color:var(--primary)}
+      /* PAGE HEADER */
+      [data-theme="dark"] .page-title {
+        color: var(--ink);
+      }
+      [data-theme="dark"] .page-sub {
+        color: var(--body);
+      }
 
-/* STATS PILL */
-.stc-stats{display:flex;gap:.75rem;margin-bottom:.6rem;font-size:.78rem;color:var(--muted)}
-.stc-stat{display:flex;align-items:center;gap:.25rem}
+      /* STUDENT CARDS — glass with teal glow on hover */
+      [data-theme="dark"] .student-card {
+        background: linear-gradient(
+          160deg,
+          rgba(13, 24, 41, 0.97),
+          rgba(9, 18, 35, 0.99)
+        );
+        border: 1px solid rgba(52, 211, 153, 0.1);
+        box-shadow:
+          0 2px 16px rgba(0, 0, 0, 0.3),
+          inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      }
+      [data-theme="dark"] .student-card:hover {
+        border-color: rgba(52, 211, 153, 0.32);
+        box-shadow:
+          0 10px 36px rgba(52, 211, 153, 0.12),
+          inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        transform: translateY(-3px);
+      }
+      [data-theme="dark"] .stc-name {
+        color: var(--ink);
+      }
+      [data-theme="dark"] .stc-college {
+        color: var(--body);
+      }
+      [data-theme="dark"] .stc-learnlabel {
+        color: var(--body);
+      }
+      [data-theme="dark"] .stc-bio {
+        color: var(--body);
+      }
 
-/* EMPTY STATE */
-.empty-state{text-align:center;padding:4rem 2rem;background:var(--card);border:1px solid var(--border);border-radius:16px;grid-column:1/-1}
-.es-icon{font-size:3.5rem;margin-bottom:1rem}
-.empty-state h3{font-size:1.1rem;font-weight:700;color:var(--ink);margin-bottom:.4rem}
-.empty-state p{font-size:.88rem;color:var(--muted);line-height:1.6;max-width:360px;margin:0 auto 1.2rem}
+      /* Level pill */
+      [data-theme="dark"] .stc-level {
+        background: rgba(52, 211, 153, 0.13);
+        color: var(--primary);
+      }
 
-/* Toast */
-.toast-wrap{position:fixed;bottom:24px;right:24px;z-index:400;display:flex;flex-direction:column;gap:.5rem;pointer-events:none}
-.toast{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.7rem 1rem;font-size:.83rem;font-weight:500;color:var(--ink);box-shadow:0 8px 24px rgba(0,0,0,.12);display:flex;align-items:center;gap:.5rem;animation:toastIn .35s cubic-bezier(.34,1.56,.64,1) both;pointer-events:auto;max-width:320px}
-@keyframes toastIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:49}.overlay.open{display:block}
-.ham-btn{display:none;width:38px;height:38px;border-radius:9px;border:1.5px solid var(--border);background:var(--card);align-items:center;justify-content:center;cursor:pointer;flex-direction:column;gap:5px;flex-shrink:0}
-.ham-btn span{width:16px;height:1.5px;background:var(--ink);border-radius:2px}
-.floating-theme-btn{position:fixed;bottom:24px;right:24px;width:48px;height:48px;border-radius:50%;background:var(--card);border:1px solid var(--border);box-shadow:0 4px 12px rgba(0,0,0,.1);font-size:20px;cursor:pointer;z-index:1000;display:flex;align-items:center;justify-content:center;transition:all .2s;color:var(--ink)}
-.floating-theme-btn:hover{transform:scale(1.05)}
+      /* Skill tags */
+      [data-theme="dark"] .stc-skill-tag {
+        background: rgba(52, 211, 153, 0.1);
+        color: var(--primary);
+        border-color: rgba(52, 211, 153, 0.18);
+      }
 
-/* LOADING SKELETON */
-.loading-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.4rem;animation:shimmer 1.5s infinite}
-@keyframes shimmer{0%{opacity:.7}50%{opacity:.4}100%{opacity:.7}}
-.sk-line{height:14px;background:var(--surface);border-radius:6px;margin-bottom:.6rem}
-.sk-circle{width:52px;height:52px;border-radius:50%;background:var(--surface)}
+      /* Action divider */
+      [data-theme="dark"] .stc-actions {
+        border-top-color: rgba(52, 211, 153, 0.08);
+      }
 
-@media(max-width:900px){
-  .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0}
-  #hamBtn{display:flex!important}
-  .students-grid{grid-template-columns:1fr}
-}
-@media(max-width:560px){.content{padding:1rem}}
-</style>
-<script>
-  (() => { const t = localStorage.getItem('vs-theme'); if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark'); })();
-</script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js"></script>
-<script src="api.js"></script>
-</head>
-<body>
+      /* Outline button dark */
+      [data-theme="dark"] .stc-btn.outline {
+        color: var(--body);
+        border-color: rgba(52, 211, 153, 0.18);
+      }
+      [data-theme="dark"] .stc-btn.outline:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
 
-<div class="toast-wrap" id="toastWrap"></div>
-<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+      /* EMPTY STATE */
+      [data-theme="dark"] .empty-state {
+        background: linear-gradient(
+          160deg,
+          rgba(13, 24, 41, 0.97),
+          rgba(9, 18, 35, 0.99)
+        );
+        border-color: rgba(52, 211, 153, 0.1);
+      }
+      [data-theme="dark"] .empty-state h3 {
+        color: var(--ink);
+      }
+      [data-theme="dark"] .empty-state p {
+        color: var(--body);
+      }
 
-<!-- ═══ TEACHER SIDEBAR ═══ -->
-<aside class="sidebar" id="sidebar">
-  <div class="sb-top"><a href="index.html" class="sb-logo"><img src="logo-v.png" alt="V" class="logo-img"><span class="logo-text">vidyasetu</span></a></div>
-  <nav class="sb-nav">
-    <div class="sb-section">Teaching</div>
-    <a href="03_dashboard_teacher.html" class="sb-item"><span class="icon">🎓</span> Teacher Hub</a>
-    <a href="#" class="sb-item"><span class="icon">👥</span> My Students</a>
-    <a href="11_my_sessions_teacher.html" class="sb-item"><span class="icon">📅</span> My Sessions</a>
-    <a href="13_skill_verify_teacher.html" class="sb-item"><span class="icon">✅</span> Verify Skills</a>
-    <div class="sb-section">Messages</div><a href="16_messages.html" class="sb-item"><span class="icon">💬</span> My Inbox <span class="badge" id="sb-unread-count" style="display:none">0</span></a><div class="sb-section">Discover</div>
-    <a href="04_explore_students.html" class="sb-item active"><span class="icon">🎓</span> Explore Students</a>
-    <a href="04_explore.html" class="sb-item"><span class="icon">🔍</span> Explore Teachers</a>
-    <div class="sb-section">Earnings</div>
-    <a href="08_wallet_teacher.html" class="sb-item"><span class="icon">🪙</span> Earnings & Wallet</a>
-    <div class="sb-section">Community</div>
-    <a href="09_bounty_teacher.html" class="sb-item"><span class="icon">🎯</span> Bounty Hub</a>
-    <a href="15_campus_collab_teacher.html" class="sb-item"><span class="icon">☕</span> Campus Collab</a>
-    <div class="sb-section">Account</div>
-    <a href="12_my_profile.html" class="sb-item"><span class="icon">👤</span> My Profile</a>
-    <div style="padding:.5rem .8rem;margin-top:.5rem">
-      <a href="03_dashboard.html" style="display:flex;align-items:center;gap:.5rem;padding:.55rem .8rem;border-radius:9px;background:var(--indigo-light);color:var(--indigo);font-size:.82rem;font-weight:600;text-decoration:none;transition:all .2s">
-        <span>🎒</span> Switch to Student Mode
-      </a>
-    </div>
-  </nav>
-  <div class="sb-bottom" id="sb-user-area">
-    <div class="sb-user">
-      <div class="sb-avatar">...</div>
-      <div>
-        <div class="sb-name">Loading...</div>
-        <div class="sb-coin">...</div>
+      /* LOADING SKELETON */
+      [data-theme="dark"] .loading-card {
+        background: rgba(13, 24, 41, 0.9);
+        border-color: rgba(52, 211, 153, 0.08);
+      }
+      [data-theme="dark"] .sk-line,
+      [data-theme="dark"] .sk-circle {
+        background: rgba(52, 211, 153, 0.07);
+      }
+
+      /* TOAST */
+      [data-theme="dark"] .toast {
+        background: rgba(13, 24, 41, 0.98);
+        border-color: rgba(52, 211, 153, 0.15);
+        color: var(--ink);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      }
+
+      /* FLOATING THEME TOGGLE */
+      .floating-theme-btn {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        border: 1.5px solid var(--border);
+        background: var(--card);
+        color: var(--body);
+        cursor: pointer;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        transition: all 0.22s ease;
+        font-size: 18px;
+      }
+      .floating-theme-btn:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+        transform: scale(1.08);
+        box-shadow: 0 6px 24px rgba(52, 211, 153, 0.18);
+      }
+      [data-theme="dark"] .floating-theme-btn {
+        background: rgba(13, 24, 41, 0.95);
+        border-color: rgba(52, 211, 153, 0.2);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      }
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--surface);
+        color: var(--ink);
+        display: flex;
+        min-height: 100dvh;
+        overflow-x: hidden;
+        transition:
+          background 0.3s,
+          color 0.3s;
+      }
+      .logo-img {
+        height: 22px;
+        width: 22px;
+        border-radius: 4px;
+      }
+      .logo-text {
+        font-family: "DM Serif Display", serif;
+        font-size: 1.2rem;
+        color: var(--ink);
+      }
+
+      /* SIDEBAR */
+      .sidebar {
+        width: var(--sidebar);
+        background: var(--card);
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 50;
+        transition:
+          transform 0.3s,
+          background 0.3s;
+      }
+      .sb-top {
+        padding: 1.5rem 1.2rem 1rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .sb-logo {
+        font-family: "DM Serif Display", serif;
+        font-size: 1.35rem;
+        color: var(--ink);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+      }
+      .sb-nav {
+        flex: 1;
+        padding: 1rem 0.8rem;
+        overflow-y: auto;
+      }
+      .sb-section {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding: 0.4rem 0.6rem;
+        margin-top: 1rem;
+        margin-bottom: 0.3rem;
+      }
+      .sb-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.65rem 0.8rem;
+        border-radius: 9px;
+        text-decoration: none;
+        color: var(--body);
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.18s;
+        cursor: pointer;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+      }
+      .sb-item:hover {
+        background: var(--surface);
+        color: var(--ink);
+      }
+      .sb-item.active {
+        background: var(--primary-light);
+        color: var(--primary);
+        font-weight: 600;
+      }
+      .sb-item .icon {
+        width: 20px;
+        text-align: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+      }
+      .sb-bottom {
+        padding: 1rem 1.2rem;
+        border-top: 1px solid var(--border);
+      }
+      .sb-user {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .sb-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--primary);
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .sb-name {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .sb-coin {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.78rem;
+        color: var(--coin);
+        font-weight: 600;
+      }
+      .main {
+        margin-left: var(--sidebar);
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        overflow-x: hidden;
+      }
+      .topbar {
+        background: var(--card);
+        border-bottom: 1px solid var(--border);
+        padding: 0 2rem;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        transition: background 0.3s;
+      }
+      .topbar-right {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .icon-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 9px;
+        border: 1.5px solid var(--border);
+        background: var(--card);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.95rem;
+        color: var(--body);
+        flex-shrink: 0;
+      }
+      .icon-btn:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+      .content {
+        padding: 2rem;
+        flex: 1;
+      }
+
+      /* PAGE HEADER */
+      .page-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      .page-title {
+        font-family: "DM Serif Display", serif;
+        font-size: 1.9rem;
+        color: var(--ink);
+      }
+      .page-sub {
+        font-size: 0.9rem;
+        color: var(--body);
+        margin-top: 0.2rem;
+      }
+
+      /* SEARCH BAR */
+      .search-bar {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+      }
+      .search-input {
+        flex: 1;
+        min-width: 200px;
+        padding: 0.7rem 1rem;
+        border: 1.5px solid var(--border);
+        border-radius: 12px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.9rem;
+        color: var(--ink);
+        background: var(--card);
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      .search-input:focus {
+        border-color: var(--primary);
+      }
+      .search-input::placeholder {
+        color: var(--muted);
+      }
+
+      /* CATEGORY FILTERS */
+      .cat-filters {
+        display: flex;
+        gap: 0.4rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+      }
+      .cat-btn {
+        padding: 0.4rem 0.9rem;
+        border-radius: 99px;
+        border: 1.5px solid var(--border);
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        background: var(--card);
+        color: var(--muted);
+        transition: all 0.15s;
+      }
+      .cat-btn:hover {
+        border-color: rgba(22, 162, 123, 0.3);
+        color: var(--primary);
+      }
+      .cat-btn.active {
+        background: var(--primary-light);
+        border-color: rgba(22, 162, 123, 0.3);
+        color: var(--primary);
+      }
+
+      /* STUDENT CARDS GRID */
+      .students-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+        gap: 1rem;
+      }
+      .student-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.4rem;
+        transition: all 0.25s;
+        position: relative;
+        overflow: hidden;
+      }
+      .student-card:hover {
+        border-color: rgba(22, 162, 123, 0.25);
+        box-shadow: 0 6px 20px rgba(22, 162, 123, 0.08);
+        transform: translateY(-2px);
+      }
+      .stc-top {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        margin-bottom: 0.85rem;
+      }
+      .stc-avatar {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: #fff;
+        font-size: 1.05rem;
+        flex-shrink: 0;
+      }
+      .stc-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .stc-name {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 0.15rem;
+      }
+      .stc-college {
+        font-size: 0.8rem;
+        color: var(--muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .stc-level {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--primary);
+        background: var(--primary-light);
+        padding: 0.15rem 0.55rem;
+        border-radius: 99px;
+        margin-top: 0.3rem;
+      }
+
+      /* WANTS TO LEARN TAGS */
+      .stc-learnlabel {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        margin-bottom: 0.45rem;
+      }
+      .stc-skills {
+        display: flex;
+        gap: 0.35rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.85rem;
+      }
+      .stc-skill-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.3rem 0.65rem;
+        border-radius: 8px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        background: var(--primary-light);
+        color: var(--primary);
+        border: 1px solid rgba(22, 162, 123, 0.12);
+      }
+
+      /* BIO */
+      .stc-bio {
+        font-size: 0.82rem;
+        color: var(--body);
+        line-height: 1.5;
+        margin-bottom: 0.85rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      /* ACTIONS */
+      .stc-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        padding-top: 0.75rem;
+        border-top: 1px solid var(--surface);
+      }
+      .stc-btn {
+        padding: 0.45rem 1rem;
+        border-radius: 9px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+      }
+      .stc-btn.primary {
+        background: var(--primary);
+        color: #fff;
+      }
+      .stc-btn.primary:hover {
+        background: var(--primary-dark);
+        transform: translateY(-1px);
+      }
+      .stc-btn.outline {
+        background: transparent;
+        color: var(--body);
+        border: 1.5px solid var(--border);
+      }
+      .stc-btn.outline:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+
+      /* STATS PILL */
+      .stc-stats {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 0.6rem;
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+      .stc-stat {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+      }
+
+      /* EMPTY STATE */
+      .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        grid-column: 1/-1;
+      }
+      .es-icon {
+        font-size: 3.5rem;
+        margin-bottom: 1rem;
+      }
+      .empty-state h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 0.4rem;
+      }
+      .empty-state p {
+        font-size: 0.88rem;
+        color: var(--muted);
+        line-height: 1.6;
+        max-width: 360px;
+        margin: 0 auto 1.2rem;
+      }
+
+      /* Toast */
+      .toast-wrap {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 400;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        pointer-events: none;
+      }
+      .toast {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 0.7rem 1rem;
+        font-size: 0.83rem;
+        font-weight: 500;
+        color: var(--ink);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        animation: toastIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        pointer-events: auto;
+        max-width: 320px;
+      }
+      @keyframes toastIn {
+        from {
+          transform: translateY(20px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+      .overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.3);
+        z-index: 49;
+      }
+      .overlay.open {
+        display: block;
+      }
+      .ham-btn {
+        display: none;
+        width: 38px;
+        height: 38px;
+        border-radius: 9px;
+        border: 1.5px solid var(--border);
+        background: var(--card);
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        flex-direction: column;
+        gap: 5px;
+        flex-shrink: 0;
+      }
+      .ham-btn span {
+        width: 16px;
+        height: 1.5px;
+        background: var(--ink);
+        border-radius: 2px;
+      }
+      .floating-theme-btn {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: var(--card);
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        font-size: 20px;
+        cursor: pointer;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        color: var(--ink);
+      }
+      .floating-theme-btn:hover {
+        transform: scale(1.05);
+      }
+
+      /* LOADING SKELETON */
+      .loading-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.4rem;
+        animation: shimmer 1.5s infinite;
+      }
+      @keyframes shimmer {
+        0% {
+          opacity: 0.7;
+        }
+        50% {
+          opacity: 0.4;
+        }
+        100% {
+          opacity: 0.7;
+        }
+      }
+      .sk-line {
+        height: 14px;
+        background: var(--surface);
+        border-radius: 6px;
+        margin-bottom: 0.6rem;
+      }
+      .sk-circle {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: var(--surface);
+      }
+
+      /* RESPONSIVE DESIGN */
+      @media (max-width: 1024px) {
+        .sidebar {
+          transform: translateX(-100%);
+        }
+        .sidebar.open {
+          transform: translateX(0);
+          box-shadow: 4px 0 24px rgba(0,0,0,0.1);
+        }
+        .main {
+          margin-left: 0;
+        }
+        #hamBtn {
+          display: flex !important;
+        }
+        .topbar {
+          padding: 0 1rem;
+        }
+      }
+      @media (max-width: 768px) {
+        .content {
+          padding: 1.5rem;
+        }
+        .page-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 1rem;
+        }
+      }
+      @media (max-width: 480px) {
+        .content {
+          padding: 1rem;
+        }
+        .topbar {
+          gap: 0.5rem;
+        }
+        .cat-filters {
+          flex-wrap: nowrap;
+          overflow-x: auto;
+          padding-bottom: 0.5rem;
+          -webkit-overflow-scrolling: touch;
+          scrollbar-width: none;
+        }
+        .cat-filters::-webkit-scrollbar {
+          display: none;
+        }
+        .cat-btn {
+          flex-shrink: 0;
+        }
+        .stc-actions {
+          flex-direction: column;
+        }
+        .stc-btn {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+    </style>
+    <script src="js/dark-mode.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script type="module" src="api.js"></script>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </head>
+  <body>
+    <div class="toast-wrap" id="toastWrap"></div>
+    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+    <!-- ═══ TEACHER SIDEBAR ═══ -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sb-top">
+        <a href="index.html" class="sb-logo"
+          ><img src="logo-v.png" alt="V" class="logo-img" /><span
+            class="logo-text"
+            >vidyasetu</span
+          ></a
+        >
       </div>
-    </div>
-  </div>
-</aside>
-
-<!-- ═══ MAIN ═══ -->
-<div class="main">
-  <div class="topbar">
-    <button class="ham-btn" id="hamBtn" style="display:none" onclick="openSidebar()"><span></span><span></span><span></span></button>
-    <div style="font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--ink)">🎓 Explore Students</div>
-    <div class="topbar-right">
-      <button class="icon-btn" title="Notifications">🔔</button>
-    </div>
-  </div>
-
-  <div class="content">
-    <div class="page-header">
-      <div>
-        <h1 class="page-title">Explore Students</h1>
-        <p class="page-sub">Discover learners who want to be taught. Offer your skills and connect.</p>
-      </div>
-      <a href="03_dashboard_teacher.html" style="padding:.65rem 1.3rem;background:var(--primary);color:#fff;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;transition:all .2s">🎓 Teacher Hub</a>
-    </div>
-
-    <!-- SEARCH -->
-    <div class="search-bar">
-      <input type="text" class="search-input" id="searchInput" placeholder="Search by skill name (e.g. Python, React, DSA...)" oninput="debounceSearch()">
-    </div>
-
-    <!-- CATEGORY FILTERS -->
-    <div class="cat-filters" id="catFilters">
-      <button class="cat-btn active" onclick="setCategory(this,'all')">All</button>
-      <button class="cat-btn" onclick="setCategory(this,'programming')">💻 Programming</button>
-      <button class="cat-btn" onclick="setCategory(this,'science')">🔬 Science</button>
-      <button class="cat-btn" onclick="setCategory(this,'math')">🧮 Math</button>
-      <button class="cat-btn" onclick="setCategory(this,'language')">🗣️ Language</button>
-      <button class="cat-btn" onclick="setCategory(this,'design')">🎨 Design</button>
-      <button class="cat-btn" onclick="setCategory(this,'other')">📚 Other</button>
-    </div>
-
-    <!-- RESULTS COUNT -->
-    <div style="font-size:.85rem;color:var(--muted);margin-bottom:1rem" id="resultCount">Loading students...</div>
-
-    <!-- STUDENT CARDS -->
-    <div class="students-grid" id="studentsGrid">
-      <!-- Loading skeletons -->
-      <div class="loading-card"><div style="display:flex;gap:.85rem;margin-bottom:.85rem"><div class="sk-circle"></div><div style="flex:1"><div class="sk-line" style="width:60%"></div><div class="sk-line" style="width:40%"></div></div></div><div class="sk-line"></div><div class="sk-line" style="width:80%"></div></div>
-      <div class="loading-card"><div style="display:flex;gap:.85rem;margin-bottom:.85rem"><div class="sk-circle"></div><div style="flex:1"><div class="sk-line" style="width:60%"></div><div class="sk-line" style="width:40%"></div></div></div><div class="sk-line"></div><div class="sk-line" style="width:80%"></div></div>
-      <div class="loading-card"><div style="display:flex;gap:.85rem;margin-bottom:.85rem"><div class="sk-circle"></div><div style="flex:1"><div class="sk-line" style="width:60%"></div><div class="sk-line" style="width:40%"></div></div></div><div class="sk-line"></div><div class="sk-line" style="width:80%"></div></div>
-    </div>
-  </div>
+      <nav class="sb-nav">
+        <div class="sb-section">Teaching</div>
+        <a href="03_dashboard_teacher.html" class="sb-item"
+          ><span class="icon">🎓</span> Teacher Hub</a
+        >
+        <a href="#" class="sb-item"><span class="icon">👥</span> My Students</a>
+        <a href="11_my_sessions_teacher.html" class="sb-item"
+          ><span class="icon">📅</span> My Sessions</a
+        >
+        <div class="sb-section">Messages</div>
+        <a href="16_messages.html" class="sb-item"
+          ><span class="icon">💬</span> My Inbox
+          <span class="badge" id="sb-unread-count" style="display: none"
+            >0</span
+          ></a
+        >
+        <div class="sb-section">Discover</div>
+        <a href="04_explore_students.html" class="sb-item active"
+          ><span class="icon">🎓</span> Explore Students</a
+        >
+        <a href="04_explore.html" class="sb-item"
+          ><span class="icon">🔍</span> Explore Teachers</a
+        >
+        <div class="sb-section">Earnings</div>
+        <a href="08_wallet_teacher.html" class="sb-item"
+          ><span class="icon">🪙</span> Earnings & Wallet</a
+        >
+        <div class="sb-section">Community</div>
+        <a href="09_bounty_teacher.html" class="sb-item"
+          ><span class="icon">🎯</span> Bounty Hub</a
+        >
+        <a href="15_campus_collab_teacher.html" class="sb-item"
+          ><span class="icon">☕</span> Campus Collab</a
+        >
+        <div class="sb-section">Account</div>
+        <a href="12_my_profile.html" class="sb-item"
+          ><span class="icon">👤</span> My Profile</a
+        >
+        <div style="padding: 0.5rem 0.8rem; margin-top: 0.5rem">
+          <a
+            href="03_dashboard.html"
+            style="
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
+              padding: 0.55rem 0.8rem;
+              border-radius: 9px;
+              background: var(--indigo-light);
+              color: var(--indigo);
+              font-size: 0.82rem;
+              font-weight: 600;
+              text-decoration: none;
+              transition: all 0.2s;
+            "
+          >
+            <span>🎒</span> Switch to Student Mode
+          </a>
+        </div>
+      </nav>
+      <div class="sb-bottom" id="sb-user-area">
+        <div class="sb-user">
+          <div class="sb-avatar">...</div>
+          <div>
+            <div class="sb-name">Loading...</div>
+            <div class="sb-coin">...</div>
+                      <div class="xph-level" style="font-size:0.7rem;color:var(--muted);margin-bottom:0.2rem;font-weight:600">Level 1</div>
+            <div class="xph-bar" style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:0.2rem;width:100%">
+               <div class="xph-fill" style="height:100%;background:var(--coin);width:0%;transition:width 1s"></div>
+            </div>
+            <div class="xph-xp" style="font-size:0.65rem;color:var(--muted);font-family:'JetBrains Mono',monospace">0 / 500 XP</div>
 </div>
+        </div>
+      </div>
+    </aside>
 
-<script>
-let allStudents = [];
-let currentCategory = 'all';
-let searchTimeout = null;
+    <!-- ═══ MAIN ═══ -->
+    <div class="main">
+      <div class="topbar">
+        <button
+          class="ham-btn"
+          id="hamBtn"
+          style="display: none"
+          onclick="openSidebar()"
+        >
+          <span></span><span></span><span></span>
+        </button>
+        <div
+          style="
+            font-family: &quot;DM Serif Display&quot;, serif;
+            font-size: 1.1rem;
+            color: var(--ink);
+          "
+        >
+          🎓 Explore Students
+        </div>
+        <div class="topbar-right">
+          <button class="icon-btn" title="Notifications">🔔</button>
+        </div>
+      </div>
 
-function escapeHTML(str) { if (!str) return ''; return str.replace(/[&<>'"]/g, t => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[t])); }
+      <div class="content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Explore Students</h1>
+            <p class="page-sub">
+              Discover learners who want to be taught. Offer your skills and
+              connect.
+            </p>
+          </div>
+          <a
+            href="03_dashboard_teacher.html"
+            style="
+              padding: 0.65rem 1.3rem;
+              background: var(--primary);
+              color: #fff;
+              border: none;
+              border-radius: 9px;
+              font-family: &quot;DM Sans&quot;, sans-serif;
+              font-size: 0.88rem;
+              font-weight: 600;
+              cursor: pointer;
+              text-decoration: none;
+              display: inline-flex;
+              align-items: center;
+              gap: 0.4rem;
+              transition: all 0.2s;
+            "
+            >🎓 Teacher Hub</a
+          >
+        </div>
 
-async function loadStudents() {
-  if (typeof VS === 'undefined' || !VS.auth) return;
-  const user = VS.auth.currentUser();
-  if (!user) { window.location.replace('02_login.html?redirect=04_explore_students.html'); return; }
+        <!-- SEARCH -->
+        <div class="search-bar">
+          <input
+            type="text"
+            class="search-input"
+            id="searchInput"
+            placeholder="Search by skill name (e.g. Python, React, DSA...)"
+            oninput="debounceSearch()"
+          />
+        </div>
 
-  try {
-    const search = document.getElementById('searchInput').value.trim();
-    allStudents = await VS.teachers.exploreStudents({
-      category: currentCategory !== 'all' ? currentCategory : null,
-      search: search || null,
-    });
-    renderStudents();
-  } catch (err) {
-    console.error('Failed to load students:', err);
-    document.getElementById('studentsGrid').innerHTML = `
+        <!-- CATEGORY FILTERS -->
+        <div class="cat-filters" id="catFilters">
+          <button class="cat-btn active" onclick="setCategory(this, 'all')">
+            All
+          </button>
+          <button class="cat-btn" onclick="setCategory(this, 'programming')">
+            💻 Programming
+          </button>
+          <button class="cat-btn" onclick="setCategory(this, 'science')">
+            🔬 Science
+          </button>
+          <button class="cat-btn" onclick="setCategory(this, 'math')">
+            🧮 Math
+          </button>
+          <button class="cat-btn" onclick="setCategory(this, 'language')">
+            🗣️ Language
+          </button>
+          <button class="cat-btn" onclick="setCategory(this, 'design')">
+            🎨 Design
+          </button>
+          <button class="cat-btn" onclick="setCategory(this, 'other')">
+            📚 Other
+          </button>
+        </div>
+
+        <!-- RESULTS COUNT -->
+        <div
+          style="font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem"
+          id="resultCount"
+        >
+          Loading students...
+        </div>
+
+        <!-- STUDENT CARDS -->
+        <div class="students-grid" id="studentsGrid">
+          <!-- Loading skeletons -->
+          <div class="loading-card">
+            <div style="display: flex; gap: 0.85rem; margin-bottom: 0.85rem">
+              <div class="sk-circle"></div>
+              <div style="flex: 1">
+                <div class="sk-line" style="width: 60%"></div>
+                <div class="sk-line" style="width: 40%"></div>
+              </div>
+            </div>
+            <div class="sk-line"></div>
+            <div class="sk-line" style="width: 80%"></div>
+          </div>
+          <div class="loading-card">
+            <div style="display: flex; gap: 0.85rem; margin-bottom: 0.85rem">
+              <div class="sk-circle"></div>
+              <div style="flex: 1">
+                <div class="sk-line" style="width: 60%"></div>
+                <div class="sk-line" style="width: 40%"></div>
+              </div>
+            </div>
+            <div class="sk-line"></div>
+            <div class="sk-line" style="width: 80%"></div>
+          </div>
+          <div class="loading-card">
+            <div style="display: flex; gap: 0.85rem; margin-bottom: 0.85rem">
+              <div class="sk-circle"></div>
+              <div style="flex: 1">
+                <div class="sk-line" style="width: 60%"></div>
+                <div class="sk-line" style="width: 40%"></div>
+              </div>
+            </div>
+            <div class="sk-line"></div>
+            <div class="sk-line" style="width: 80%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let allStudents = [];
+      let currentCategory = "all";
+      let searchTimeout = null;
+
+      function escapeHTML(str) {
+        if (!str) return "";
+        return str.replace(
+          /[&<>'"]/g,
+          (t) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              "'": "&#39;",
+              '"': "&quot;",
+            })[t],
+        );
+      }
+
+      async function loadStudents() {
+        if (typeof VS === "undefined" || !VS.auth) return;
+        const user = VS.auth.currentUser();
+        if (!user) {
+          window.location.replace(
+            "02_login.html?redirect=04_explore_students.html",
+          );
+          return;
+        }
+
+        try {
+          const search = document.getElementById("searchInput").value.trim();
+          allStudents = await VS.teachers.exploreStudents({
+            category: currentCategory !== "all" ? currentCategory : null,
+            search: search || null,
+          });
+          renderStudents();
+        } catch (err) {
+          console.error("Failed to load students:", err);
+          document.getElementById("studentsGrid").innerHTML = `
       <div class="empty-state">
         <div class="es-icon">⚠️</div>
         <h3>Failed to load</h3>
-        <p>${escapeHTML(err.message || 'Something went wrong. Please try again.')}</p>
+        <p>${escapeHTML(err.message || "Something went wrong. Please try again.")}</p>
       </div>`;
-    document.getElementById('resultCount').textContent = '';
-  }
-}
+          document.getElementById("resultCount").textContent = "";
+        }
+      }
 
-function renderStudents() {
-  const grid = document.getElementById('studentsGrid');
-  const countEl = document.getElementById('resultCount');
+      function renderStudents() {
+        const grid = document.getElementById("studentsGrid");
+        const countEl = document.getElementById("resultCount");
 
-  if (!allStudents.length) {
-    grid.innerHTML = `
+        if (!allStudents.length) {
+          grid.innerHTML = `
       <div class="empty-state">
         <div class="es-icon">🔍</div>
         <h3>No students found</h3>
         <p>No learners match your search. Try different keywords or category.</p>
       </div>`;
-    countEl.textContent = '0 students found';
-    return;
-  }
+          countEl.textContent = "0 students found";
+          return;
+        }
 
-  countEl.textContent = `${allStudents.length} student${allStudents.length !== 1 ? 's' : ''} looking to learn`;
+        countEl.textContent = `${allStudents.length} student${allStudents.length !== 1 ? "s" : ""} looking to learn`;
 
-  grid.innerHTML = allStudents.map(s => `
+        grid.innerHTML = allStudents
+          .map(
+            (s) => `
     <div class="student-card">
       <div class="stc-top">
         <div class="stc-avatar" style="background:${s.color}">${s.initials}</div>
@@ -270,120 +1252,142 @@ function renderStudents() {
       </div>
       <div class="stc-learnlabel">📖 Wants to Learn</div>
       <div class="stc-skills">
-        ${s.wantsToLearn.map(sk => `<span class="stc-skill-tag">📝 ${escapeHTML(sk.name)}</span>`).join('')}
+        ${s.wantsToLearn.map((sk) => `<span class="stc-skill-tag">📝 ${escapeHTML(sk.name)}</span>`).join("")}
       </div>
-      ${s.bio ? `<div class="stc-bio">${escapeHTML(s.bio)}</div>` : ''}
+      ${s.bio ? `<div class="stc-bio">${escapeHTML(s.bio)}</div>` : ""}
       <div class="stc-actions">
         <button class="stc-btn primary" onclick="offerToTeach('${s.id}','${escapeHTML(s.name)}')">🎓 Offer to Teach</button>
         <button class="stc-btn outline" onclick="sendMessage('${s.id}','${escapeHTML(s.name)}')">💬 Message</button>
       </div>
     </div>
-  `).join('');
-}
-
-function setCategory(btn, cat) {
-  currentCategory = cat;
-  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  loadStudents();
-}
-
-function debounceSearch() {
-  clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(() => loadStudents(), 400);
-}
-
-async function offerToTeach(studentId, studentName) {
-  // Check if qualified for any teaching skill first
-  const user = VS.auth.currentUser();
-  if (!user) return;
-
-  try {
-    // Get teacher's verified skills
-    const supabase = window.__supabase || (await import('./config.js')).default;
-    const stats = await VS.teachers.myStats();
-    
-    if (!stats.skills || stats.skills.length === 0) {
-      showToast('⚠️', 'You need to verify a skill before you can teach. Go to Verify Skills first.');
-      return;
-    }
-
-    // Get the student's wanted skills
-    const student = allStudents.find(s => s.id === studentId);
-    if (!student) return;
-
-    const matchingSkills = student.wantsToLearn.map(sk => sk.name);
-    const teacherSkills = stats.skills.map(sk => sk.name);
-    
-    // Check for skill overlap
-    const matches = matchingSkills.filter(sk => 
-      teacherSkills.some(ts => ts.toLowerCase() === sk.toLowerCase())
-    );
-
-    if (matches.length > 0) {
-      // Direct match — send DM
-      const msg = `Hi ${studentName}! I can teach you ${matches[0]}. Would you like to schedule a session?`;
-      await VS.dm.send(studentId, msg);
-      showToast('✅', `Message sent to ${studentName}! Check your DMs.`);
-    } else {
-      // No direct match, offer anyway via DM
-      const skillList = matchingSkills.join(', ');
-      if (confirm(`${studentName} wants to learn: ${skillList}\n\nYour skills: ${teacherSkills.join(', ')}\n\nSend a message to offer teaching?`)) {
-        const msg = `Hi ${studentName}! I'd love to help you learn. Let me know if you're interested in a session!`;
-        await VS.dm.send(studentId, msg);
-        showToast('✅', `Message sent to ${studentName}!`);
+  `,
+          )
+          .join("");
       }
-    }
-  } catch (err) {
-    console.error('Offer to teach failed:', err);
-    showToast('❌', err.message || 'Failed to send offer');
-  }
-}
 
-async function sendMessage(studentId, studentName) {
-  const msg = prompt(`Send a message to ${studentName}:`);
-  if (!msg || !msg.trim()) return;
-  try {
-    await VS.dm.send(studentId, msg.trim());
-    showToast('✅', `Message sent to ${studentName}!`);
-  } catch (err) {
-    showToast('❌', err.message || 'Failed to send message');
-  }
-}
+      function setCategory(btn, cat) {
+        currentCategory = cat;
+        document
+          .querySelectorAll(".cat-btn")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        loadStudents();
+      }
 
-function showToast(icon, text) {
-  const wrap = document.getElementById('toastWrap');
-  if (!wrap) return;
-  const t = document.createElement('div');
-  t.className = 'toast';
-  t.innerHTML = `<span style="font-size:1rem">${icon}</span><span>${text}</span>`;
-  wrap.appendChild(t);
-  setTimeout(() => t.remove(), 4000);
-}
+      function debounceSearch() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => loadStudents(), 400);
+      }
 
-function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('open')}
-function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('open')}
-if(window.innerWidth<=900){document.getElementById('hamBtn').style.display='flex'}
-window.addEventListener('resize',()=>{if(window.innerWidth<=900)document.getElementById('hamBtn').style.display='flex';else document.getElementById('hamBtn').style.display='none'})
+      async function offerToTeach(studentId, studentName) {
+        // Check if qualified for any teaching skill first
+        const user = VS.auth.currentUser();
+        if (!user) return;
 
-document.addEventListener('DOMContentLoaded', () => {
-  loadStudents();
-  if (typeof VS !== 'undefined' && VS.ui) VS.ui.updateSidebar();
-});
-</script>
+        try {
+          // Get teacher's verified skills
+          const stats = await VS.teachers.myStats();
 
-<button onclick="toggleTheme()" id="globalThemeBtn" class="floating-theme-btn" title="Toggle Dark/Light Mode">🌙</button>
-<script>
-function toggleTheme() {
-  const html = document.documentElement;
-  const isDark = html.getAttribute('data-theme') === 'dark';
-  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
-  document.getElementById('globalThemeBtn').textContent = isDark ? '🌙' : '☀️';
-  localStorage.setItem('vs-theme', isDark ? 'light' : 'dark');
-}
-if (document.documentElement.getAttribute('data-theme') === 'dark') {
-  document.getElementById('globalThemeBtn').textContent = '☀️';
-}
-</script>
-</body>
+          if (!stats.skills || stats.skills.length === 0) {
+            showToast(
+              "⚠️",
+              "You need to verify a skill before you can teach. Go to Verify Skills first.",
+            );
+            return;
+          }
+
+          // Get the student's wanted skills
+          const student = allStudents.find((s) => s.id === studentId);
+          if (!student) return;
+
+          const matchingSkills = student.wantsToLearn.map((sk) => sk.name);
+          const teacherSkills = stats.skills.map((sk) => sk.name);
+
+          // Check for skill overlap
+          const matches = matchingSkills.filter((sk) =>
+            teacherSkills.some((ts) => ts.toLowerCase() === sk.toLowerCase()),
+          );
+
+          if (matches.length > 0) {
+            // Direct match — send DM
+            const msg = `Hi ${studentName}! I can teach you ${matches[0]}. Would you like to schedule a session?`;
+            await VS.dm.send(studentId, msg);
+            showToast("✅", `Message sent to ${studentName}! Check your DMs.`);
+          } else {
+            // No direct match, offer anyway via DM
+            const skillList = matchingSkills.join(", ");
+            if (
+              confirm(
+                `${studentName} wants to learn: ${skillList}\n\nYour skills: ${teacherSkills.join(", ")}\n\nSend a message to offer teaching?`,
+              )
+            ) {
+              const msg = `Hi ${studentName}! I'd love to help you learn. Let me know if you're interested in a session!`;
+              await VS.dm.send(studentId, msg);
+              showToast("✅", `Message sent to ${studentName}!`);
+            }
+          }
+        } catch (err) {
+          console.error("Offer to teach failed:", err);
+          showToast("❌", err.message || "Failed to send offer");
+        }
+      }
+
+      async function sendMessage(studentId, studentName) {
+        const msg = prompt(`Send a message to ${studentName}:`);
+        if (!msg || !msg.trim()) return;
+        try {
+          await VS.dm.send(studentId, msg.trim());
+          showToast("✅", `Message sent to ${studentName}!`);
+        } catch (err) {
+          showToast("❌", err.message || "Failed to send message");
+        }
+      }
+
+      function showToast(icon, text) {
+        const wrap = document.getElementById("toastWrap");
+        if (!wrap) return;
+        const t = document.createElement("div");
+        t.className = "toast";
+        t.innerHTML = `<span style="font-size:1rem">${icon}</span><span>${text}</span>`;
+        wrap.appendChild(t);
+        setTimeout(() => t.remove(), 4000);
+      }
+
+      function openSidebar() {
+        document.getElementById("sidebar").classList.add("open");
+        document.getElementById("overlay").classList.add("open");
+      }
+      function closeSidebar() {
+        document.getElementById("sidebar").classList.remove("open");
+        document.getElementById("overlay").classList.remove("open");
+      }
+      if (window.innerWidth <= 1024) {
+        document.getElementById("hamBtn").style.display = "flex";
+      }
+      window.addEventListener("resize", () => {
+        if (window.innerWidth <= 1024)
+          document.getElementById("hamBtn").style.display = "flex";
+        else document.getElementById("hamBtn").style.display = "none";
+      });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const params = new URLSearchParams(window.location.search);
+        const initialSearch = params.get("search");
+        if (initialSearch) {
+          const searchInput = document.getElementById("searchInput");
+          if (searchInput) searchInput.value = initialSearch;
+        }
+        loadStudents();
+        if (typeof VS !== "undefined" && VS.ui) VS.ui.updateSidebar();
+      });
+    </script>
+
+    <!-- Theme toggle auto-injected by js/dark-mode.js -->
+
+    <script>
+      if (typeof lucide !== "undefined") {
+        lucide.createIcons();
+      }
+    </script>
+  </body>
 </html>

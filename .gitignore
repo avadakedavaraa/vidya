@@ -1,19 +1,57 @@
 # Node / build artefacts
 node_modules/
 dist/
+build/
+out/
 .next/
+.cache/
+
+# AI Agent folders
+.agent/
+.agents/
+graphify-out/
+session.md
 
 # API keys — NEVER commit these
 .env.local
 .env
 config.js
+*.env.local
+*.env
 
 # Python
 .venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
 
 # Logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # OS files
 .DS_Store
 Thumbs.db
+.vercel
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Project specific ignores
+add_xp.py
+fix_links.py
+fix_links2.py
+replace_emojis.py
+test_db.js
+seed-mcqs*.js
+generate-config.sh
+
+# AI Agent metadata
+AGENTS.md
+SKILL.md

@@ -1,1190 +1,2069 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" data-theme="light">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vidyasetu — Code Quest</title>
-<link rel="icon" href="logo-v.png" type="image/png">
-<script>
-  // Early theme init — must run before paint
-  if (localStorage.getItem('vs-theme') === 'dark')
-    document.documentElement.setAttribute('data-theme', 'dark');
-</script>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vidyasetu — Code Quest</title>
+    <link rel="icon" href="logo-v.png" type="image/png" />
+    <script src="js/dark-mode.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
 
-<!-- ⚠️  API keys loaded from config.js (git-ignored). See config.example.js -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js"></script>
-<script src="api.js"></script>
-<script src="demo-data.js"></script>
-<link rel="stylesheet" href="vs-code-editor.css">
-<script src="vs-code-editor.js"></script>
+    <!-- ⚠️  API keys loaded from config.js (git-ignored). See config.example.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script type="module" src="api.js"></script>
+    <link rel="stylesheet" href="vs-code-editor.css" />
+    <script src="vs-code-editor.js"></script>
 
-<script>
-  // Access Guard: Ensure user is logged in
-  if (localStorage.getItem('vs_logged_in') !== 'true') {
-    window.location.replace('02_login.html?redirect=14_game_learn.html');
-  }
-</script>
-<style>
-/* ═══════════════════════════════════════
+    <script>
+      // Access Guard: Ensure user is logged in
+      if (localStorage.getItem("vs_logged_in") !== "true") {
+        window.location.replace("02_login.html?redirect=14_game_learn.html");
+      }
+    </script>
+    <style>
+      /* ═══════════════════════════════════════
    CSS RESET
 ═══════════════════════════════════════ */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-/* ═══════════════════════════════════════
+      /* ═══════════════════════════════════════
    DESIGN TOKENS
 ═══════════════════════════════════════ */
-:root {
-  /* Background layers */
-  --bg:           #060309;
-  --bg2:          #0a0414;
-  --surface:      #0f0619;
-  --card:         #140820;
-  --card2:        #180b26;
+      :root {
+        /* Light Theme (Default) */
+        --bg: #f8fafc;
+        --bg2: #f1f5f9;
+        --surface: #ffffff;
+        --card: #ffffff;
+        --card2: #f8fafc;
+        --border: rgba(124, 58, 237, 0.15);
+        --border2: rgba(124, 58, 237, 0.25);
+        --ink: #0f172a;
+        --ink2: #334155;
+        --ink3: #475569;
+        --muted: #64748b;
+        --body: #475569;
+        --violet: #7c3aed;
+        --violet2: #8b5cf6;
+        --violet-d: #6d28d9;
+        --violet-glow: rgba(124, 58, 237, 0.2);
+        --teal: #10b981;
+        --teal-bg: rgba(16, 185, 129, 0.1);
+        --coin: #f59e0b;
+        --coin-bg: rgba(245, 158, 11, 0.1);
+        --danger: #ef4444;
+        --success: #10b981;
+      }
 
-  /* Borders */
-  --border:       rgba(200, 180, 255, .10);
-  --border2:      rgba(200, 180, 255, .16);
+      [data-theme="dark"] {
+        --bg: #060309;
+        --bg2: #0a0414;
+        --surface: #060d1a;
+        --card: #0d1829;
+        --card2: #180b26;
+        --border: #1a2d4a;
+        --border2: rgba(200, 180, 255, 0.16);
+        --ink: #e8eeff;
+        --ink2: #b8a8d4;
+        --ink3: #6b5a8a;
+        --muted: #94a3b8;
+        --body: #94a3b8;
+        --violet: #a78bfa;
+        --violet2: #c4b5fd;
+        --violet-d: #8b5cf6;
+        --violet-glow: rgba(167, 139, 250, 0.2);
+        --teal: #34d399;
+        --teal-light: rgba(52, 211, 153, 0.13);
+        --teal-bg: rgba(52, 211, 154, 0.13);
+        --coin: #fbbf24;
+        --coin-light: rgba(251, 191, 36, 0.14);
+        --coin-bg: rgba(240, 180, 41, 0.12);
+        --danger: #f87171;
+        --success: #34d39a;
+        --indigo: #818cf8;
+        --indigo-light: rgba(129, 140, 248, 0.14);
+        --indigo-dark: #6366f1;
+      }
 
-  /* Text */
-  --ink:          #ffffff;
-  --ink2:         #b8a8d4;
-  --ink3:         #6b5a8a;
-  --muted:        #6b5a8a;
-  --body:         #b8a8d4;
+      /* Glassmorphism Overrides */
+      [data-theme="dark"] body {
+        background: var(--surface);
+      }
+      [data-theme="dark"] .grid-bg {
+        opacity: 0.1;
+      }
+      [data-theme="dark"] .error-code {
+        opacity: 0.08;
+      }
+      [data-theme="dark"] .btn-outline {
+        background: rgba(13, 24, 41, 0.6);
+        border-color: rgba(129, 140, 248, 0.15);
+      }
+      [data-theme="dark"] .suggestions {
+        border-top-color: rgba(129, 140, 248, 0.1);
+      }
 
-  /* Brand */
-  --violet:       #8b5cf6;
-  --violet2:      #a78bfa;
-  --violet-d:     #6d28d9;
-  --violet-glow:  rgba(139, 92, 246, .30);
+      /* Navbar — Premium Glass */
+      [data-theme="dark"] .top-nav {
+        background: rgba(6, 13, 26, 0.85);
+        border-bottom-color: rgba(129, 140, 248, 0.1);
+        backdrop-filter: blur(20px);
+      }
 
-  /* Semantic */
-  --teal:         #34d39a;
-  --teal-bg:      rgba(52, 211, 154, .13);
-  --coin:         #f0b429;
-  --coin-bg:      rgba(240, 180, 41, .12);
-  --danger:       #ff6b6b;
-  --success:      #34d39a;
-}
+      /* Cards — Glassmorphism */
+      [data-theme="dark"] .lang-card,
+      [data-theme="dark"] .theme-card,
+      [data-theme="dark"] .level-row,
+      [data-theme="dark"] .narrative-card,
+      [data-theme="dark"] .question-card {
+        background: rgba(13, 24, 41, 0.6);
+        border-color: rgba(129, 140, 248, 0.14);
+      }
+      [data-theme="dark"] .opt-btn {
+        background: rgba(6, 13, 26, 0.6);
+        border-color: rgba(129, 140, 248, 0.12);
+      }
+      [data-theme="dark"] .code-block {
+        background: rgba(6, 13, 26, 0.9);
+        border-color: rgba(129, 140, 248, 0.15);
+      }
+      [data-theme="dark"] .stat-box {
+        background: rgba(13, 24, 41, 0.8);
+      }
 
-[data-theme="light"] {
-  --bg: #f5f3ff;    --bg2: #ede9fe;    --surface: #f0ecff;
-  --card: #fff;     --card2: #faf8ff;
-  --border: rgba(109, 40, 217, .10);   --border2: rgba(109, 40, 217, .18);
-  --ink: #13001f;   --ink2: #4c3d6b;   --ink3: #9780b8;
-  --muted: #9780b8; --body: #4c3d6b;
-  --violet: #6d28d9; --violet2: #7c3aed; --violet-d: #5b21b6;
-  --violet-glow: rgba(109, 40, 217, .22);
-  --teal: #059669;  --coin: #b45309;    --danger: #dc2626;
-}
+      /* Progress */
+      [data-theme="dark"] .q-progress-bar,
+      [data-theme="dark"] .ai-progress-bar {
+        background: rgba(255, 255, 255, 0.05);
+      }
 
-/* ═══════════════════════════════════════
+      /* ═══════════════════════════════════════
    BASE
 ═══════════════════════════════════════ */
-html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+      html {
+        scroll-behavior: smooth;
+        -webkit-font-smoothing: antialiased;
+      }
 
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--bg);
-  color: var(--ink);
-  min-height: 100vh;
-  overflow-x: hidden;
-  font-size: 15px;
-  line-height: 1.6;
-}
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        min-height: 100vh;
+        overflow-x: hidden;
+        font-size: 15px;
+        line-height: 1.6;
+      }
 
-/* ═══════════════════════════════════════
+      /* ═══════════════════════════════════════
    NAVIGATION
 ═══════════════════════════════════════ */
-.top-nav {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 200;
-  height: 62px;
-  padding: 0 5%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: rgba(6, 3, 9, .85);
-  backdrop-filter: blur(24px);
-  border-bottom: 1px solid var(--border);
-}
-[data-theme="light"] .top-nav { background: rgba(240, 236, 255, .90); }
+      .top-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 200;
+        height: 62px;
+        padding: 0 5%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(6, 3, 9, 0.85);
+        backdrop-filter: blur(24px);
+        border-bottom: 1px solid var(--border);
+      }
+      [data-theme="light"] .top-nav {
+        background: rgba(240, 236, 255, 0.9);
+      }
 
-.logo-img {
-  height: 28px;
-  width: auto;
-  display: block;
-}
+      .logo-img {
+        height: 28px;
+        width: auto;
+        display: block;
+      }
 
-.nav-logo {
-  font-family: 'DM Serif Display', serif;
-  font-size: 1.3rem;
-  color: var(--ink);
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.nav-logo em { color: var(--violet); font-style: normal; }
+      .nav-logo {
+        font-family: "DM Serif Display", serif;
+        font-size: 1.3rem;
+        color: var(--ink);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .nav-logo em {
+        color: var(--violet);
+        font-style: normal;
+      }
 
-.nav-controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+      .nav-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
 
-/* Coin badge */
-.coin-badge {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--coin-bg);
-  border: 1px solid rgba(240, 180, 41, .25);
-  color: var(--coin);
-  padding: .35rem .85rem;
-  border-radius: 99px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: .85rem;
-  font-weight: 600;
-}
+      /* Coin badge */
+      .coin-badge {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--coin-bg);
+        border: 1px solid rgba(240, 180, 41, 0.25);
+        color: var(--coin);
+        padding: 0.35rem 0.85rem;
+        border-radius: 99px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
 
-/* AI / DB mode toggle */
-.mode-toggle {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--card);
-  border: 1px solid var(--border2);
-  border-radius: 99px;
-  padding: .3rem .8rem;
-  font-size: .8rem;
-  font-weight: 600;
-  color: var(--ink2);
-  cursor: pointer;
-  transition: border-color .2s;
-}
-.mode-toggle:hover { border-color: var(--violet); color: var(--violet); }
-.mode-toggle .dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: var(--teal);
-  box-shadow: 0 0 6px var(--teal);
-  animation: pulse 2s infinite;
-  flex-shrink: 0;
-}
-.mode-toggle.db-mode .dot { background: var(--coin); box-shadow: 0 0 6px var(--coin); }
+      /* AI / DB mode toggle */
+      .mode-toggle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--card);
+        border: 1px solid var(--border2);
+        border-radius: 99px;
+        padding: 0.3rem 0.8rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--ink2);
+        cursor: pointer;
+        transition: border-color 0.2s;
+      }
+      .mode-toggle:hover {
+        border-color: var(--violet);
+        color: var(--violet);
+      }
+      .mode-toggle .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--teal);
+        box-shadow: 0 0 6px var(--teal);
+        animation: pulse 2s infinite;
+        flex-shrink: 0;
+      }
+      .mode-toggle.db-mode .dot {
+        background: var(--coin);
+        box-shadow: 0 0 6px var(--coin);
+      }
 
-/* Icon button */
-.icon-btn {
-  width: 38px; height: 38px;
-  border-radius: 50%;
-  background: var(--card);
-  border: 1px solid var(--border2);
-  font-size: 16px;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: transform .2s;
-  color: var(--ink);
-}
-.icon-btn:hover { transform: scale(1.1); }
+      /* Icon button */
+      .icon-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: var(--card);
+        border: 1px solid var(--border2);
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s;
+        color: var(--ink);
+      }
+      .icon-btn:hover {
+        transform: scale(1.1);
+      }
 
-/* ═══════════════════════════════════════
+      /* ═══════════════════════════════════════
    SCREEN SYSTEM
 ═══════════════════════════════════════ */
-.screen {
-  display: none;
-  min-height: 100vh;
-  padding: 90px 5% 60px;
-  animation: fadeUp .45s ease both;
-}
-.screen.active { display: block; }
+      .screen {
+        display: none;
+        min-height: 100vh;
+        padding: 90px 5% 60px;
+        animation: fadeUp 0.45s ease both;
+      }
+      .screen.active {
+        display: block;
+      }
 
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(18px); }
-  to   { opacity: 1; transform: none; }
-}
-@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .4; } }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(18px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
 
-/* Screen header */
-.screen-hd {
-  text-align: center;
-  margin-bottom: 2.5rem;
-}
-.screen-label {
-  font-size: .7rem;
-  font-weight: 700;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: var(--violet);
-  margin-bottom: .6rem;
-}
-.screen-title {
-  font-family: 'DM Serif Display', serif;
-  font-size: clamp(1.9rem, 3.5vw, 2.8rem);
-  color: var(--ink);
-  line-height: 1.1;
-  margin-bottom: .6rem;
-}
-.screen-sub {
-  font-size: .95rem;
-  color: var(--body);
-  max-width: 460px;
-  margin: 0 auto;
-}
+      /* Screen header */
+      .screen-hd {
+        text-align: center;
+        margin-bottom: 2.5rem;
+      }
+      .screen-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--violet);
+        margin-bottom: 0.6rem;
+      }
+      .screen-title {
+        font-family: "DM Serif Display", serif;
+        font-size: clamp(1.9rem, 3.5vw, 2.8rem);
+        color: var(--ink);
+        line-height: 1.1;
+        margin-bottom: 0.6rem;
+      }
+      .screen-sub {
+        font-size: 0.95rem;
+        color: var(--body);
+        max-width: 460px;
+        margin: 0 auto;
+      }
 
-/* Soft back link */
-.back-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: none;
-  border: none;
-  color: var(--ink3);
-  font-size: .85rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: color .2s;
-  margin-bottom: 1.5rem;
-}
-.back-link:hover { color: var(--violet); }
+      /* Soft back link */
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: none;
+        border: none;
+        color: var(--ink3);
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: color 0.2s;
+        margin-bottom: 1.5rem;
+      }
+      .back-link:hover {
+        color: var(--violet);
+      }
 
-/* ═══════════════════════════════════════
+      /* ═══════════════════════════════════════
    SCREEN 1 — LANGUAGE SELECTION
 ═══════════════════════════════════════ */
-#screen-lang .lang-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 1rem;
-  max-width: 1100px;
-  margin: 0 auto;
-}
+      #screen-lang .lang-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 1rem;
+        max-width: 1100px;
+        margin: 0 auto;
+      }
 
-@media (max-width: 900px) { #screen-lang .lang-grid { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 580px) { #screen-lang .lang-grid { grid-template-columns: 1fr 1fr; } }
+      @media (max-width: 900px) {
+        #screen-lang .lang-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      @media (max-width: 580px) {
+        #screen-lang .lang-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
 
-.lang-card {
-  background: var(--card);
-  border: 1.5px solid var(--border);
-  border-radius: 20px;
-  padding: 2rem 1.25rem;
-  cursor: pointer;
-  text-align: center;
-  transition: transform .3s, border-color .3s, box-shadow .3s;
-  position: relative;
-  overflow: hidden;
-}
-.lang-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  border-radius: 3px 3px 0 0;
-  background: var(--lang-color, var(--violet));
-}
-.lang-card:hover {
-  transform: translateY(-6px);
-  border-color: var(--lang-color, var(--violet));
-  box-shadow: 0 16px 40px rgba(0, 0, 0, .3);
-}
-.lang-icon  { font-size: 2.6rem; display: block; margin-bottom: .9rem; }
-.lang-name  { font-family: 'DM Serif Display', serif; font-size: 1.2rem; color: var(--ink); margin-bottom: .35rem; }
-.lang-badge { display: inline-block; background: var(--card2); color: var(--ink3); font-size: .7rem; font-weight: 600; padding: .2rem .6rem; border-radius: 99px; letter-spacing: .03em; }
-.lang-count { font-size: .75rem; color: var(--muted); margin-top: .65rem; }
+      .lang-card {
+        background: var(--card);
+        border: 1.5px solid var(--border);
+        border-radius: 20px;
+        padding: 2rem 1.25rem;
+        cursor: pointer;
+        text-align: center;
+        transition:
+          transform 0.3s,
+          border-color 0.3s,
+          box-shadow 0.3s;
+        position: relative;
+        overflow: hidden;
+      }
+      .lang-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        border-radius: 3px 3px 0 0;
+        background: var(--lang-color, var(--violet));
+      }
+      .lang-card:hover {
+        transform: translateY(-6px);
+        border-color: var(--lang-color, var(--violet));
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+      }
+      .lang-icon {
+        font-size: 2.6rem;
+        display: block;
+        margin-bottom: 0.9rem;
+      }
+      .lang-name {
+        font-family: "DM Serif Display", serif;
+        font-size: 1.2rem;
+        color: var(--ink);
+        margin-bottom: 0.35rem;
+      }
+      .lang-badge {
+        display: inline-block;
+        background: var(--card2);
+        color: var(--ink3);
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 0.2rem 0.6rem;
+        border-radius: 99px;
+        letter-spacing: 0.03em;
+      }
+      .lang-count {
+        font-size: 0.75rem;
+        color: var(--muted);
+        margin-top: 0.65rem;
+      }
 
-/* ═══════════════════════════════════════
+      /* ═══════════════════════════════════════
    SCREEN 2 — THEME SELECTION
 ═══════════════════════════════════════ */
-#screen-theme .theme-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 1rem;
-  max-width: 1000px;
-  margin: 0 auto;
-}
-@media (max-width: 800px) { #screen-theme .theme-grid { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 500px) { #screen-theme .theme-grid { grid-template-columns: 1fr 1fr; } }
+      #screen-theme .theme-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 1rem;
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+      @media (max-width: 800px) {
+        #screen-theme .theme-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      @media (max-width: 500px) {
+        #screen-theme .theme-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
 
-.theme-card {
-  background: var(--card);
-  border: 1.5px solid var(--border);
-  border-radius: 18px;
-  padding: 1.75rem 1rem;
-  text-align: center;
-  cursor: pointer;
-  transition: transform .3s, border-color .3s, box-shadow .3s;
-}
-.theme-card:hover { transform: translateY(-5px); border-color: var(--violet); box-shadow: 0 14px 36px rgba(0,0,0,.28); }
-.theme-card.selected { border-color: var(--violet); background: rgba(139, 92, 246, .08); }
-.theme-emoji { font-size: 2.4rem; display: block; margin-bottom: .65rem; }
-.theme-name  { font-weight: 700; color: var(--ink); font-size: .9rem; margin-bottom: .3rem; }
-.theme-desc  { font-size: .75rem; color: var(--muted); line-height: 1.5; }
+      .theme-card {
+        background: var(--card);
+        border: 1.5px solid var(--border);
+        border-radius: 18px;
+        padding: 1.75rem 1rem;
+        text-align: center;
+        cursor: pointer;
+        transition:
+          transform 0.3s,
+          border-color 0.3s,
+          box-shadow 0.3s;
+      }
+      .theme-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--violet);
+        box-shadow: 0 14px 36px rgba(0, 0, 0, 0.28);
+      }
+      .theme-card.selected {
+        border-color: var(--violet);
+        background: rgba(139, 92, 246, 0.08);
+      }
+      .theme-emoji {
+        font-size: 2.4rem;
+        display: block;
+        margin-bottom: 0.65rem;
+      }
+      .theme-name {
+        font-weight: 700;
+        color: var(--ink);
+        font-size: 0.9rem;
+        margin-bottom: 0.3rem;
+      }
+      .theme-desc {
+        font-size: 0.75rem;
+        color: var(--muted);
+        line-height: 1.5;
+      }
 
-/* ═══════════════════════════════════════
+      /* ═══════════════════════════════════════
    SCREEN 3 — LEVEL MAP
 ═══════════════════════════════════════ */
-#screen-levels .level-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  max-width: 680px;
-  margin: 0 auto;
-}
+      #screen-levels .level-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        max-width: 680px;
+        margin: 0 auto;
+      }
 
-.level-row {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  background: var(--card);
-  border: 1.5px solid var(--border);
-  border-radius: 16px;
-  padding: 1.1rem 1.4rem;
-  cursor: pointer;
-  transition: transform .25s, border-color .25s;
-}
-.level-row:hover:not(.locked) { transform: translateX(6px); border-color: var(--violet); }
-.level-row.completed          { border-color: var(--teal); }
-.level-row.locked             { opacity: .45; cursor: not-allowed; }
+      .level-row {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        background: var(--card);
+        border: 1.5px solid var(--border);
+        border-radius: 16px;
+        padding: 1.1rem 1.4rem;
+        cursor: pointer;
+        transition:
+          transform 0.25s,
+          border-color 0.25s;
+      }
+      .level-row:hover:not(.locked) {
+        transform: translateX(6px);
+        border-color: var(--violet);
+      }
+      .level-row.completed {
+        border-color: var(--teal);
+      }
+      .level-row.locked {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
 
-.level-circle {
-  width: 50px; height: 50px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'DM Serif Display', serif;
-  font-size: 1.3rem;
-  flex-shrink: 0;
-  background: linear-gradient(135deg, #7c3aed, #9f67f8);
-  color: #fff;
-  box-shadow: 0 6px 18px var(--violet-glow);
-}
-.level-row.completed .level-circle { background: linear-gradient(135deg, var(--teal), #0d9488); box-shadow: none; }
-.level-row.locked    .level-circle { background: var(--card2); box-shadow: none; }
+      .level-circle {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "DM Serif Display", serif;
+        font-size: 1.3rem;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, #7c3aed, #9f67f8);
+        color: #fff;
+        box-shadow: 0 6px 18px var(--violet-glow);
+      }
+      .level-row.completed .level-circle {
+        background: linear-gradient(135deg, var(--teal), #0d9488);
+        box-shadow: none;
+      }
+      .level-row.locked .level-circle {
+        background: var(--card2);
+        box-shadow: none;
+      }
 
-.level-info         { flex: 1; min-width: 0; }
-.level-info-title   { font-weight: 700; color: var(--ink); font-size: .92rem; margin-bottom: .18rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.level-info-meta    { font-size: .75rem; color: var(--muted); }
+      .level-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .level-info-title {
+        font-weight: 700;
+        color: var(--ink);
+        font-size: 0.92rem;
+        margin-bottom: 0.18rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .level-info-meta {
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
 
-.level-coins {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: .82rem;
-  font-weight: 600;
-  color: var(--coin);
-  white-space: nowrap;
-}
+      .level-coins {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--coin);
+        white-space: nowrap;
+      }
 
-/* ═══════════════════════════════════════
+      /* ═══════════════════════════════════════
    SCREEN 4 — QUESTION
 ═══════════════════════════════════════ */
-#screen-question .q-wrap {
-  max-width: 740px;
-  margin: 0 auto;
-}
+      #screen-question .q-wrap {
+        max-width: 740px;
+        margin: 0 auto;
+      }
 
-/* Progress bar */
-.q-progress {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.75rem;
-}
-.q-progress-bar {
-  flex: 1;
-  height: 5px;
-  background: var(--card2);
-  border-radius: 3px;
-  overflow: hidden;
-}
-.q-progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #7c3aed, #9f67f8);
-  border-radius: 3px;
-  transition: width .5s ease;
-}
-.q-counter {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: .78rem;
-  color: var(--muted);
-  white-space: nowrap;
-}
+      /* Progress bar */
+      .q-progress {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.75rem;
+      }
+      .q-progress-bar {
+        flex: 1;
+        height: 5px;
+        background: var(--card2);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      .q-progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #7c3aed, #9f67f8);
+        border-radius: 3px;
+        transition: width 0.5s ease;
+      }
+      .q-counter {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.78rem;
+        color: var(--muted);
+        white-space: nowrap;
+      }
 
-/* Loading indicator */
-.loading-row {
-  display: none;
-  flex-direction: column;
-  gap: .5rem;
-  background: var(--card);
-  border: 1px solid var(--border2);
-  padding: .75rem 1rem;
-  border-radius: 14px;
-  font-size: .78rem;
-  color: var(--ink3);
-  margin-bottom: 1rem;
-}
-.loading-row.show { display: flex; }
-.loading-top {
-  display: flex;
-  align-items: center;
-  gap: .65rem;
-}
-.spinner {
-  width: 13px; height: 13px;
-  border: 2px solid var(--border2);
-  border-top-color: var(--violet);
-  border-radius: 50%;
-  animation: spin .6s linear infinite;
-  flex-shrink: 0;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.ai-progress-bar {
-  width: 100%;
-  height: 4px;
-  background: var(--card2);
-  border-radius: 3px;
-  overflow: hidden;
-}
-.ai-progress-fill {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, #7c3aed, #9f67f8, #34d39a);
-  border-radius: 3px;
-  transition: width 0.4s ease;
-}
+      /* Loading indicator */
+      .loading-row {
+        display: none;
+        flex-direction: column;
+        gap: 0.5rem;
+        background: var(--card);
+        border: 1px solid var(--border2);
+        padding: 0.75rem 1rem;
+        border-radius: 14px;
+        font-size: 0.78rem;
+        color: var(--ink3);
+        margin-bottom: 1rem;
+      }
+      .loading-row.show {
+        display: flex;
+      }
+      .loading-top {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+      }
+      .spinner {
+        width: 13px;
+        height: 13px;
+        border: 2px solid var(--border2);
+        border-top-color: var(--violet);
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+        flex-shrink: 0;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .ai-progress-bar {
+        width: 100%;
+        height: 4px;
+        background: var(--card2);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      .ai-progress-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #7c3aed, #9f67f8, #34d39a);
+        border-radius: 3px;
+        transition: width 0.4s ease;
+      }
 
-/* Narrative card */
-.narrative-card {
-  background: var(--card);
-  border: 1px solid var(--border2);
-  border-left: 3px solid var(--violet);
-  border-radius: 14px;
-  padding: 1.4rem 1.5rem;
-  margin-bottom: 1.25rem;
-}
-.narrative-tag  { font-size: .68rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--violet); margin-bottom: .5rem; }
-.narrative-body { font-size: .93rem; color: var(--ink2); line-height: 1.75; font-style: italic; }
+      /* Narrative card */
+      .narrative-card {
+        background: var(--card);
+        border: 1px solid var(--border2);
+        border-left: 3px solid var(--violet);
+        border-radius: 14px;
+        padding: 1.4rem 1.5rem;
+        margin-bottom: 1.25rem;
+      }
+      .narrative-tag {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--violet);
+        margin-bottom: 0.5rem;
+      }
+      .narrative-body {
+        font-size: 0.93rem;
+        color: var(--ink2);
+        line-height: 1.75;
+        font-style: italic;
+      }
 
-/* Question card */
-.question-card {
-  background: var(--card2);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 1.6rem;
-  margin-bottom: 1.1rem;
-}
-.question-text { font-size: 1.02rem; font-weight: 600; color: var(--ink); line-height: 1.6; margin-bottom: 1.1rem; }
+      /* Question card */
+      .question-card {
+        background: var(--card2);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.6rem;
+        margin-bottom: 1.1rem;
+      }
+      .question-text {
+        font-size: 1.02rem;
+        font-weight: 600;
+        color: var(--ink);
+        line-height: 1.6;
+        margin-bottom: 1.1rem;
+      }
 
-.code-block {
-  background: #0a0318;
-  border: 1px solid var(--border2);
-  border-radius: 10px;
-  padding: .9rem 1.1rem;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: .85rem;
-  color: #c4b5fd;
-  line-height: 1.8;
-  margin-bottom: 1.1rem;
-  overflow-x: auto;
-}
-[data-theme="light"] .code-block { background: #1e1040; color: #a78bfa; }
+      .code-block {
+        background: #0a0318;
+        border: 1px solid var(--border2);
+        border-radius: 10px;
+        padding: 0.9rem 1.1rem;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.85rem;
+        color: #c4b5fd;
+        line-height: 1.8;
+        margin-bottom: 1.1rem;
+        overflow-x: auto;
+      }
+      [data-theme="light"] .code-block {
+        background: #1e1040;
+        color: #a78bfa;
+      }
 
-/* Options */
-.options-list { display: flex; flex-direction: column; gap: .7rem; }
+      /* Options */
+      .options-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.7rem;
+      }
 
-.opt-btn {
-  display: flex;
-  align-items: center;
-  gap: .8rem;
-  width: 100%;
-  background: var(--card);
-  border: 1.5px solid var(--border);
-  border-radius: 12px;
-  padding: .85rem 1rem;
-  text-align: left;
-  font-family: 'DM Sans', sans-serif;
-  font-size: .9rem;
-  color: var(--ink);
-  cursor: pointer;
-  transition: border-color .2s, background .2s;
-}
-.opt-btn:hover:not(:disabled) { border-color: var(--violet); background: rgba(139, 92, 246, .06); transform: scale(1.01); }
-.opt-btn:disabled { cursor: not-allowed; }
+      .opt-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        width: 100%;
+        background: var(--card);
+        border: 1.5px solid var(--border);
+        border-radius: 12px;
+        padding: 0.85rem 1rem;
+        text-align: left;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.9rem;
+        color: var(--ink);
+        cursor: pointer;
+        transition:
+          border-color 0.2s,
+          background 0.2s;
+      }
+      .opt-btn:hover:not(:disabled) {
+        border-color: var(--violet);
+        background: rgba(139, 92, 246, 0.06);
+        transform: scale(1.01);
+      }
+      .opt-btn:disabled {
+        cursor: not-allowed;
+      }
 
-.opt-key {
-  width: 28px; height: 28px;
-  border-radius: 8px;
-  background: var(--card2);
-  border: 1px solid var(--border2);
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: .75rem;
-  font-weight: 700;
-  color: var(--ink3);
-  flex-shrink: 0;
-  transition: background .2s, color .2s, border-color .2s;
-}
+      .opt-key {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: var(--card2);
+        border: 1px solid var(--border2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--ink3);
+        flex-shrink: 0;
+        transition:
+          background 0.2s,
+          color 0.2s,
+          border-color 0.2s;
+      }
 
-/* State: correct / wrong */
-.opt-btn.correct               { border-color: var(--teal)   !important; background: rgba(52, 211, 154, .08) !important; }
-.opt-btn.correct .opt-key      { background: var(--teal);   color: #fff; border-color: var(--teal); }
-.opt-btn.wrong                 { border-color: var(--danger) !important; background: rgba(255, 107, 107, .08) !important; }
-.opt-btn.wrong .opt-key        { background: var(--danger);  color: #fff; border-color: var(--danger); }
+      /* State: correct / wrong */
+      .opt-btn.correct {
+        border-color: var(--teal) !important;
+        background: rgba(52, 211, 154, 0.08) !important;
+      }
+      .opt-btn.correct .opt-key {
+        background: var(--teal);
+        color: #fff;
+        border-color: var(--teal);
+      }
+      .opt-btn.wrong {
+        border-color: var(--danger) !important;
+        background: rgba(255, 107, 107, 0.08) !important;
+      }
+      .opt-btn.wrong .opt-key {
+        background: var(--danger);
+        color: #fff;
+        border-color: var(--danger);
+      }
 
-/* Hint */
-.hint-box {
-  display: none;
-  background: var(--coin-bg);
-  border: 1px solid rgba(240, 180, 41, .22);
-  border-radius: 10px;
-  padding: .7rem 1rem;
-  font-size: .85rem;
-  color: var(--coin);
-  margin-bottom: 1rem;
-}
-.hint-box.show { display: block; }
+      /* Hint */
+      .hint-box {
+        display: none;
+        background: var(--coin-bg);
+        border: 1px solid rgba(240, 180, 41, 0.22);
+        border-radius: 10px;
+        padding: 0.7rem 1rem;
+        font-size: 0.85rem;
+        color: var(--coin);
+        margin-bottom: 1rem;
+      }
+      .hint-box.show {
+        display: block;
+      }
 
-/* Explanation */
-.explain-box {
-  display: none;
-  background: var(--card);
-  border: 1px solid var(--border2);
-  border-radius: 12px;
-  padding: 1rem 1.25rem;
-  margin-top: 1rem;
-}
-.explain-box.show { display: block; animation: fadeUp .3s ease both; }
-.explain-tag  { font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--teal); margin-bottom: .35rem; }
-.explain-text { font-size: .87rem; color: var(--ink2); line-height: 1.7; }
+      /* Explanation */
+      .explain-box {
+        display: none;
+        background: var(--card);
+        border: 1px solid var(--border2);
+        border-radius: 12px;
+        padding: 1rem 1.25rem;
+        margin-top: 1rem;
+      }
+      .explain-box.show {
+        display: block;
+        animation: fadeUp 0.3s ease both;
+      }
+      .explain-tag {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--teal);
+        margin-bottom: 0.35rem;
+      }
+      .explain-text {
+        font-size: 0.87rem;
+        color: var(--ink2);
+        line-height: 1.7;
+      }
 
-/* Action row */
-.q-actions {
-  display: flex;
-  align-items: center;
-  gap: .75rem;
-  margin-top: 1.1rem;
-  flex-wrap: wrap;
-}
-.btn-hint {
-  background: none;
-  border: 1.5px solid rgba(240, 180, 41, .3);
-  color: var(--coin);
-  padding: .58rem 1.05rem;
-  border-radius: 10px;
-  font-size: .83rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background .2s;
-}
-.btn-hint:hover { background: var(--coin-bg); }
-.btn-next {
-  display: none;
-  margin-left: auto;
-  background: linear-gradient(135deg, #7c3aed, #9f67f8);
-  color: #fff;
-  border: none;
-  padding: .65rem 1.5rem;
-  border-radius: 10px;
-  font-size: .88rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 6px 20px var(--violet-glow);
-  transition: transform .2s;
-}
-.btn-next:hover { transform: translateY(-2px); }
-.btn-next.show  { display: block; }
+      /* Action row */
+      .q-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-top: 1.1rem;
+        flex-wrap: wrap;
+      }
+      .btn-hint {
+        background: none;
+        border: 1.5px solid rgba(240, 180, 41, 0.3);
+        color: var(--coin);
+        padding: 0.58rem 1.05rem;
+        border-radius: 10px;
+        font-size: 0.83rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .btn-hint:hover {
+        background: var(--coin-bg);
+      }
+      .btn-next {
+        display: none;
+        margin-left: auto;
+        background: linear-gradient(135deg, #7c3aed, #9f67f8);
+        color: #fff;
+        border: none;
+        padding: 0.65rem 1.5rem;
+        border-radius: 10px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 6px 20px var(--violet-glow);
+        transition: transform 0.2s;
+      }
+      .btn-next:hover {
+        transform: translateY(-2px);
+      }
+      .btn-next.show {
+        display: block;
+      }
 
-/* ═══════════════════════════════════════
+      /* ═══════════════════════════════════════
    SCREEN 5 — LEVEL COMPLETE
 ═══════════════════════════════════════ */
-#screen-complete .complete-wrap {
-  max-width: 500px;
-  margin: 0 auto;
-  text-align: center;
-}
-.complete-icon  { font-size: 4.5rem; display: block; margin-bottom: 1rem; animation: bounce .6s ease both; }
-.complete-title { font-family: 'DM Serif Display', serif; font-size: 2.4rem; color: var(--ink); margin-bottom: .4rem; }
-.complete-sub   { color: var(--body); margin-bottom: 1.75rem; }
+      #screen-complete .complete-wrap {
+        max-width: 500px;
+        margin: 0 auto;
+        text-align: center;
+      }
+      .complete-icon {
+        font-size: 4.5rem;
+        display: block;
+        margin-bottom: 1rem;
+        animation: bounce 0.6s ease both;
+      }
+      .complete-title {
+        font-family: "DM Serif Display", serif;
+        font-size: 2.4rem;
+        color: var(--ink);
+        margin-bottom: 0.4rem;
+      }
+      .complete-sub {
+        color: var(--body);
+        margin-bottom: 1.75rem;
+      }
 
-.coins-box {
-  background: var(--coin-bg);
-  border: 1.5px solid rgba(240, 180, 41, .3);
-  border-radius: 18px;
-  padding: 1.4rem;
-  margin: 1.4rem 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: .65rem;
-}
-.coins-big   { font-family: 'JetBrains Mono', monospace; font-size: 2.4rem; font-weight: 700; color: var(--coin); }
-.coins-label { font-size: .88rem; color: var(--body); font-weight: 600; }
+      .coins-box {
+        background: var(--coin-bg);
+        border: 1.5px solid rgba(240, 180, 41, 0.3);
+        border-radius: 18px;
+        padding: 1.4rem;
+        margin: 1.4rem 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.65rem;
+      }
+      .coins-big {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 2.4rem;
+        font-weight: 700;
+        color: var(--coin);
+      }
+      .coins-label {
+        font-size: 0.88rem;
+        color: var(--body);
+        font-weight: 600;
+      }
 
-.stats-row {
-  display: flex;
-  gap: .85rem;
-  justify-content: center;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-}
-.stat-box {
-  flex: 1;
-  min-width: 90px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: .8rem .9rem;
-  text-align: center;
-}
-.stat-val { font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; font-weight: 700; color: var(--violet); }
-.stat-lbl { font-size: .72rem; color: var(--muted); margin-top: .15rem; }
+      .stats-row {
+        display: flex;
+        gap: 0.85rem;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+      }
+      .stat-box {
+        flex: 1;
+        min-width: 90px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 0.8rem 0.9rem;
+        text-align: center;
+      }
+      .stat-val {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--violet);
+      }
+      .stat-lbl {
+        font-size: 0.72rem;
+        color: var(--muted);
+        margin-top: 0.15rem;
+      }
 
-.btn-row { display: flex; gap: .75rem; justify-content: center; flex-wrap: wrap; }
+      .btn-row {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
 
-.btn-primary {
-  background: linear-gradient(135deg, #7c3aed, #9f67f8);
-  color: #fff; border: none;
-  padding: .82rem 1.9rem;
-  border-radius: 12px;
-  font-size: .93rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 8px 24px var(--violet-glow);
-  transition: transform .22s;
-}
-.btn-primary:hover { transform: translateY(-2px); }
+      .btn-primary {
+        background: linear-gradient(135deg, #7c3aed, #9f67f8);
+        color: #fff;
+        border: none;
+        padding: 0.82rem 1.9rem;
+        border-radius: 12px;
+        font-size: 0.93rem;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 8px 24px var(--violet-glow);
+        transition: transform 0.22s;
+      }
+      .btn-primary:hover {
+        transform: translateY(-2px);
+      }
 
-.btn-outline {
-  background: transparent;
-  color: var(--ink);
-  border: 1.5px solid var(--border2);
-  padding: .82rem 1.9rem;
-  border-radius: 12px;
-  font-size: .93rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: border-color .2s, color .2s;
-}
-.btn-outline:hover { border-color: var(--violet); color: var(--violet); }
+      .btn-outline {
+        background: transparent;
+        color: var(--ink);
+        border: 1.5px solid var(--border2);
+        padding: 0.82rem 1.9rem;
+        border-radius: 12px;
+        font-size: 0.93rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+          border-color 0.2s,
+          color 0.2s;
+      }
+      .btn-outline:hover {
+        border-color: var(--violet);
+        color: var(--violet);
+      }
 
-/* ═══════════════════════════════════════
+      /* ═══════════════════════════════════════
    COIN BURST
 ═══════════════════════════════════════ */
-#coin-burst {
-  position: fixed;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: 1000;
-  font-size: 2.4rem;
-  display: none;
-}
-.burst-anim {
-  animation: burstAnim .8s ease both;
-}
-@keyframes burstAnim {
-  0%   { opacity: 1; transform: translate(-50%, -50%) scale(.5); }
-  50%  { opacity: 1; transform: translate(-50%, -120%) scale(1.3); }
-  100% { opacity: 0; transform: translate(-50%, -180%) scale(1); }
-}
-@keyframes bounce {
-  0%   { transform: scale(0); }
-  70%  { transform: scale(1.12); }
-  100% { transform: scale(1); }
-}
+      #coin-burst {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        z-index: 1000;
+        font-size: 2.4rem;
+        display: none;
+      }
+      .burst-anim {
+        animation: burstAnim 0.8s ease both;
+      }
+      @keyframes burstAnim {
+        0% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(0.5);
+        }
+        50% {
+          opacity: 1;
+          transform: translate(-50%, -120%) scale(1.3);
+        }
+        100% {
+          opacity: 0;
+          transform: translate(-50%, -180%) scale(1);
+        }
+      }
+      @keyframes bounce {
+        0% {
+          transform: scale(0);
+        }
+        70% {
+          transform: scale(1.12);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
 
-/* ═══════════════════════════════════════
+      /* ═══════════════════════════════════════
    TYPE TOGGLE
 ═══════════════════════════════════════ */
-.q-type-toggle {
-  display: flex;
-  background: var(--card2);
-  border: 1px solid var(--border);
-  border-radius: 99px;
-  padding: 4px;
-  margin-bottom: 1.25rem;
-  width: fit-content;
-}
-.type-btn {
-  background: transparent;
-  border: none;
-  color: var(--ink3);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.8rem;
-  font-weight: 600;
-  padding: 0.4rem 1rem;
-  border-radius: 99px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.type-btn.active {
-  background: var(--card);
-  color: var(--violet);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-[data-theme="light"] .type-btn.active {
-  background: #fff;
-}
+      .q-type-toggle {
+        display: flex;
+        background: var(--card2);
+        border: 1px solid var(--border);
+        border-radius: 99px;
+        padding: 4px;
+        margin-bottom: 1.25rem;
+        width: fit-content;
+      }
+      .type-btn {
+        background: transparent;
+        border: none;
+        color: var(--ink3);
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 0.4rem 1rem;
+        border-radius: 99px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .type-btn.active {
+        background: var(--card);
+        color: var(--violet);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      [data-theme="light"] .type-btn.active {
+        background: #fff;
+      }
+      /* THEME TOGGLE (injected by dark-mode.js) */
+      #vs-theme-toggle {
+        position: fixed;
+        bottom: 1.5rem;
+        right: 1.5rem;
+        z-index: 9999;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        border: 1.5px solid var(--border);
+        background: var(--card);
+        color: var(--body);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        transition: all 0.22s ease;
+      }
+      #vs-theme-toggle:hover {
+        border-color: var(--indigo);
+        color: var(--indigo);
+        transform: scale(1.08);
+        box-shadow: 0 6px 24px rgba(99, 102, 241, 0.2);
+      }
+      [data-theme="dark"] #vs-theme-toggle {
+        background: rgba(13, 24, 41, 0.95);
+        border-color: rgba(129, 140, 248, 0.25);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      }
+    </style>
 
-</style>
-</head>
-<body>
-
-<!-- ════════════════════════════════════
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </head>
+  <body>
+    <!-- ════════════════════════════════════
      NAVIGATION
 ════════════════════════════════════ -->
-<nav class="top-nav">
-  <a href="03_dashboard.html" class="nav-logo" title="Back to Dashboard"><img src="logo-v.png" alt="V" class="logo-img"><span class="logo-text">vidyasetu</span></a>
+    <nav class="top-nav">
+      <a href="03_dashboard.html" class="nav-logo" title="Back to Dashboard"
+        ><img src="logo-v.png" alt="V" class="logo-img" /><span
+          class="logo-text"
+          >vidyasetu</span
+        ></a
+      >
 
-  <div class="nav-controls">
-    <div class="coin-badge">🪙 <span id="coin-count">0</span></div>
+      <div class="nav-controls">
+        <div class="coin-badge">🪙 <span id="coin-count">0</span></div>
 
-    <button class="mode-toggle" id="mode-btn" onclick="toggleMode()" title="Switch between AI and DB questions">
-      <span class="dot"></span>
-      <span id="mode-label">AI Mode</span>
-    </button>
+        <button
+          class="mode-toggle"
+          id="mode-btn"
+          onclick="toggleMode()"
+          title="Switch between AI and DB questions"
+        >
+          <span class="dot"></span>
+          <span id="mode-label">AI Mode</span>
+        </button>
 
-    <a href="15_campus_collab.html" class="icon-btn" title="Campus IRL Collab">☕</a>
+        <a
+          href="15_campus_collab.html"
+          class="icon-btn"
+          title="Campus IRL Collab"
+          >☕</a
+        >
+        <button id="mobile-menu-btn" onclick="toggleSidebar()" style="background:none;border:none;color:var(--ink);font-size:1.5rem;cursor:pointer;margin-left:8px;display:none;">☰</button>
+      </div>
+    </nav>
+    <style>
+      @media (max-width: 768px) {
+        #mobile-menu-btn { display: inline-block !important; }
+      }
+    </style>
 
-    <button class="icon-btn" onclick="toggleTheme()" id="theme-btn" title="Toggle theme" aria-label="Toggle Dark/Light Mode">🌙</button>
-  </div>
-</nav>
+    <!-- SIDEBAR -->
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+    <aside class="sidebar" id="sidebar">
+      <div class="sb-top">
+        <a href="index.html" class="sb-logo"
+          ><img src="logo-v.png" alt="V" class="logo-img" /><span
+            class="logo-text"
+            >vidyasetu</span
+          ></a
+        >
+      </div>
+      <nav class="sb-nav">
+        <div class="sb-section">Main</div>
+        <a href="03_dashboard.html" class="sb-item"
+          ><span class="icon">🏠</span> Dashboard</a
+        >
+        <a href="04_explore.html" class="sb-item"
+          ><span class="icon">🔍</span> Explore Teachers</a
+        >
+        <a href="09_bounty.html" class="sb-item"
+          ><span class="icon">🎯</span> Bounty Hub
+          <span class="badge" id="sb-bounty-badge">0</span></a
+        >
+        <a href="14_game_learn.html" class="sb-item active"
+          ><span class="icon">🎮</span> Code Quest</a
+        >
+        <div class="sb-section">My Learning</div>
+        <a href="11_my_sessions.html" class="sb-item"
+          ><span class="icon">📅</span> My Sessions</a
+        >
+        <a href="08_wallet.html" class="sb-item"
+          ><span class="icon">🪙</span> Wallet</a
+        >
+        <div class="sb-section">Account</div>
+        <a href="12_my_profile.html" class="sb-item"
+          ><span class="icon">👤</span> My Profile</a
+        >
+        <a href="12_my_profile.html" class="sb-item"
+          ><span class="icon">⚙️</span> Settings</a
+        >
+      </nav>
+      <div class="sb-bottom" id="sb-user-area">
+        <div class="sb-user">
+          <div class="sb-avatar">...</div>
+          <div>
+            <div class="sb-name">Loading...</div>
+            <div class="sb-coin">...</div>
+                      <div class="xph-level" style="font-size:0.7rem;color:var(--muted);margin-bottom:0.2rem;font-weight:600">Level 1</div>
+            <div class="xph-bar" style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:0.2rem;width:100%">
+               <div class="xph-fill" style="height:100%;background:var(--coin);width:0%;transition:width 1s"></div>
+            </div>
+            <div class="xph-xp" style="font-size:0.65rem;color:var(--muted);font-family:'JetBrains Mono',monospace">0 / 500 XP</div>
+</div>
+        </div>
+      </div>
+    </aside>
+    <style>
+      /* Sidebar injected styles */
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 260px;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        z-index: 1000;
+        transition: transform 0.3s;
+      }
+      .sb-top {
+        height: 72px;
+        display: flex;
+        align-items: center;
+        padding: 0 1.5rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .sb-logo {
+        font-family: 'DM Serif Display', serif;
+        font-size: 1.45rem;
+        color: var(--ink);
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+      }
+      .sb-nav {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.5rem 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+      }
+      .sb-section {
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 1rem 0 0.5rem 0.5rem;
+      }
+      .sb-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        border-radius: 12px;
+        color: var(--body);
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 500;
+        transition: all 0.2s;
+      }
+      .sb-item:hover {
+        background: rgba(124, 58, 237, 0.05);
+        color: var(--violet);
+      }
+      .sb-item.active {
+        background: rgba(124, 58, 237, 0.1);
+        color: var(--violet);
+        font-weight: 600;
+      }
+      .sb-bottom {
+        padding: 1.2rem;
+        border-top: 1px solid var(--border);
+      }
+      .sb-user {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+      }
+      .sb-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--violet);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+      .sb-name {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--ink);
+      }
+      .sb-coin {
+        font-size: 0.8rem;
+        color: var(--coin);
+        font-weight: 500;
+      }
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 999;
+        display: none;
+        backdrop-filter: blur(4px);
+      }
+      .overlay.active {
+        display: block;
+      }
+      @media (max-width: 768px) {
+        .sidebar {
+          transform: translateX(-100%);
+        }
+        .sidebar.active {
+          transform: translateX(0);
+        }
+      }
+      @media (min-width: 769px) {
+        body {
+          padding-left: 260px;
+        }
+        .top-nav {
+          left: 260px;
+        }
+        #mobile-menu-btn {
+          display: none;
+        }
+      }
+    </style>
+    <script>
+      function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('overlay').classList.toggle('active');
+      }
+      // Update sidebar dynamically using UI helper
+      window.addEventListener('DOMContentLoaded', () => {
+        if (typeof VS !== 'undefined' && VS.ui) {
+          VS.ui.updateSidebar();
+        }
+      });
+    </script>
 
-<!-- Coin burst overlay -->
-<div id="coin-burst">+1 🪙</div>
+    <!-- Coin burst overlay -->
+    <div id="coin-burst">+1 🪙</div>
 
-
-<!-- ════════════════════════════════════
+    <!-- ════════════════════════════════════
      SCREEN 1 · LANGUAGE
 ════════════════════════════════════ -->
-<div class="screen active" id="screen-lang">
+    <div class="screen active" id="screen-lang">
+      <div class="screen-hd">
+        <div class="screen-label">🎮 Code Quest</div>
+        <h1 class="screen-title">Choose your language</h1>
+        <p class="screen-sub">
+          Master coding through story-driven missions — earn Time Coins with
+          every level.
+        </p>
+      </div>
 
-  <div class="screen-hd">
-    <div class="screen-label">🎮 Code Quest</div>
-    <h1 class="screen-title">Choose your language</h1>
-    <p class="screen-sub">Master coding through story-driven missions — earn Time Coins with every level.</p>
-  </div>
+      <div class="lang-grid">
+        <div
+          class="lang-card"
+          style="--lang-color: #f59e0b"
+          onclick="selectLang('sql')"
+        >
+          <span class="lang-icon">🗄️</span>
+          <div class="lang-name">SQL</div>
+          <span class="lang-badge">Database Query</span>
+          <div class="lang-count">10 levels · 50 questions</div>
+        </div>
 
-  <div class="lang-grid">
+        <div
+          class="lang-card"
+          style="--lang-color: #3b82f6"
+          onclick="selectLang('python')"
+        >
+          <span class="lang-icon">🐍</span>
+          <div class="lang-name">Python</div>
+          <span class="lang-badge">General Purpose</span>
+          <div class="lang-count">10 levels · 50 questions</div>
+        </div>
 
-    <div class="lang-card" style="--lang-color:#f59e0b" onclick="selectLang('sql')">
-      <span class="lang-icon">🗄️</span>
-      <div class="lang-name">SQL</div>
-      <span class="lang-badge">Database Query</span>
-      <div class="lang-count">10 levels · 50 questions</div>
+        <div
+          class="lang-card"
+          style="--lang-color: #f97316"
+          onclick="selectLang('javascript')"
+        >
+          <span class="lang-icon">⚡</span>
+          <div class="lang-name">JavaScript</div>
+          <span class="lang-badge">Web Scripting</span>
+          <div class="lang-count">10 levels · 50 questions</div>
+        </div>
+
+        <div
+          class="lang-card"
+          style="--lang-color: #ef4444"
+          onclick="selectLang('html')"
+        >
+          <span class="lang-icon">🌐</span>
+          <div class="lang-name">HTML</div>
+          <span class="lang-badge">Web Structure</span>
+          <div class="lang-count">10 levels · 40 questions</div>
+        </div>
+
+        <div
+          class="lang-card"
+          style="--lang-color: #8b5cf6"
+          onclick="selectLang('css')"
+        >
+          <span class="lang-icon">🎨</span>
+          <div class="lang-name">CSS</div>
+          <span class="lang-badge">Styling</span>
+          <div class="lang-count">10 levels · 40 questions</div>
+        </div>
+      </div>
     </div>
+    <!-- /screen-lang -->
 
-    <div class="lang-card" style="--lang-color:#3b82f6" onclick="selectLang('python')">
-      <span class="lang-icon">🐍</span>
-      <div class="lang-name">Python</div>
-      <span class="lang-badge">General Purpose</span>
-      <div class="lang-count">10 levels · 50 questions</div>
-    </div>
-
-    <div class="lang-card" style="--lang-color:#f97316" onclick="selectLang('javascript')">
-      <span class="lang-icon">⚡</span>
-      <div class="lang-name">JavaScript</div>
-      <span class="lang-badge">Web Scripting</span>
-      <div class="lang-count">10 levels · 50 questions</div>
-    </div>
-
-    <div class="lang-card" style="--lang-color:#ef4444" onclick="selectLang('html')">
-      <span class="lang-icon">🌐</span>
-      <div class="lang-name">HTML</div>
-      <span class="lang-badge">Web Structure</span>
-      <div class="lang-count">10 levels · 40 questions</div>
-    </div>
-
-    <div class="lang-card" style="--lang-color:#8b5cf6" onclick="selectLang('css')">
-      <span class="lang-icon">🎨</span>
-      <div class="lang-name">CSS</div>
-      <span class="lang-badge">Styling</span>
-      <div class="lang-count">10 levels · 40 questions</div>
-    </div>
-
-  </div>
-</div><!-- /screen-lang -->
-
-
-<!-- ════════════════════════════════════
+    <!-- ════════════════════════════════════
      SCREEN 2 · THEME
 ════════════════════════════════════ -->
-<div class="screen" id="screen-theme">
+    <div class="screen" id="screen-theme">
+      <button class="back-link" onclick="goTo('screen-lang')">
+        ← Change language
+      </button>
 
-  <button class="back-link" onclick="goTo('screen-lang')">← Change language</button>
+      <div class="screen-hd">
+        <div class="screen-label">Step 2 of 3</div>
+        <h1 class="screen-title">Pick your story world</h1>
+        <p class="screen-sub">
+          Every challenge is wrapped in a narrative. Choose the world you want
+          to inhabit.
+        </p>
+      </div>
 
-  <div class="screen-hd">
-    <div class="screen-label">Step 2 of 3</div>
-    <h1 class="screen-title">Pick your story world</h1>
-    <p class="screen-sub">Every challenge is wrapped in a narrative. Choose the world you want to inhabit.</p>
-  </div>
+      <div class="theme-grid">
+        <div class="theme-card" onclick="selectTheme('murder', event)">
+          <span class="theme-emoji">🔪</span>
+          <div class="theme-name">Murder Mystery</div>
+          <div class="theme-desc">
+            Solve crimes with code. Every query is a clue.
+          </div>
+        </div>
 
-  <div class="theme-grid">
+        <div class="theme-card" onclick="selectTheme('thriller', event)">
+          <span class="theme-emoji">🕵️</span>
+          <div class="theme-name">Spy Thriller</div>
+          <div class="theme-desc">
+            Go undercover. Write code to save the world.
+          </div>
+        </div>
 
-    <div class="theme-card" onclick="selectTheme('murder', event)">
-      <span class="theme-emoji">🔪</span>
-      <div class="theme-name">Murder Mystery</div>
-      <div class="theme-desc">Solve crimes with code. Every query is a clue.</div>
+        <div class="theme-card" onclick="selectTheme('adventure', event)">
+          <span class="theme-emoji">🏔️</span>
+          <div class="theme-name">Adventure</div>
+          <div class="theme-desc">Explore lost temples and ancient ruins.</div>
+        </div>
+
+        <div class="theme-card" onclick="selectTheme('scifi', event)">
+          <span class="theme-emoji">🚀</span>
+          <div class="theme-name">Sci-Fi</div>
+          <div class="theme-desc">Pilot a spaceship with code commands.</div>
+        </div>
+
+        <div class="theme-card" onclick="selectTheme('fantasy', event)">
+          <span class="theme-emoji">🧙</span>
+          <div class="theme-name">Fantasy</div>
+          <div class="theme-desc">Cast spells powered by clean code logic.</div>
+        </div>
+      </div>
     </div>
+    <!-- /screen-theme -->
 
-    <div class="theme-card" onclick="selectTheme('thriller', event)">
-      <span class="theme-emoji">🕵️</span>
-      <div class="theme-name">Spy Thriller</div>
-      <div class="theme-desc">Go undercover. Write code to save the world.</div>
-    </div>
-
-    <div class="theme-card" onclick="selectTheme('adventure', event)">
-      <span class="theme-emoji">🏔️</span>
-      <div class="theme-name">Adventure</div>
-      <div class="theme-desc">Explore lost temples and ancient ruins.</div>
-    </div>
-
-    <div class="theme-card" onclick="selectTheme('scifi', event)">
-      <span class="theme-emoji">🚀</span>
-      <div class="theme-name">Sci-Fi</div>
-      <div class="theme-desc">Pilot a spaceship with code commands.</div>
-    </div>
-
-    <div class="theme-card" onclick="selectTheme('fantasy', event)">
-      <span class="theme-emoji">🧙</span>
-      <div class="theme-name">Fantasy</div>
-      <div class="theme-desc">Cast spells powered by clean code logic.</div>
-    </div>
-
-  </div>
-</div><!-- /screen-theme -->
-
-
-<!-- ════════════════════════════════════
+    <!-- ════════════════════════════════════
      SCREEN 3 · LEVEL MAP
 ════════════════════════════════════ -->
-<div class="screen" id="screen-levels">
+    <div class="screen" id="screen-levels">
+      <button class="back-link" onclick="goTo('screen-theme')">
+        ← Change theme
+      </button>
 
-  <button class="back-link" onclick="goTo('screen-theme')">← Change theme</button>
+      <div class="screen-hd">
+        <div class="screen-label" id="levels-label">Mission Map</div>
+        <h1 class="screen-title" id="levels-title">Choose your level</h1>
+        <p class="screen-sub">
+          Complete each mission to unlock the next. Coins scale with level.
+        </p>
+      </div>
 
-  <div class="screen-hd">
-    <div class="screen-label" id="levels-label">Mission Map</div>
-    <h1 class="screen-title" id="levels-title">Choose your level</h1>
-    <p class="screen-sub">Complete each mission to unlock the next. Coins scale with level.</p>
-  </div>
+      <div class="level-list" id="level-list"></div>
+    </div>
+    <!-- /screen-levels -->
 
-  <div class="level-list" id="level-list"></div>
-
-</div><!-- /screen-levels -->
-
-
-<!-- ════════════════════════════════════
+    <!-- ════════════════════════════════════
      SCREEN 4 · QUESTION
 ════════════════════════════════════ -->
-<div class="screen" id="screen-question">
-  <div class="q-wrap">
-
-    <!-- Top bar -->
-    <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.6rem; flex-wrap:wrap;">
-      <button class="back-link" style="margin:0" onclick="goTo('screen-levels')">← Exit level</button>
-      <div class="q-progress" style="flex:1; margin:0;">
-        <div class="q-progress-bar">
-          <div class="q-progress-fill" id="q-fill" style="width:0%"></div>
+    <div class="screen" id="screen-question">
+      <div class="q-wrap">
+        <!-- Top bar -->
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.6rem;
+            flex-wrap: wrap;
+          "
+        >
+          <button
+            class="back-link"
+            style="margin: 0"
+            onclick="goTo('screen-levels')"
+          >
+            ← Exit level
+          </button>
+          <div class="q-progress" style="flex: 1; margin: 0">
+            <div class="q-progress-bar">
+              <div class="q-progress-fill" id="q-fill" style="width: 0%"></div>
+            </div>
+            <span class="q-counter" id="q-counter">0 / 5</span>
+          </div>
         </div>
-        <span class="q-counter" id="q-counter">0 / 5</span>
+
+        <!-- Loading pill with progress bar -->
+        <div class="loading-row" id="loading-row">
+          <div class="loading-top">
+            <div class="spinner"></div>
+            <span id="loading-text">Loading question…</span>
+          </div>
+          <div
+            class="ai-progress-bar"
+            id="ai-progress-bar"
+            style="display: none"
+          >
+            <div class="ai-progress-fill" id="ai-progress-fill"></div>
+          </div>
+        </div>
+
+        <!-- Narrative -->
+        <div class="narrative-card">
+          <div class="narrative-tag">📖 Mission Briefing</div>
+          <div class="narrative-body" id="narrative-text">Loading…</div>
+        </div>
+
+        <!-- Switch between MCQ and subjective -->
+        <div class="q-type-toggle" id="q-type-toggle" style="display: none">
+          <button
+            class="type-btn active"
+            id="btn-mcq"
+            onclick="setAnswerType('mcq')"
+          >
+            Multi-choice
+          </button>
+          <button
+            class="type-btn"
+            id="btn-type"
+            onclick="setAnswerType('type')"
+          >
+            Type Code
+          </button>
+        </div>
+
+        <!-- Question + options -->
+        <div class="question-card">
+          <div class="question-text" id="question-text">Loading…</div>
+          <div class="code-block" id="code-block" style="display: none"></div>
+          <div class="hint-box" id="hint-box">
+            💡 <span id="hint-text"></span>
+          </div>
+
+          <div class="options-list" id="options-list"></div>
+
+          <div id="editor-wrapper" style="display: none; margin-top: 1rem">
+            <div id="vs-editor-container"></div>
+          </div>
+
+          <div class="explain-box" id="explain-box">
+            <div class="explain-tag">💡 Explanation</div>
+            <div class="explain-text" id="explain-text"></div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="q-actions">
+          <button class="btn-hint" id="hint-btn" onclick="showHint()">
+            💡 Hint
+          </button>
+          <button
+            class="btn-primary"
+            id="submit-code-btn"
+            style="display: none"
+            onclick="submitCode()"
+          >
+            Run Code
+          </button>
+          <button class="btn-next" id="next-btn" onclick="nextQuestion()">
+            Next →
+          </button>
+        </div>
       </div>
     </div>
+    <!-- /screen-question -->
 
-    <!-- Loading pill with progress bar -->
-    <div class="loading-row" id="loading-row">
-      <div class="loading-top">
-        <div class="spinner"></div>
-        <span id="loading-text">Loading question…</span>
-      </div>
-      <div class="ai-progress-bar" id="ai-progress-bar" style="display:none">
-        <div class="ai-progress-fill" id="ai-progress-fill"></div>
-      </div>
-    </div>
-
-    <!-- Narrative -->
-    <div class="narrative-card">
-      <div class="narrative-tag">📖 Mission Briefing</div>
-      <div class="narrative-body" id="narrative-text">Loading…</div>
-    </div>
-
-    <!-- Switch between MCQ and subjective -->
-    <div class="q-type-toggle" id="q-type-toggle" style="display:none">
-      <button class="type-btn active" id="btn-mcq" onclick="setAnswerType('mcq')">Multi-choice</button>
-      <button class="type-btn" id="btn-type" onclick="setAnswerType('type')">Type Code</button>
-    </div>
-
-    <!-- Question + options -->
-    <div class="question-card">
-      <div class="question-text" id="question-text">Loading…</div>
-      <div class="code-block" id="code-block" style="display:none"></div>
-      <div class="hint-box" id="hint-box">💡 <span id="hint-text"></span></div>
-      
-      <div class="options-list" id="options-list"></div>
-      
-      <div id="editor-wrapper" style="display:none; margin-top: 1rem;">
-        <div id="vs-editor-container"></div>
-      </div>
-      
-      <div class="explain-box" id="explain-box">
-        <div class="explain-tag">💡 Explanation</div>
-        <div class="explain-text" id="explain-text"></div>
-      </div>
-    </div>
-
-    <!-- Actions -->
-    <div class="q-actions">
-      <button class="btn-hint" id="hint-btn" onclick="showHint()">💡 Hint</button>
-      <button class="btn-primary" id="submit-code-btn" style="display:none" onclick="submitCode()">Run Code</button>
-      <button class="btn-next" id="next-btn" onclick="nextQuestion()">Next →</button>
-    </div>
-
-  </div>
-</div><!-- /screen-question -->
-
-
-<!-- ════════════════════════════════════
+    <!-- ════════════════════════════════════
      SCREEN 5 · LEVEL COMPLETE
 ════════════════════════════════════ -->
-<div class="screen" id="screen-complete">
-  <div class="complete-wrap">
+    <div class="screen" id="screen-complete">
+      <div class="complete-wrap">
+        <span class="complete-icon" id="complete-icon">🎉</span>
+        <div class="complete-title" id="complete-title">Level Complete!</div>
+        <div class="complete-sub" id="complete-sub">You cracked it!</div>
 
-    <span class="complete-icon" id="complete-icon">🎉</span>
-    <div class="complete-title" id="complete-title">Level Complete!</div>
-    <div class="complete-sub"   id="complete-sub">You cracked it!</div>
+        <div class="coins-box">
+          <div class="coins-big" id="coins-earned">+8 🪙</div>
+          <div class="coins-label">Time Coins earned</div>
+        </div>
+        <div id="xp-notice" style="display:none;margin-top:0.5rem;font-size:0.9rem;font-weight:700;color:var(--coin);font-family:'JetBrains Mono',monospace;animation:fadeIn 0.5s ease"></div>
 
-    <div class="coins-box">
-      <div class="coins-big"   id="coins-earned">+8 🪙</div>
-      <div class="coins-label">Time Coins earned</div>
+        <div class="stats-row" id="stats-row"></div>
+
+        <div class="btn-row">
+          <button
+            class="btn-primary"
+            id="next-level-btn"
+            onclick="goNextLevel()"
+          >
+            Next Level →
+          </button>
+          <button class="btn-outline" onclick="goTo('screen-levels')">
+            Level Map
+          </button>
+        </div>
+      </div>
     </div>
+    <!-- /screen-complete -->
 
-    <div class="stats-row" id="stats-row"></div>
-
-    <div class="btn-row">
-      <button class="btn-primary" id="next-level-btn" onclick="goNextLevel()">Next Level →</button>
-      <button class="btn-outline"                    onclick="goTo('screen-levels')">Level Map</button>
-    </div>
-
-  </div>
-</div><!-- /screen-complete -->
-
-
-<!-- ════════════════════════════════════
+    <!-- ════════════════════════════════════
      JAVASCRIPT
 ════════════════════════════════════ -->
-<script>
-/* ─── Config (from config.js via window.APP_CONFIG) ─── */
-const CFG = window.APP_CONFIG || {};
-const SUPABASE_URL      = CFG.SUPABASE_URL      || '';
-const SUPABASE_ANON_KEY = CFG.SUPABASE_ANON_KEY || '';
-const GEMINI_API_KEY    = CFG.GEMINI_API_KEY    || '';
+    <script>
+      /* ─── Config (from config.js via window.APP_CONFIG) ─── */
+      const CFG = window.APP_CONFIG || {};
+      const SUPABASE_URL = CFG.SUPABASE_URL || "";
+      const SUPABASE_ANON_KEY = CFG.SUPABASE_ANON_KEY || "";
+      // AI questions are generated via /api/ai-question (NVIDIA key is server-side only)
 
-/* ─── Constants ─── */
-const THEME_NAMES  = { murder:'Murder Mystery', thriller:'Spy Thriller', adventure:'Adventure', scifi:'Sci-Fi', fantasy:'Fantasy' };
-const THEME_EMOJIS = { murder:'🔪', thriller:'🕵️', adventure:'🏔️', scifi:'🚀', fantasy:'🧙' };
-const LANG_NAMES   = { sql:'SQL', python:'Python', javascript:'JavaScript', html:'HTML', css:'CSS' };
+      /* ─── Constants ─── */
+      const THEME_NAMES = {
+        murder: "Murder Mystery",
+        thriller: "Spy Thriller",
+        adventure: "Adventure",
+        scifi: "Sci-Fi",
+        fantasy: "Fantasy",
+      };
+      const THEME_EMOJIS = {
+        murder: "🔪",
+        thriller: "🕵️",
+        adventure: "🏔️",
+        scifi: "🚀",
+        fantasy: "🧙",
+      };
+      const LANG_NAMES = {
+        sql: "SQL",
+        python: "Python",
+        javascript: "JavaScript",
+        html: "HTML",
+        css: "CSS",
+      };
 
-const LEVEL_TITLES = {
-  murder:    ['The First Clue','Witness Statements','The Alibi','Hidden Motive','The Weapon','The Timeline','Follow the Money','Surveillance','The Accomplice','The Verdict'],
-  thriller:  ['Going Dark','The Extraction','Dead Drop','Safe House','Burned Cover','Double Agent','The Cipher','Asset Recovery','Hostile Territory','Endgame'],
-  adventure: ['The Jungle Trail','Ancient Ruins','The River Crossing','Hidden Temple','Cave of Echoes','Sky Bridge','Desert Storm','Lost City','The Summit','Treasure Vault'],
-  scifi:     ['Liftoff','Asteroid Belt','First Contact','Engine Malfunction','Alien Signal','Black Hole Edge','Cargo Bay','Rogue AI','Wormhole','The Singularity'],
-  fantasy:   ['Apprentice Spell','The Enchanted Forest','Dragon\'s Lair','Sorcerer\'s Trial','The Dark Rune','Golem Army','Time Shift','The Void Crystal','Phoenix Rebirth','Final Incantation'],
-};
+      const LEVEL_TITLES = {
+        murder: [
+          "The First Clue",
+          "Witness Statements",
+          "The Alibi",
+          "Hidden Motive",
+          "The Weapon",
+          "The Timeline",
+          "Follow the Money",
+          "Surveillance",
+          "The Accomplice",
+          "The Verdict",
+        ],
+        thriller: [
+          "Going Dark",
+          "The Extraction",
+          "Dead Drop",
+          "Safe House",
+          "Burned Cover",
+          "Double Agent",
+          "The Cipher",
+          "Asset Recovery",
+          "Hostile Territory",
+          "Endgame",
+        ],
+        adventure: [
+          "The Jungle Trail",
+          "Ancient Ruins",
+          "The River Crossing",
+          "Hidden Temple",
+          "Cave of Echoes",
+          "Sky Bridge",
+          "Desert Storm",
+          "Lost City",
+          "The Summit",
+          "Treasure Vault",
+        ],
+        scifi: [
+          "Liftoff",
+          "Asteroid Belt",
+          "First Contact",
+          "Engine Malfunction",
+          "Alien Signal",
+          "Black Hole Edge",
+          "Cargo Bay",
+          "Rogue AI",
+          "Wormhole",
+          "The Singularity",
+        ],
+        fantasy: [
+          "Apprentice Spell",
+          "The Enchanted Forest",
+          "Dragon's Lair",
+          "Sorcerer's Trial",
+          "The Dark Rune",
+          "Golem Army",
+          "Time Shift",
+          "The Void Crystal",
+          "Phoenix Rebirth",
+          "Final Incantation",
+        ],
+      };
 
-const COMPLETE_MSGS = {
-  murder:    ['The case is closed. You solved it!',  'Mystery cracked with flawless logic!'],
-  thriller:  ['Mission accomplished. Go dark.',       'Target neutralised. Data secured.'],
-  adventure: ['The temple yields its secrets!',       'Another relic claimed by the brave!'],
-  scifi:     ['Mission success. The fleet is safe!',  'Systems nominal. Objective complete.'],
-  fantasy:   ['The spell matrix holds! Victory!',     'Your code magic is unparalleled!'],
-};
+      const COMPLETE_MSGS = {
+        murder: [
+          "The case is closed. You solved it!",
+          "Mystery cracked with flawless logic!",
+        ],
+        thriller: [
+          "Mission accomplished. Go dark.",
+          "Target neutralised. Data secured.",
+        ],
+        adventure: [
+          "The temple yields its secrets!",
+          "Another relic claimed by the brave!",
+        ],
+        scifi: [
+          "Mission success. The fleet is safe!",
+          "Systems nominal. Objective complete.",
+        ],
+        fantasy: [
+          "The spell matrix holds! Victory!",
+          "Your code magic is unparalleled!",
+        ],
+      };
 
-/* ─── Game state ─── */
-const state = {
-  lang:            null,
-  theme:           null,
-  level:           null,
-  questions:       [],
-  currentQ:        0,
-  coins:           0,
-  answered:        false,
-  correctCount:    0,
-  aiMode:          false, // Use robust DB questions by default
-  answerType:      'mcq',
-  gameEditor:      null,
-  completedLevels: {},
-};
+      /* ─── Game state ─── */
+      const state = {
+        lang: null,
+        theme: null,
+        level: null,
+        questions: [],
+        currentQ: 0,
+        coins: parseInt(localStorage.getItem("vs_coins") || "0"),
+        levelCoins: 0, // Coins earned in current level
+        answered: false,
+        correctCount: 0,
+        aiMode: false, // Use robust DB questions by default
+        answerType: "mcq",
+        gameEditor: null,
+        completedLevels: {},
+      };
 
-/* ─── Screen navigation ─── */
-function goTo(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0, 0);
-}
+      /* ─── Screen navigation ─── */
+      function goTo(id) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+        window.scrollTo(0, 0);
+      }
 
-/* ─── Language select ─── */
-function selectLang(lang) {
-  state.lang = lang;
-  goTo('screen-theme');
-}
+      /* ─── Language select ─── */
+      function selectLang(lang) {
+        state.lang = lang;
+        goTo("screen-theme");
+      }
 
-/* ─── Theme select ─── */
-function selectTheme(theme, e) {
-  state.theme = theme;
-  document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('selected'));
-  if (e && e.currentTarget) e.currentTarget.classList.add('selected');
-  buildLevelMap();
-  goTo('screen-levels');
-}
+      /* ─── Theme select ─── */
+      function selectTheme(theme, e) {
+        state.theme = theme;
+        document
+          .querySelectorAll(".theme-card")
+          .forEach((c) => c.classList.remove("selected"));
+        if (e && e.currentTarget) e.currentTarget.classList.add("selected");
+        buildLevelMap();
+        goTo("screen-levels");
+      }
 
-/* ─── Level map ─── */
-function buildLevelMap() {
-  const key       = `${state.lang}_${state.theme}`;
-  const done      = state.completedLevels[key] || [];
-  const maxUnlock = done.length + 1;
+      /* ─── Level map ─── */
+      function buildLevelMap() {
+        const key = `${state.lang}_${state.theme}`;
+        const done = state.completedLevels[key] || [];
+        const maxUnlock = done.length + 1;
 
-  document.getElementById('levels-label').textContent =
-    `${THEME_EMOJIS[state.theme]} ${THEME_NAMES[state.theme]} · ${LANG_NAMES[state.lang]}`;
-  document.getElementById('levels-title').textContent = 'Choose your mission level';
+        document.getElementById("levels-label").textContent =
+          `${THEME_EMOJIS[state.theme]} ${THEME_NAMES[state.theme]} · ${LANG_NAMES[state.lang]}`;
+        document.getElementById("levels-title").textContent =
+          "Choose your mission level";
 
-  const list = document.getElementById('level-list');
-  list.innerHTML = '';
+        const list = document.getElementById("level-list");
+        list.innerHTML = "";
 
-  for (let i = 1; i <= 10; i++) {
-    const isDone   = done.includes(i);
-    const isLocked = i > maxUnlock;
+        for (let i = 1; i <= 10; i++) {
+          const isDone = done.includes(i);
+          const isLocked = i > maxUnlock;
 
-    const row = document.createElement('div');
-    row.className = `level-row ${isDone ? 'completed' : ''} ${isLocked ? 'locked' : ''}`;
-    if (!isLocked) row.onclick = () => startLevel(i);
+          const row = document.createElement("div");
+          row.className = `level-row ${isDone ? "completed" : ""} ${isLocked ? "locked" : ""}`;
+          if (!isLocked) row.onclick = () => startLevel(i);
 
-    row.innerHTML = `
-      <div class="level-circle">${isDone ? '✓' : i}</div>
+          row.innerHTML = `
+      <div class="level-circle">${isDone ? "✓" : i}</div>
       <div class="level-info">
-        <div class="level-info-title">Level ${i} — ${(LEVEL_TITLES[state.theme] || [])[i - 1] || 'Mission ' + i}</div>
-        <div class="level-info-meta">${isDone ? 'Completed ✓' : isLocked ? '🔒 Locked' : '5 questions · ~5 min'}</div>
+        <div class="level-info-title">Level ${i} — ${(LEVEL_TITLES[state.theme] || [])[i - 1] || "Mission " + i}</div>
+        <div class="level-info-meta">${isDone ? "Completed ✓" : isLocked ? "🔒 Locked" : "5 questions · ~5 min"}</div>
       </div>
       <div class="level-coins">+${5 + i} 🪙</div>
     `;
-    list.appendChild(row);
-  }
-}
+          list.appendChild(row);
+        }
+      }
 
-/* ─── Start level ─── */
-async function startLevel(level) {
-  state.level        = level;
-  state.currentQ     = 0;
-  state.correctCount = 0;
-  state.questions    = [];
-  state.answered     = false;
-  goTo('screen-question');
-  await loadQuestion();
-}
+      /* ─── Start level ─── */
+      async function startLevel(level) {
+        state.level = level;
+        state.currentQ = 0;
+        state.correctCount = 0;
+        state.levelCoins = 0; // Reset level earnings
+        state.questions = [];
+        state.answered = false;
+        state.coins = parseInt(localStorage.getItem("vs_coins") || "0"); // Sync from storage
+        updateCoinDisplay();
+        goTo("screen-question");
+        await loadQuestion();
+      }
 
-/* ─── Load question ─── */
-async function loadQuestion() {
-  resetQuestionUI();
-  updateProgress();
+      /* ─── Load question ─── */
+      async function loadQuestion() {
+        resetQuestionUI();
+        updateProgress();
 
-  const hasGemini = GEMINI_API_KEY && GEMINI_API_KEY !== 'YOUR_GEMINI_API_KEY_HERE';
-  if (state.aiMode && hasGemini) {
-    await loadFromGemini();
-  } else {
-    await loadFromDB();
-  }
-}
+        if (state.aiMode) {
+          await loadFromAI();
+        } else {
+          await loadFromDB();
+        }
+      }
 
-/* ─── Gemini path ─── */
-async function loadFromGemini() {
-  setLoading(true, 'Generating question with Gemini AI…');
-  setAIProgress(0, 'Preparing prompt…');
-  try {
-    const prompt = buildPrompt();
-    setAIProgress(20, 'Sending to Gemini AI…');
+      /* ─── NVIDIA AI path (via secure /api/ai-question proxy) ─── */
+      async function loadFromAI() {
+        setLoading(true, "Generating question with NVIDIA AI…");
+        setAIProgress(0, "Preparing prompt…");
+        try {
+          const prompt = buildPrompt();
+          setAIProgress(20, "Sending to NVIDIA AI…");
 
-    const data = await Promise.race([
-      fetchGemini(prompt),
-      new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 15000)),
-    ]);
-    setAIProgress(60, 'Parsing AI response…');
+          const data = await Promise.race([
+            fetchNvidiaAI(prompt),
+            new Promise((_, rej) =>
+              setTimeout(() => rej(new Error("timeout")), 20000),
+            ),
+          ]);
+          setAIProgress(60, "Parsing AI response…");
 
-    const q = parseGemini(data);
-    if (!q) throw new Error('parse');
-    setAIProgress(80, 'Rendering question…');
+          const q = parseAIText(data.text);
+          if (!q) throw new Error("parse");
+          setAIProgress(80, "Rendering question…");
 
-    renderQuestion(q);
-    setAIProgress(100, 'Done!');
+          renderQuestion(q);
+          setAIProgress(100, "Done!");
 
-    // Save AI-generated question to DB for future reuse
-    saveToSupabase(q);
-  } catch (e) {
-    console.warn('Gemini fallback:', e.message);
-    setAIProgress(0);
-    setLoading(true, 'Switching to database questions…');
-    await loadFromDB();
-  }
-}
+          // Save AI-generated question to DB for future reuse
+          saveToSupabase(q);
+        } catch (e) {
+          console.warn("NVIDIA AI fallback:", e.message);
+          setAIProgress(0);
+          setLoading(true, "Switching to database questions…");
+          await loadFromDB();
+        }
+      }
 
-function setAIProgress(pct, text) {
-  const bar  = document.getElementById('ai-progress-bar');
-  const fill = document.getElementById('ai-progress-fill');
-  if (pct > 0) {
-    bar.style.display = 'block';
-    fill.style.width  = pct + '%';
-  } else {
-    bar.style.display = 'none';
-    fill.style.width  = '0%';
-  }
-  if (text) document.getElementById('loading-text').textContent = text;
-}
+      function setAIProgress(pct, text) {
+        const bar = document.getElementById("ai-progress-bar");
+        const fill = document.getElementById("ai-progress-fill");
+        if (pct > 0) {
+          bar.style.display = "block";
+          fill.style.width = pct + "%";
+        } else {
+          bar.style.display = "none";
+          fill.style.width = "0%";
+        }
+        if (text) document.getElementById("loading-text").textContent = text;
+      }
 
-async function saveToSupabase(q) {
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return;
-  try {
-    await fetch(`${SUPABASE_URL}/rest/v1/game_questions`, {
-      method: 'POST',
-      headers: {
-        apikey: SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-        'Content-Type': 'application/json',
-        Prefer: 'return=minimal',
-      },
-      body: JSON.stringify({
-        language:      state.lang,
-        theme:         state.theme,
-        level:         state.level,
-        question_text: q.question_text,
-        narrative:     q.narrative,
-        code_snippet:  q.code_snippet || null,
-        option_a:      q.option_a,
-        option_b:      q.option_b,
-        option_c:      q.option_c,
-        option_d:      q.option_d,
-        correct:       q.correct,
-        correct_code:  q.correct_code || null,
-        explanation:   q.explanation,
-        hint:          q.hint || null,
-        coin_reward:   1,
-      }),
-    });
-    console.log('AI question saved to DB for reuse.');
-  } catch (err) {
-    console.warn('Could not save AI question to DB:', err);
-  }
-}
+      async function saveToSupabase(q) {
+        if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return;
+        try {
+          await fetch(`${SUPABASE_URL}/rest/v1/game_questions`, {
+            method: "POST",
+            headers: {
+              apikey: SUPABASE_ANON_KEY,
+              Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+              "Content-Type": "application/json",
+              Prefer: "return=minimal",
+            },
+            body: JSON.stringify({
+              language: state.lang,
+              theme: state.theme,
+              level: state.level,
+              question_text: q.question_text,
+              narrative: q.narrative,
+              code_snippet: q.code_snippet || null,
+              option_a: q.option_a,
+              option_b: q.option_b,
+              option_c: q.option_c,
+              option_d: q.option_d,
+              correct: q.correct,
+              correct_code: q.correct_code || null,
+              explanation: q.explanation,
+              hint: q.hint || null,
+              coin_reward: 1,
+            }),
+          });
+          console.log("AI question saved to DB for reuse.");
+        } catch (err) {
+          console.warn("Could not save AI question to DB:", err);
+        }
+      }
 
-function buildPrompt() {
-  const diff = state.level <= 3 ? 'beginner' : state.level <= 6 ? 'intermediate' : 'advanced';
-  const topics = {
-    javascript: ['closures','promises','prototypes','DOM','events','arrays','objects','async/await','modules','error handling','destructuring','generators','iterators','proxies','symbols','Map/Set','WeakMap','regex','fetch API','Web APIs'],
-    python: ['list comprehensions','decorators','generators','context managers','classes','dicts','sets','f-strings','lambda','itertools','typing','dataclasses','asyncio','file I/O','exception handling','modules','unpacking','walrus operator','slots','properties'],
-    sql: ['SELECT','JOIN','GROUP BY','subqueries','window functions','CTEs','indexes','constraints','triggers','views','CASE','aggregate functions','HAVING','UNION','transactions','stored procedures','normalization','LATERAL','recursive CTE','JSON functions'],
-    html: ['semantic elements','forms','tables','canvas','SVG','Web Components','accessibility','meta tags','media elements','data attributes','dialog','template','details/summary','picture','input types','ARIA','microdata','custom elements','shadow DOM','slots'],
-    css: ['flexbox','grid','animations','transitions','variables','pseudo-classes','selectors','media queries','specificity','box model','positioning','transforms','filters','clipping','masks','container queries','cascade layers','subgrid','scroll-snap','has selector']
-  };
-  const langTopics = topics[state.lang] || topics.javascript;
-  const randomTopic = langTopics[Math.floor(Math.random() * langTopics.length)];
-  const seed = Math.floor(Math.random() * 99999);
-  return `You are a game content creator for a coding learning app.
+      function buildPrompt() {
+        const diff =
+          state.level <= 3
+            ? "beginner"
+            : state.level <= 6
+              ? "intermediate"
+              : "advanced";
+        const topics = {
+          javascript: [
+            "closures",
+            "promises",
+            "prototypes",
+            "DOM",
+            "events",
+            "arrays",
+            "objects",
+            "async/await",
+            "modules",
+            "error handling",
+            "destructuring",
+            "generators",
+            "iterators",
+            "proxies",
+            "symbols",
+            "Map/Set",
+            "WeakMap",
+            "regex",
+            "fetch API",
+            "Web APIs",
+          ],
+          python: [
+            "list comprehensions",
+            "decorators",
+            "generators",
+            "context managers",
+            "classes",
+            "dicts",
+            "sets",
+            "f-strings",
+            "lambda",
+            "itertools",
+            "typing",
+            "dataclasses",
+            "asyncio",
+            "file I/O",
+            "exception handling",
+            "modules",
+            "unpacking",
+            "walrus operator",
+            "slots",
+            "properties",
+          ],
+          sql: [
+            "SELECT",
+            "JOIN",
+            "GROUP BY",
+            "subqueries",
+            "window functions",
+            "CTEs",
+            "indexes",
+            "constraints",
+            "triggers",
+            "views",
+            "CASE",
+            "aggregate functions",
+            "HAVING",
+            "UNION",
+            "transactions",
+            "stored procedures",
+            "normalization",
+            "LATERAL",
+            "recursive CTE",
+            "JSON functions",
+          ],
+          html: [
+            "semantic elements",
+            "forms",
+            "tables",
+            "canvas",
+            "SVG",
+            "Web Components",
+            "accessibility",
+            "meta tags",
+            "media elements",
+            "data attributes",
+            "dialog",
+            "template",
+            "details/summary",
+            "picture",
+            "input types",
+            "ARIA",
+            "microdata",
+            "custom elements",
+            "shadow DOM",
+            "slots",
+          ],
+          css: [
+            "flexbox",
+            "grid",
+            "animations",
+            "transitions",
+            "variables",
+            "pseudo-classes",
+            "selectors",
+            "media queries",
+            "specificity",
+            "box model",
+            "positioning",
+            "transforms",
+            "filters",
+            "clipping",
+            "masks",
+            "container queries",
+            "cascade layers",
+            "subgrid",
+            "scroll-snap",
+            "has selector",
+          ],
+        };
+        const langTopics = topics[state.lang] || topics.javascript;
+        const randomTopic =
+          langTopics[Math.floor(Math.random() * langTopics.length)];
+        const seed = Math.floor(Math.random() * 99999);
+        return `You are a game content creator for a coding learning app.
 Generate a Level ${state.level} (${diff}) ${LANG_NAMES[state.lang]} MCQ question inside a ${THEME_NAMES[state.theme]} story.
 
 IMPORTANT: Focus the question on the topic "${randomTopic}". Make it UNIQUE — do NOT repeat common beginner questions. Seed: ${seed}
@@ -1202,479 +2081,695 @@ Return ONLY valid JSON — no markdown, no extra text:
   "hint": "A subtle hint",
   "correct_code": "The exact short code string that correctly answers the question (for typing challenges) or null"
 }`;
-}
-
-async function fetchGemini(prompt) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 1.0, maxOutputTokens: 1024 },
-    }),
-  });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.json();
-}
-
-function parseGemini(data) {
-  try {
-    const raw     = data.candidates[0].content.parts[0].text;
-    const cleaned = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-    return JSON.parse(cleaned);
-  } catch { return null; }
-}
-
-/* ─── DB path ─── */
-async function loadFromDB() {
-  setLoading(true, 'Loading question from database…');
-  try {
-    const headers = { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` };
-
-    // 1. Exact match: language + theme + level
-    let qs = await sbFetch(`?language=eq.${state.lang}&theme=eq.${state.theme}&level=eq.${state.level}&select=*&limit=50`, headers);
-    
-    // 2. Expand pool if too small (less than 5 unique questions)
-    if (qs.length < 5) {
-      const moreQs = await sbFetch(`?language=eq.${state.lang}&level=eq.${state.level}&select=*&limit=50`, headers);
-      if (moreQs.length) {
-        const ids = new Set(qs.map(q => q.id));
-        moreQs.forEach(q => { if (!ids.has(q.id)) qs.push(q); });
       }
-    }
-    
-    // 3. Same language, nearby levels
-    if (qs.length < 5) {
-      const minLvl = Math.max(1, state.level - 2);
-      const maxLvl = Math.min(10, state.level + 2);
-      const moreQs = await sbFetch(`?language=eq.${state.lang}&level=gte.${minLvl}&level=lte.${maxLvl}&select=*&limit=50`, headers);
-      if (moreQs.length) {
-        const ids = new Set(qs.map(q => q.id));
-        moreQs.forEach(q => { if (!ids.has(q.id)) qs.push(q); });
+
+      /**
+       * fetchNvidiaAI — calls our secure Vercel proxy at /api/ai-question.
+       * The NVIDIA_API_KEY never leaves the server.
+       */
+      async function fetchNvidiaAI(prompt) {
+        const res = await fetch("/api/ai-question", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt }),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json(); // { text: '...' }
       }
-    }
-    
-    // 4. Any question in language
-    if (qs.length < 5) {
-      const moreQs = await sbFetch(`?language=eq.${state.lang}&select=*&limit=50`, headers);
-      if (moreQs.length) {
-        const ids = new Set(qs.map(q => q.id));
-        moreQs.forEach(q => { if (!ids.has(q.id)) qs.push(q); });
+
+      /** Parse raw AI text — strips markdown code fences then JSON.parse. */
+      function parseAIText(raw) {
+        try {
+          const cleaned = (raw || "")
+            .replace(/```json\n?/g, "")
+            .replace(/```\n?/g, "")
+            .trim();
+          return JSON.parse(cleaned);
+        } catch {
+          return null;
+        }
       }
-    }
-    
-    // 5. Automatic AI Fallback if pool is still too small and Gemini is available
-    const hasGemini = GEMINI_API_KEY && GEMINI_API_KEY !== 'YOUR_GEMINI_API_KEY_HERE';
-    if (qs.length < 3 && hasGemini && !state._forcedAI) {
-      console.log('Pool too small, switching to Gemini AI...');
-      state._forcedAI = true;
-      state.aiMode = true;
-      document.getElementById('mode-btn').classList.remove('db-mode');
-      document.getElementById('mode-label').textContent = 'AI Mode (Auto)';
-      await loadFromGemini();
-      return;
-    }
 
-    // 6. Hard-coded dummy fallback
-    if (!qs.length) { renderDummy(); return; }
+      /* ─── DB path ─── */
+      async function loadFromDB() {
+        setLoading(true, "Loading question from database…");
+        try {
+          const headers = {
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          };
 
-    shuffle(qs);
-    // Filter out already-seen questions in this session
-    if (!state._seenIds) state._seenIds = new Set();
-    const unseen = qs.filter(q => !state._seenIds.has(q.id));
-    const pool = unseen.length > 0 ? unseen : qs; // reset if all seen
-    if (unseen.length === 0) state._seenIds.clear();
+          // 1. Exact match: language + theme + level
+          let qs = await sbFetch(
+            `?language=eq.${state.lang}&theme=eq.${state.theme}&level=eq.${state.level}&select=*&limit=50`,
+            headers,
+          );
 
-    state.questions = pool.slice(0, 5);
-    state._seenIds.add(state.questions[0].id);
-    renderFromDB(state.questions[0]);
-  } catch (e) {
-    console.error('DB error:', e);
-    renderDummy();
-  }
-}
+          // 2. Expand pool if too small (less than 5 unique questions)
+          if (qs.length < 5) {
+            const moreQs = await sbFetch(
+              `?language=eq.${state.lang}&level=eq.${state.level}&select=*&limit=50`,
+              headers,
+            );
+            if (moreQs.length) {
+              const ids = new Set(qs.map((q) => q.id));
+              moreQs.forEach((q) => {
+                if (!ids.has(q.id)) qs.push(q);
+              });
+            }
+          }
 
-async function sbFetch(query, headers) {
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/game_questions${query}`, { headers });
-  return res.json();
-}
+          // 3. Same language, nearby levels
+          if (qs.length < 5) {
+            const minLvl = Math.max(1, state.level - 2);
+            const maxLvl = Math.min(10, state.level + 2);
+            const moreQs = await sbFetch(
+              `?language=eq.${state.lang}&level=gte.${minLvl}&level=lte.${maxLvl}&select=*&limit=50`,
+              headers,
+            );
+            if (moreQs.length) {
+              const ids = new Set(qs.map((q) => q.id));
+              moreQs.forEach((q) => {
+                if (!ids.has(q.id)) qs.push(q);
+              });
+            }
+          }
 
-function renderFromDB(q) {
-  setLoading(false);
-  renderQuestion({
-    narrative:     q.narrative,
-    question_text: q.question_text,
-    code_snippet:  q.code_snippet,
-    option_a:      q.option_a,
-    option_b:      q.option_b,
-    option_c:      q.option_c,
-    option_d:      q.option_d,
-    correct:       (q.correct || '').trim(),
-    correct_code:  q.correct_code || '',
-    explanation:   q.explanation,
-    hint:          q.hint || 'Think carefully about the syntax.',
-  });
-}
+          // 4. Any question in language
+          if (qs.length < 5) {
+            const moreQs = await sbFetch(
+              `?language=eq.${state.lang}&select=*&limit=50`,
+              headers,
+            );
+            if (moreQs.length) {
+              const ids = new Set(qs.map((q) => q.id));
+              moreQs.forEach((q) => {
+                if (!ids.has(q.id)) qs.push(q);
+              });
+            }
+          }
 
-function renderDummy() {
-  setLoading(false);
-  renderQuestion({
-    narrative:     `${THEME_EMOJIS[state.theme]} Your coding skills are the only thing standing between victory and defeat in this ${THEME_NAMES[state.theme]} scenario.`,
-    question_text: `Which of the following is valid ${LANG_NAMES[state.lang]} syntax?`,
-    code_snippet:  null,
-    option_a: 'Option A', option_b: 'Option B — Correct ✓',
-    option_c: 'Option C', option_d: 'Option D',
-    correct: 'b',
-    correct_code: 'def decrypt():',
-    explanation: 'This is a placeholder. Add real questions to Supabase for full gameplay.',
-    hint: 'Look carefully at the syntax.',
-  });
-}
+          // 5. Automatic AI Fallback if pool is still too small
+          if (qs.length < 3 && !state._forcedAI) {
+            console.log("Pool too small, switching to NVIDIA AI...");
+            state._forcedAI = true;
+            state.aiMode = true;
+            document.getElementById("mode-btn").classList.remove("db-mode");
+            document.getElementById("mode-label").textContent =
+              "AI Mode (Auto)";
+            await loadFromAI();
+            return;
+          }
 
-/* ─── Render question ─── */
-function renderQuestion(q) {
-  setLoading(false);
-  state._q = q;
+          // 6. Hard-coded dummy fallback
+          if (!qs.length) {
+            renderDummy();
+            return;
+          }
 
-  document.getElementById('narrative-text').textContent  = q.narrative;
-  document.getElementById('question-text').textContent   = q.question_text;
+          shuffle(qs);
+          // Filter out already-seen questions in this session
+          if (!state._seenIds) state._seenIds = new Set();
+          const unseen = qs.filter((q) => !state._seenIds.has(q.id));
+          const pool = unseen.length > 0 ? unseen : qs; // reset if all seen
+          if (unseen.length === 0) state._seenIds.clear();
 
-  const codeEl = document.getElementById('code-block');
-  if (q.code_snippet) { codeEl.textContent = q.code_snippet; codeEl.style.display = 'block'; }
-  else                { codeEl.style.display = 'none'; }
-
-  document.getElementById('hint-text').textContent = q.hint || '';
-  document.getElementById('hint-box').classList.remove('show');
-
-  const list = document.getElementById('options-list');
-  list.innerHTML = '';
-  const options = [['a', q.option_a], ['b', q.option_b], ['c', q.option_c], ['d', q.option_d]]
-    .filter(([, text]) => text && text.trim().length > 0); // skip empty/null options
-  if (options.length === 0) options.push(['a', 'No options available']);
-  options.forEach(([key, text]) => {
-    const btn = document.createElement('button');
-    btn.className    = 'opt-btn';
-    btn.id           = `opt-${key}`;
-    btn.onclick      = () => selectAnswer(key, q.correct, q.explanation);
-
-    const keySpan = document.createElement('span');
-    keySpan.className = 'opt-key';
-    keySpan.textContent = key.toUpperCase();
-
-    const textSpan = document.createElement('span');
-    textSpan.textContent = String(text).trim();
-
-    btn.appendChild(keySpan);
-    btn.appendChild(textSpan);
-    list.appendChild(btn);
-  });
-
-  document.getElementById('q-type-toggle').style.display = 'flex';
-  setAnswerType('mcq');
-
-  document.getElementById('explain-box').classList.remove('show');
-  document.getElementById('next-btn').classList.remove('show');
-  document.getElementById('next-btn').style.display = '';
-  updateProgress();
-}
-
-/* ─── Editor & Toggle ─── */
-function setAnswerType(type) {
-  state.answerType = type;
-  document.getElementById('btn-mcq').classList.toggle('active', type === 'mcq');
-  document.getElementById('btn-type').classList.toggle('active', type === 'type');
-
-  const list = document.getElementById('options-list');
-  const editorWrapper = document.getElementById('editor-wrapper');
-  const submitBtn = document.getElementById('submit-code-btn');
-
-  if (type === 'mcq') {
-    list.style.display = 'flex';
-    editorWrapper.style.display = 'none';
-    submitBtn.style.display = 'none';
-  } else {
-    list.style.display = 'none';
-    editorWrapper.style.display = 'block';
-    
-    if (!state.gameEditor) {
-      state.gameEditor = new VSCodeEditor('vs-editor-container', { language: state.lang });
-    }
-    state.gameEditor.setLanguage(state.lang);
-    state.gameEditor.setValue('');
-    
-    submitBtn.style.display = state.answered ? 'none' : 'block';
-  }
-}
-
-function submitCode() {
-  if (state.answered || !state.gameEditor) return;
-  const userCode = state.gameEditor.getValue().trim();
-  const correctCode = state._q.correct_code ? state._q.correct_code.trim() : getCorrectOptionText().trim();
-  
-  if (!userCode) return;
-  
-  state.answered = true;
-  document.getElementById('submit-code-btn').style.display = 'none';
-  state.gameEditor.textarea.readOnly = true;
-
-  // Disable toggle after typing submission
-  document.getElementById('q-type-toggle').style.opacity = '0.5';
-  document.getElementById('btn-mcq').disabled = true;
-  document.getElementById('btn-type').disabled = true;
-  
-  // Basic validation ignoring extra spaces internally
-  const cleanStr = (s) => s.replace(/\s+/g, ' ').toLowerCase();
-  const isCorrect = cleanStr(userCode) === cleanStr(correctCode);
-  
-  const vceContainer = document.querySelector('.vce-container');
-  if (isCorrect) {
-    vceContainer.style.borderColor = 'var(--teal)';
-    vceContainer.style.boxShadow = '0 0 0 2px var(--teal)';
-    state.correctCount++;
-    awardCoins(1);
-    triggerBurst();
-  } else {
-    vceContainer.style.borderColor = 'var(--danger)';
-    vceContainer.style.boxShadow = '0 0 0 2px var(--danger)';
-  }
-
-  document.getElementById('explain-text').textContent = state._q.explanation + (isCorrect ? '' : ` (Expected: ${correctCode})`);
-  document.getElementById('explain-box').classList.add('show');
-  
-  document.getElementById('next-btn').classList.add('show');
-  document.getElementById('hint-btn').style.display = 'none';
-}
-
-function getCorrectOptionText() {
-  const q = state._q;
-  if (q.correct === 'a') return q.option_a;
-  if (q.correct === 'b') return q.option_b;
-  if (q.correct === 'c') return q.option_c;
-  if (q.correct === 'd') return q.option_d;
-  return '';
-}
-
-/* ─── Answer selection ─── */
-function selectAnswer(chosen, correct, explanation) {
-  if (state.answered) return;
-  state.answered = true;
-
-  document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
-  document.getElementById(`opt-${chosen}`).classList.add(chosen === correct ? 'correct' : 'wrong');
-  if (chosen !== correct) document.getElementById(`opt-${correct}`).classList.add('correct');
-
-  // Disable toggle if they answered
-  document.getElementById('q-type-toggle').style.opacity = '0.5';
-  document.getElementById('btn-mcq').disabled = true;
-  document.getElementById('btn-type').disabled = true;
-
-  document.getElementById('explain-text').textContent = explanation;
-  document.getElementById('explain-box').classList.add('show');
-
-  if (chosen === correct) {
-    state.correctCount++;
-    awardCoins(1);
-    triggerBurst();
-  }
-
-  document.getElementById('submit-code-btn').style.display = 'none';
-  document.getElementById('next-btn').classList.add('show');
-  document.getElementById('hint-btn').style.display = 'none';
-}
-
-/* ─── Next question ─── */
-async function nextQuestion() {
-  state.currentQ++;
-  state.answered = false;
-
-  if (state.currentQ >= 5) { showComplete(); return; }
-
-  if (state.questions.length > state.currentQ) {
-    renderFromDB(state.questions[state.currentQ]);
-  } else {
-    await loadQuestion();
-  }
-}
-
-/* ─── Progress ─── */
-function updateProgress() {
-  document.getElementById('q-fill').style.width    = `${(state.currentQ / 5) * 100}%`;
-  document.getElementById('q-counter').textContent = `${state.currentQ} / 5`;
-}
-
-function resetQuestionUI() {
-  state.answered = false;
-  document.getElementById('hint-btn').style.display = '';
-  document.getElementById('next-btn').classList.remove('show');
-  document.getElementById('hint-box').classList.remove('show');
-  document.getElementById('explain-box').classList.remove('show');
-  
-  if (state.gameEditor) {
-    const vceContainer = document.querySelector('.vce-container');
-    if (vceContainer) {
-      vceContainer.style.borderColor = 'var(--border)';
-      vceContainer.style.boxShadow = 'none';
-    }
-    state.gameEditor.textarea.readOnly = false;
-  }
-
-  document.getElementById('q-type-toggle').style.opacity = '1';
-  document.getElementById('btn-mcq').disabled = false;
-  document.getElementById('btn-type').disabled = false;
-}
-
-function showHint() {
-  document.getElementById('hint-box').classList.add('show');
-  document.getElementById('hint-btn').style.display = 'none';
-}
-
-/* ─── Level complete ─── */
-function showComplete() {
-  const bonus = 3 + state.level;
-  awardCoins(bonus);
-
-  const key = `${state.lang}_${state.theme}`;
-  if (!state.completedLevels[key]) state.completedLevels[key] = [];
-  if (!state.completedLevels[key].includes(state.level)) state.completedLevels[key].push(state.level);
-  localStorage.setItem('vs_completed', JSON.stringify(state.completedLevels));
-
-  // Persist unlock globally
-  if (window.VS && window.VS.api && window.getSupabase) {
-    VS.api.getCurrentUser().then(u => {
-      if (u) {
-        getSupabase().from('users').update({ game_progress: state.completedLevels }).eq('id', u.id).catch(console.error);
+          state.questions = pool.slice(0, 5);
+          state._seenIds.add(state.questions[0].id);
+          renderFromDB(state.questions[0]);
+        } catch (e) {
+          console.error("DB error:", e);
+          renderDummy();
+        }
       }
-    });
-  } const msgs = COMPLETE_MSGS[state.theme] || ['Level complete!'];
-  const msg  = msgs[Math.floor(Math.random() * msgs.length)];
 
-  document.getElementById('complete-icon').textContent  = THEME_EMOJIS[state.theme] + '🎉';
-  document.getElementById('complete-title').textContent = 'Level Complete!';
-  document.getElementById('complete-sub').textContent   = msg;
-  document.getElementById('coins-earned').textContent   = `+${state.correctCount + bonus} 🪙`;
+      async function sbFetch(query, headers) {
+        const res = await fetch(
+          `${SUPABASE_URL}/rest/v1/game_questions${query}`,
+          { headers },
+        );
+        return res.json();
+      }
 
-  document.getElementById('stats-row').innerHTML = `
+      function renderFromDB(q) {
+        setLoading(false);
+        renderQuestion({
+          narrative: q.narrative,
+          question_text: q.question_text,
+          code_snippet: q.code_snippet,
+          option_a: q.option_a,
+          option_b: q.option_b,
+          option_c: q.option_c,
+          option_d: q.option_d,
+          correct: (q.correct || "").trim(),
+          correct_code: q.correct_code || "",
+          explanation: q.explanation,
+          hint: q.hint || "Think carefully about the syntax.",
+        });
+      }
+
+      function renderDummy() {
+        setLoading(false);
+        renderQuestion({
+          narrative: `${THEME_EMOJIS[state.theme]} Your coding skills are the only thing standing between victory and defeat in this ${THEME_NAMES[state.theme]} scenario.`,
+          question_text: `Which of the following is valid ${LANG_NAMES[state.lang]} syntax?`,
+          code_snippet: null,
+          option_a: "Option A",
+          option_b: "Option B — Correct ✓",
+          option_c: "Option C",
+          option_d: "Option D",
+          correct: "b",
+          correct_code: "def decrypt():",
+          explanation:
+            "This is a placeholder. Add real questions to Supabase for full gameplay.",
+          hint: "Look carefully at the syntax.",
+        });
+      }
+
+      /* ─── Render question ─── */
+      function renderQuestion(q) {
+        setLoading(false);
+        state._q = q;
+
+        document.getElementById("narrative-text").innerHTML = q.narrative;
+        if (typeof lucide !== "undefined") lucide.createIcons();
+        document.getElementById("question-text").textContent = q.question_text;
+
+        const codeEl = document.getElementById("code-block");
+        if (q.code_snippet) {
+          codeEl.textContent = q.code_snippet;
+          codeEl.style.display = "block";
+        } else {
+          codeEl.style.display = "none";
+        }
+
+        document.getElementById("hint-text").textContent = q.hint || "";
+        document.getElementById("hint-box").classList.remove("show");
+
+        // Always reset to MCQ mode for each new question
+        state.answerType = "mcq";
+        const list = document.getElementById("options-list");
+        list.style.display = "flex"; // force visible — guard against stale "type" mode
+        const editorWrapper = document.getElementById("editor-wrapper");
+        if (editorWrapper) editorWrapper.style.display = "none";
+
+        list.innerHTML = "";
+        const options = [
+          ["a", q.option_a],
+          ["b", q.option_b],
+          ["c", q.option_c],
+          ["d", q.option_d],
+        ].filter(([, text]) => text != null && String(text).trim().length > 0); // skip null/empty
+        if (options.length === 0) options.push(["a", "No options available"]);
+        options.forEach(([key, text]) => {
+          const btn = document.createElement("button");
+          btn.className = "opt-btn";
+          btn.id = `opt-${key}`;
+          btn.onclick = () => selectAnswer(key, q.correct, q.explanation);
+
+          const keySpan = document.createElement("span");
+          keySpan.className = "opt-key";
+          keySpan.textContent = key.toUpperCase();
+
+          const textSpan = document.createElement("span");
+          textSpan.textContent = String(text).trim();
+
+          btn.appendChild(keySpan);
+          btn.appendChild(textSpan);
+          list.appendChild(btn);
+        });
+
+        document.getElementById("q-type-toggle").style.display = "flex";
+        setAnswerType("mcq");
+
+        document.getElementById("explain-box").classList.remove("show");
+        document.getElementById("next-btn").classList.remove("show");
+        document.getElementById("next-btn").style.display = "";
+        updateProgress();
+      }
+
+      /* ─── Editor & Toggle ─── */
+      function setAnswerType(type) {
+        state.answerType = type;
+        document
+          .getElementById("btn-mcq")
+          .classList.toggle("active", type === "mcq");
+        document
+          .getElementById("btn-type")
+          .classList.toggle("active", type === "type");
+
+        const list = document.getElementById("options-list");
+        const editorWrapper = document.getElementById("editor-wrapper");
+        const submitBtn = document.getElementById("submit-code-btn");
+
+        if (type === "mcq") {
+          list.style.display = "flex";
+          editorWrapper.style.display = "none";
+          submitBtn.style.display = "none";
+        } else {
+          list.style.display = "none";
+          editorWrapper.style.display = "block";
+
+          if (!state.gameEditor) {
+            state.gameEditor = new VSCodeEditor("vs-editor-container", {
+              language: state.lang,
+            });
+          }
+          state.gameEditor.setLanguage(state.lang);
+          state.gameEditor.setValue("");
+
+          submitBtn.style.display = state.answered ? "none" : "block";
+        }
+      }
+
+      function submitCode() {
+        if (state.answered || !state.gameEditor) return;
+        const userCode = state.gameEditor.getValue().trim();
+        const correctCode = state._q.correct_code
+          ? state._q.correct_code.trim()
+          : getCorrectOptionText().trim();
+
+        if (!userCode) return;
+
+        state.answered = true;
+        document.getElementById("submit-code-btn").style.display = "none";
+        state.gameEditor.textarea.readOnly = true;
+
+        // Disable toggle after typing submission
+        document.getElementById("q-type-toggle").style.opacity = "0.5";
+        document.getElementById("btn-mcq").disabled = true;
+        document.getElementById("btn-type").disabled = true;
+
+        // Basic validation ignoring extra spaces internally
+        const cleanStr = (s) => s.replace(/\s+/g, " ").toLowerCase();
+        const isCorrect = cleanStr(userCode) === cleanStr(correctCode);
+
+        const vceContainer = document.querySelector(".vce-container");
+        if (isCorrect) {
+          vceContainer.style.borderColor = "var(--teal)";
+          vceContainer.style.boxShadow = "0 0 0 2px var(--teal)";
+          state.correctCount++;
+          awardCoins(1);
+          triggerBurst();
+        } else {
+          vceContainer.style.borderColor = "var(--danger)";
+          vceContainer.style.boxShadow = "0 0 0 2px var(--danger)";
+        }
+
+        document.getElementById("explain-text").textContent =
+          state._q.explanation +
+          (isCorrect ? "" : ` (Expected: ${correctCode})`);
+        document.getElementById("explain-box").classList.add("show");
+
+        document.getElementById("next-btn").classList.add("show");
+        document.getElementById("hint-btn").style.display = "none";
+      }
+
+      function getCorrectOptionText() {
+        const q = state._q;
+        if (q.correct === "a") return q.option_a;
+        if (q.correct === "b") return q.option_b;
+        if (q.correct === "c") return q.option_c;
+        if (q.correct === "d") return q.option_d;
+        return "";
+      }
+
+      /* ─── Answer selection ─── */
+      function selectAnswer(chosen, correct, explanation) {
+        if (state.answered) return;
+        state.answered = true;
+
+        document
+          .querySelectorAll(".opt-btn")
+          .forEach((b) => (b.disabled = true));
+        document
+          .getElementById(`opt-${chosen}`)
+          .classList.add(chosen === correct ? "correct" : "wrong");
+        if (chosen !== correct)
+          document.getElementById(`opt-${correct}`).classList.add("correct");
+
+        // Disable toggle if they answered
+        document.getElementById("q-type-toggle").style.opacity = "0.5";
+        document.getElementById("btn-mcq").disabled = true;
+        document.getElementById("btn-type").disabled = true;
+
+        document.getElementById("explain-text").textContent = explanation;
+        document.getElementById("explain-box").classList.add("show");
+
+        if (chosen === correct) {
+          state.correctCount++;
+          awardCoins(1);
+          triggerBurst();
+        }
+
+        document.getElementById("submit-code-btn").style.display = "none";
+        document.getElementById("next-btn").classList.add("show");
+        document.getElementById("hint-btn").style.display = "none";
+      }
+
+      /* ─── Next question ─── */
+      async function nextQuestion() {
+        state.currentQ++;
+        state.answered = false;
+
+        if (state.currentQ >= 5) {
+          showComplete();
+          return;
+        }
+
+        if (state.questions.length > state.currentQ) {
+          renderFromDB(state.questions[state.currentQ]);
+        } else {
+          await loadQuestion();
+        }
+      }
+
+      /* ─── Progress ─── */
+      function updateProgress() {
+        document.getElementById("q-fill").style.width =
+          `${(state.currentQ / 5) * 100}%`;
+        document.getElementById("q-counter").textContent =
+          `${state.currentQ} / 5`;
+      }
+
+      function resetQuestionUI() {
+        state.answered = false;
+        document.getElementById("hint-btn").style.display = "";
+        document.getElementById("next-btn").classList.remove("show");
+        document.getElementById("hint-box").classList.remove("show");
+        document.getElementById("explain-box").classList.remove("show");
+
+        if (state.gameEditor) {
+          const vceContainer = document.querySelector(".vce-container");
+          if (vceContainer) {
+            vceContainer.style.borderColor = "var(--border)";
+            vceContainer.style.boxShadow = "none";
+          }
+          state.gameEditor.textarea.readOnly = false;
+        }
+
+        document.getElementById("q-type-toggle").style.opacity = "1";
+        document.getElementById("btn-mcq").disabled = false;
+        document.getElementById("btn-type").disabled = false;
+      }
+
+      function showHint() {
+        document.getElementById("hint-box").classList.add("show");
+        document.getElementById("hint-btn").style.display = "none";
+      }
+
+      /* ─── Level complete ─── */
+      async function showComplete() {
+        const bonus = state.level;
+        awardCoins(bonus);
+        flushCoinsToServer();
+
+        // Award XP for level completion via Supabase RPC
+        try {
+          const sb = window.getSupabase && window.getSupabase();
+          if (sb) {
+            const { data: xpResult } = await sb.rpc('award_game_xp', {
+              p_correct: state.correctCount || 0,
+              p_level:   state.level || 1
+            });
+            if (xpResult) {
+              // Update localStorage with fresh XP
+              localStorage.setItem('vs_user_xp',    String(xpResult.xp    || 0));
+              localStorage.setItem('vs_user_level',  String(xpResult.level || 1));
+              // Refresh sidebar XP bar if VS is loaded
+              if (window.VS && VS.ui) VS.ui.updateSidebar();
+
+              const gained = xpResult.gained || 0;
+              const xpNotice = document.getElementById('xp-notice');
+              if (xpNotice) {
+                xpNotice.textContent = `+${gained} XP earned!`;
+                xpNotice.style.display = 'block';
+              }
+            }
+          }
+        } catch (e) {
+          console.warn('[XP] award_game_xp failed:', e.message);
+        }
+
+
+        const key = `${state.lang}_${state.theme}`;
+        if (!state.completedLevels[key]) state.completedLevels[key] = [];
+        if (!state.completedLevels[key].includes(state.level))
+          state.completedLevels[key].push(state.level);
+        localStorage.setItem(
+          "vs_completed",
+          JSON.stringify(state.completedLevels),
+        );
+
+        // Persist game progress to DB (fire-and-forget)
+        if (window.getSupabase) {
+          (async () => {
+            try {
+              const sb = window.getSupabase();
+              const {
+                data: { session },
+              } = await sb.auth.getSession();
+              if (session) {
+                await sb
+                  .from("users")
+                  .update({ game_progress: state.completedLevels })
+                  .eq("id", session.user.id);
+              }
+            } catch (e) {
+              console.warn("game_progress save failed:", e.message);
+            }
+          })();
+        }
+        const msgs = COMPLETE_MSGS[state.theme] || ["Level complete!"];
+        const msg = msgs[Math.floor(Math.random() * msgs.length)];
+
+        document.getElementById("complete-icon").innerHTML =
+          (THEME_EMOJIS[state.theme] || "🎉") + " 🎉";
+        if (typeof lucide !== "undefined") lucide.createIcons();
+        document.getElementById("complete-title").textContent =
+          "Level Complete!";
+        document.getElementById("complete-sub").textContent = msg;
+        document.getElementById("coins-earned").innerHTML =
+          `+${state.levelCoins} 🪙`;
+        if (typeof lucide !== "undefined") lucide.createIcons();
+
+        document.getElementById("stats-row").innerHTML = `
     <div class="stat-box"><div class="stat-val">${state.correctCount}/5</div><div class="stat-lbl">Correct</div></div>
     <div class="stat-box"><div class="stat-val">${state.correctCount * 20}%</div><div class="stat-lbl">Accuracy</div></div>
-    <div class="stat-box"><div class="stat-val">${state.level < 10 ? state.level + 1 : '🏆'}</div><div class="stat-lbl">Next</div></div>
+    <div class="stat-box"><div class="stat-val">${state.level < 10 ? state.level + 1 : "🏆"}</div><div class="stat-lbl">Next</div></div>
   `;
 
-  const btn = document.getElementById('next-level-btn');
-  if (state.level >= 10) { btn.textContent = '🏆 All Done!'; btn.onclick = () => goTo('screen-lang'); }
-
-  goTo('screen-complete');
-}
-
-function goNextLevel() {
-  if (state.level < 10) startLevel(state.level + 1);
-  else goTo('screen-lang');
-}
-
-/* ─── Coins ─── */
-function awardCoins(n) {
-  state.coins += n;
-  document.getElementById('coin-count').textContent = state.coins;
-
-  if (window.VS && window.VS.api && window.getSupabase) {
-    VS.api.getCurrentUser().then(user => {
-      if (!user) {
-        localStorage.setItem('vs_coins', state.coins);
-        return;
-      }
-      const sb = getSupabase();
-      // Record transaction via RPC for security/RLS bypass
-      sb.rpc('claim_game_reward', {
-        p_amount: Number(n),
-        p_lang: state.lang,
-        p_level: state.level,
-        p_note: `Code Quest — Level ${state.level} in ${LANG_NAMES[state.lang] || 'unknown'}`
-      }).then(({ data: realBalance, error }) => {
-        if (error) {
-          console.error('RPC claim_game_reward failed:', error);
-          // Fallback refresh
-          return VS.coins.balance();
+        const btn = document.getElementById("next-level-btn");
+        if (state.level >= 10) {
+          btn.innerHTML = "🏆 All Done!";
+          btn.onclick = () => goTo("screen-lang");
+          if (typeof lucide !== "undefined") lucide.createIcons();
         }
-        return realBalance;
-      }).then(realBalance => {
-        if (realBalance !== undefined) {
-          state.coins = Number(realBalance);
-          document.getElementById('coin-count').textContent = state.coins;
-          localStorage.setItem('vs_coins', String(state.coins));
+
+        goTo("screen-complete");
+      }
+
+      function goNextLevel() {
+        if (state.level < 10) startLevel(state.level + 1);
+        else goTo("screen-lang");
+      }
+
+      /* ─── Coins ─── */
+      function updateCoinDisplay() {
+        document.getElementById("coin-count").textContent = state.coins;
+      }
+
+      // Wait for the ES-module api.js to finish loading (it's async/deferred)
+      function waitForVS(maxMs = 8000) {
+        return new Promise((resolve) => {
+          if (window.VS && window.VS.api && window.getSupabase) {
+            resolve(true);
+            return;
+          }
+          const start = Date.now();
+          const id = setInterval(() => {
+            if (window.VS && window.VS.api && window.getSupabase) {
+              clearInterval(id);
+              resolve(true);
+            } else if (Date.now() - start > maxMs) {
+              clearInterval(id);
+              resolve(false); // timed out, VS not available
+            }
+          }, 100);
+        });
+      }
+
+      function awardCoins(n) {
+        state.coins += n;
+        state.levelCoins += n;
+        state._pendingCoins = (state._pendingCoins || 0) + n;
+        updateCoinDisplay();
+        localStorage.setItem("vs_coins", String(state.coins));
+      }
+
+      async function flushCoinsToServer() {
+        const pending = state._pendingCoins || 0;
+        if (pending <= 0) return;
+
+        // Wait for api.js ES module to finish loading
+        const ready = await waitForVS();
+        if (!ready) {
+          console.warn("[Coins] VS module not ready, staying in localStorage");
+          return;
         }
-        // Notify other UI components
-        if (window.VS && window.VS.ui && VS.ui.updateSidebar) VS.ui.updateSidebar();
-      }).catch(err => {
-        console.error('awardCoins persistence failed:', err);
-      });
-    }).catch(() => localStorage.setItem('vs_coins', state.coins));
-  } else {
-    localStorage.setItem('vs_coins', state.coins);
-  }
-}
 
-function triggerBurst() {
-  const el = document.getElementById('coin-burst');
-  el.style.display = 'block';
-  el.className     = '';
-  el.offsetHeight;                     // force reflow
-  el.className     = 'burst-anim';
-  setTimeout(() => el.style.display = 'none', 900);
-}
+        state._pendingCoins = 0;
+        try {
+          // Get session directly from Supabase (most reliable path)
+          const sb = window.getSupabase();
+          let {
+            data: { session },
+            error: sessionErr,
+          } = await sb.auth.getSession();
 
-/* ─── UI helpers ─── */
-function setLoading(show, text) {
-  const el = document.getElementById('loading-row');
-  el.classList.toggle('show', show);
-  if (text) document.getElementById('loading-text').textContent = text;
-}
+          // If no session, try refreshing (handles expired access tokens)
+          if (!session && !sessionErr) {
+            console.log("[Coins] No session found, attempting refresh...");
+            const refreshResult = await sb.auth.refreshSession();
+            session = refreshResult.data?.session;
+            sessionErr = refreshResult.error;
+          }
 
-function shuffle(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-}
+          if (sessionErr || !session) {
+            console.warn(
+              "[Coins] No active session after refresh attempt. User must re-login.",
+              sessionErr?.message,
+            );
+            state._pendingCoins += pending;
+            return;
+          }
 
-/* ─── Theme toggle ─── */
-function toggleTheme() {
-  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
-  document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');
-  document.getElementById('theme-btn').textContent = dark ? '🌙' : '☀️';
-  localStorage.setItem('vs-theme', dark ? 'light' : 'dark');
-}
+          console.log(
+            "[Coins] Flushing",
+            pending,
+            "coins for user",
+            session.user.id,
+          );
 
-/* ─── AI / DB mode toggle ─── */
-function toggleMode() {
-  state.aiMode = !state.aiMode;
-  document.getElementById('mode-label').textContent = state.aiMode ? 'AI Mode' : 'DB Mode';
-  document.getElementById('mode-btn').classList.toggle('db-mode', !state.aiMode);
-}
+          const { data, error } = await sb.rpc("claim_game_reward", {
+            p_amount: Number(pending),
+            p_lang: state.lang || "unknown",
+            p_level: state.level || 1,
+            p_note: `Code Quest — Level ${state.level} (${LANG_NAMES[state.lang] || state.lang})`,
+          });
 
-/* ─── Init ─── */
-(async () => {
-  state.completedLevels = JSON.parse(localStorage.getItem('vs_completed') || '{}');
-  
-  try {
-    const user = await window.VS?.api?.getCurrentUser();
-    if (user) {
-      if (user.game_progress && Object.keys(user.game_progress).length > 0) {
-        state.completedLevels = { ...state.completedLevels, ...user.game_progress };
-        localStorage.setItem('vs_completed', JSON.stringify(state.completedLevels));
+          if (error) {
+            console.error(
+              "[Coins] claim_game_reward RPC error:",
+              error.message,
+              error.code,
+            );
+            state._pendingCoins += pending;
+            return;
+          }
+
+          console.log("[Coins] New balance from server:", data);
+          if (data !== undefined && data !== null) {
+            state.coins = Number(data);
+            updateCoinDisplay();
+            localStorage.setItem("vs_coins", String(state.coins));
+          }
+          if (window.VS && window.VS.ui && VS.ui.updateSidebar)
+            VS.ui.updateSidebar();
+        } catch (err) {
+          console.error("[Coins] flushCoinsToServer unexpected error:", err);
+          state._pendingCoins += pending;
+        }
       }
-      if (window.VS && window.VS.coins) {
-        state.coins = await VS.coins.balance();
-      } else {
-        state.coins = user.coins || parseInt(localStorage.getItem('vs_coins')||'0');
+
+      function triggerBurst() {
+        const el = document.getElementById("coin-burst");
+        el.style.display = "block";
+        el.className = "";
+        el.offsetHeight; // force reflow
+        el.className = "burst-anim";
+        setTimeout(() => (el.style.display = "none"), 900);
       }
-      document.getElementById('coin-count').textContent = state.coins;
-    }
-  } catch(e) {
-    const cached = parseInt(localStorage.getItem('vs_coins')||'0');
-    state.coins = cached;
-    document.getElementById('coin-count').textContent = cached;
-  }
-})();
-</script>
-</body>
+
+      /* ─── UI helpers ─── */
+      function setLoading(show, text) {
+        const el = document.getElementById("loading-row");
+        el.classList.toggle("show", show);
+        if (text) document.getElementById("loading-text").textContent = text;
+      }
+
+      function shuffle(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+      }
+
+      /* ─── Theme toggle ─── */
+      function toggleTheme() {
+        const dark =
+          document.documentElement.getAttribute("data-theme") === "dark";
+        document.documentElement.setAttribute(
+          "data-theme",
+          dark ? "light" : "dark",
+        );
+        document.getElementById("theme-btn").textContent = dark ? "🌙" : "☀️";
+        localStorage.setItem("vs-theme", dark ? "light" : "dark");
+      }
+
+      /* ─── AI / DB mode toggle ─── */
+      function toggleMode() {
+        state.aiMode = !state.aiMode;
+        document.getElementById("mode-label").textContent = state.aiMode
+          ? "AI Mode"
+          : "DB Mode";
+        document
+          .getElementById("mode-btn")
+          .classList.toggle("db-mode", !state.aiMode);
+      }
+
+      /* ─── Init ─── */
+      (async () => {
+        state.completedLevels = JSON.parse(
+          localStorage.getItem("vs_completed") || "{}",
+        );
+
+        try {
+          const user = await window.VS?.api?.getCurrentUser();
+          if (user) {
+            if (
+              user.game_progress &&
+              Object.keys(user.game_progress).length > 0
+            ) {
+              state.completedLevels = {
+                ...state.completedLevels,
+                ...user.game_progress,
+              };
+              localStorage.setItem(
+                "vs_completed",
+                JSON.stringify(state.completedLevels),
+              );
+            }
+            if (window.VS && window.VS.coins) {
+              state.coins = await VS.coins.balance();
+            } else {
+              state.coins =
+                user.coins || parseInt(localStorage.getItem("vs_coins") || "0");
+            }
+            document.getElementById("coin-count").textContent = state.coins;
+          }
+        } catch (e) {
+          const cached = parseInt(localStorage.getItem("vs_coins") || "0");
+          state.coins = cached;
+          document.getElementById("coin-count").textContent = cached;
+        }
+      })();
+    </script>
+
+    <script>
+      if (typeof lucide !== "undefined") {
+        lucide.createIcons();
+      }
+    </script>
+  </body>
 </html>
