@@ -1,0 +1,11 @@
+vidyasetu_backend/
+# Exclude the backend (already there)
+vidyasetu_backend/
+
+# Exclude documentation and AI logs
+.agent/
+.agents/
+graphify-out/
+AGENTS.md
+session.md
+README.md

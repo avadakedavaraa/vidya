@@ -1,13 +1,12 @@
-// supabase/functions/book-session/index.ts
+// api/book-session.ts
 // Creates a booking and atomically locks coins in escrow.
 // Validates: slot availability, learner balance, no double-booking, no self-booking.
 
-import {
-  handleOptions, ok, err,
-  adminClient, requireAuth,
-  rateLimit, debitCoins,
-  sanitizeText, validateUUID, AuthError
-} from './_shared/utils';
+import { handleOptions, ok, err } from './_shared/responses';
+import { adminClient } from './_shared/supabase';
+import { requireAuth, AuthError } from './_shared/auth';
+import { rateLimit, debitCoins } from './_shared/ledger';
+import { sanitizeText, validateUUID } from './_shared/validation';
 
 export const config = { runtime: 'edge' };
 
@@ -90,7 +89,6 @@ export default async function (req: Request) {
   }
 
   // ─── Check no conflicting bookings for teacher ─────────
-  const endTime = new Date(bookingDateTime.getTime() + durationMins * 60000);
   const { count: conflict } = await db
     .from('bookings')
     .select('*', { count: 'exact', head: true })
@@ -99,7 +97,7 @@ export default async function (req: Request) {
     .neq('status', 'cancelled')
     .neq('status', 'refunded')
     .lte('start_time', startTime)
-    .gte('start_time', startTime); // simplified check — production should check full overlap
+    .gte('start_time', startTime);
 
   if ((conflict ?? 0) > 0) {
     return err('This time slot is no longer available. Please choose another.', req, 409);

@@ -5,9 +5,10 @@
 
 echo "⚡ Generating config.js from environment variables..."
 
-if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ] || [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
   echo "❌ ERROR: Missing required environment variables!"
-  echo "   Set SUPABASE_URL, SUPABASE_ANON_KEY, and GEMINI_API_KEY in Vercel dashboard."
+  echo "   Set SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY in Vercel dashboard."
+  echo "   Optional: NVIDIA_API_KEY for AI question generation (server-side only)."
   exit 1
 fi
 
@@ -15,7 +16,6 @@ cat > config.js << JSEOF
 window.APP_CONFIG = {
   SUPABASE_URL:      '${SUPABASE_URL}',
   SUPABASE_ANON_KEY: '${SUPABASE_ANON_KEY}',
-  GEMINI_API_KEY:    '${GEMINI_API_KEY}',
 };
 window.VS_CONFIG = {
   SUPABASE_URL:  window.APP_CONFIG.SUPABASE_URL,

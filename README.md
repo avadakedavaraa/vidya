@@ -22,7 +22,7 @@ Rename `.env.local.example` to `.env.local` or edit `config.example.js` and rena
 - `SUPABASE_URL`: Your Supabase project URL
 - `SUPABASE_ANON_KEY`: Your Supabase anonymous key
 - `SUPABASE_SERVICE_ROLE_KEY`: Your secure backend key (only used in Vercel)
-- `GEMINI_API_KEY`: Used for AI Code Question generation
+- `NVIDIA_API_KEY`: Used for AI Code Question generation (server-side only)
 
 To run the frontend locally, simply serve the HTML files using any basic static server:
 ```bash
@@ -41,7 +41,7 @@ npx vercel dev
 Vidyasetu is architected for zero-config unified deployment on [Vercel](https://vercel.com).
 1. Push this repository to GitHub.
 2. Import the repository into Vercel.
-3. In Vercel's **Environment Variables** dashboard, add `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, and `GEMINI_API_KEY`.
+3. In Vercel's **Environment Variables** dashboard, add `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, and `NVIDIA_API_KEY`.
 4. Click Deploy. Vercel will automatically host the massive HTML interface natively on Edge CDNs while dynamically compiling the `api/` directory into secure backend serverless endpoints.
 
 ## 🔒 Security

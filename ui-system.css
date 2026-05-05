@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
 /* Shared UI system for Vidyasetu: professional minimal baseline */
 :root {
   --space-xs: 0.25rem;
@@ -17,11 +18,11 @@
   --text-small: 0.82rem;
   --line-body: 1.55;
 
-  --shadow-sm: 0 6px 16px rgba(35, 61, 110, 0.08);
-  --shadow-md: 0 14px 34px rgba(35, 61, 110, 0.14);
+  --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 10px 28px rgba(0, 0, 0, 0.08);
 
-  --vs-focus: #5b45e0;
-  --vs-focus-ring: 0 0 0 3px rgba(91, 69, 224, 0.18);
+  --vs-focus: #6366f1;
+  --vs-focus-ring: 0 0 0 3px rgba(99, 102, 241, 0.2);
 
   --vs-text: #111a2e;
   --vs-muted: #5f6b84;
@@ -29,8 +30,8 @@
   --vs-surface: #f4f8ff;
   --vs-card: #ffffff;
 
-  --vs-primary: #5b45e0;
-  --vs-primary-hover: #4937bf;
+  --vs-primary: #6366f1;
+  --vs-primary-hover: #4f46e5;
   --vs-primary-weak: #efecfb;
 
   --vs-success: #0f9f76;
@@ -49,23 +50,28 @@
   --vs-surface: #040b14;
   --vs-card: #08121f;
 
-  --vs-primary: #9b8bff;
-  --vs-primary-hover: #b0a3ff;
-  --vs-primary-weak: rgba(155, 139, 255, 0.2);
+  --vs-primary: #818cf8;
+  --vs-primary-hover: #6366f1;
+  --vs-primary-weak: rgba(129, 140, 248, 0.15);
 
   --vs-success: #53c79b;
   --vs-danger: #ef8080;
   --vs-warning-text: #ffd27a;
   --vs-warning-bg: rgba(232, 176, 66, 0.2);
 
-  --shadow-sm: 0 10px 26px rgba(2, 8, 20, 0.44);
-  --shadow-md: 0 16px 42px rgba(2, 8, 20, 0.6);
-  --vs-focus: #b0a3ff;
-  --vs-focus-ring: 0 0 0 3px rgba(176, 163, 255, 0.26);
+  --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 10px 28px rgba(0, 0, 0, 0.3);
+  --vs-focus: #818cf8;
+  --vs-focus-ring: 0 0 0 3px rgba(129, 140, 248, 0.2);
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap');
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0
+}
 
 /* Bridge shared tokens to per-page variable names used in existing files */
 [data-theme="dark"] {
@@ -102,8 +108,7 @@ html:not([data-theme="dark"]) :where(nav, .topbar, .sidebar) {
   border-color: color-mix(in srgb, var(--vs-border) 86%, #ffffff 14%);
 }
 
-html:not([data-theme="dark"]) :where(
-  .card,
+html:not([data-theme="dark"]) :where(.card,
   .stat-card,
   .session-card,
   .quest-card,
@@ -116,15 +121,13 @@ html:not([data-theme="dark"]) :where(
   .booking-card,
   .panel,
   .empty-state,
-  .skill-card
-) {
+  .skill-card) {
   background: linear-gradient(180deg, color-mix(in srgb, var(--vs-card) 96%, #f2f7ff 4%), var(--vs-card));
   border-color: var(--vs-border);
   box-shadow: var(--shadow-sm);
 }
 
-html:not([data-theme="dark"]) :where(
-  .card,
+html:not([data-theme="dark"]) :where(.card,
   .stat-card,
   .session-card,
   .quest-card,
@@ -136,8 +139,7 @@ html:not([data-theme="dark"]) :where(
   .teacher-card,
   .booking-card,
   .panel,
-  .skill-card
-):hover {
+  .skill-card):hover {
   box-shadow: var(--shadow-md);
   border-color: color-mix(in srgb, var(--vs-primary) 26%, var(--vs-border));
 }
@@ -156,35 +158,34 @@ html:not([data-theme="dark"]) :where(input, select, textarea, .form-input, .form
   background: color-mix(in srgb, var(--vs-card) 92%, #f3f7ff 8%);
 }
 
-html:not([data-theme="dark"]) :where(a):not(.btn):not(.btn-primary):not(.btn-book):not(.btn-auth):not(.btn-start):not(.btn-submit):not(.cta-btn):not(.nav-cta):not(.btn-white):not(.btn-outline):not(.btn-edit):not(.btn-nav):not(.btn-social) {
+html:not([data-theme="dark"]) :where(a):not(.btn):not(.btn-primary):not(.btn-book):not(.btn-book-now):not(.btn-auth):not(.btn-start):not(.btn-submit):not(.cta-btn):not(.nav-cta):not(.btn-white):not(.btn-outline):not(.btn-edit):not(.btn-nav):not(.btn-social):not(.tc-btn):not(.back-btn) {
   color: color-mix(in srgb, var(--vs-primary) 88%, #2c4fff 12%);
 }
 
-html:not([data-theme="dark"]) :where(a):not(.btn):not(.btn-primary):not(.btn-book):not(.btn-auth):not(.btn-start):not(.btn-submit):not(.cta-btn):not(.nav-cta):not(.btn-white):not(.btn-outline):not(.btn-edit):not(.btn-nav):not(.btn-social):hover {
+html:not([data-theme="dark"]) :where(a):not(.btn):not(.btn-primary):not(.btn-book):not(.btn-book-now):not(.btn-auth):not(.btn-start):not(.btn-submit):not(.cta-btn):not(.nav-cta):not(.btn-white):not(.btn-outline):not(.btn-edit):not(.btn-nav):not(.btn-social):not(.tc-btn):not(.back-btn):hover {
   color: var(--vs-primary-hover);
 }
 
-html:not([data-theme="dark"]) :where(a.btn-primary, a.btn-book, a.btn-auth, a.btn-start, a.btn-submit, a.cta-btn, a.nav-cta) {
+/* Button-style anchor tags always get white text */
+:where(a.btn-primary, a.btn-book, a.btn-book-now, a.btn-auth, a.btn-start, a.btn-submit, a.cta-btn, a.nav-cta, a.tc-btn) {
   color: #fff !important;
+  text-decoration: none;
 }
 
 /* Contrast-safety overrides for recurring warning/coin styles */
-:where(
-  .pill-gold,
+:where(.pill-gold,
   .badge-amber,
   .st-escrowed,
   .qt-daily,
   .qc-reward,
   .test-timer,
-  .coin-bonus-text strong
-) {
+  .coin-bonus-text strong) {
   color: var(--vs-warning-text) !important;
   background: var(--vs-warning-bg);
 }
 
 /* Ensure tiny white-meta labels remain readable in dark mode */
-[data-theme="dark"] :where(
-  .cta-note,
+[data-theme="dark"] :where(.cta-note,
   .coin-label,
   .xph-level,
   .xph-prog,
@@ -196,20 +197,17 @@ html:not([data-theme="dark"]) :where(a.btn-primary, a.btn-book, a.btn-auth, a.bt
   [style*="color:rgba(255,255,255,.4)"],
   [style*="color: rgba(255,255,255,.4)"],
   [style*="color:rgba(255,255,255,.5)"],
-  [style*="color: rgba(255,255,255,.5)"]
-) {
+  [style*="color: rgba(255,255,255,.5)"]) {
   color: color-mix(in srgb, var(--vs-text) 78%, #9fb4da 22%) !important;
 }
 
 /* Guardrail: amber/yellow backgrounds need dark foreground for readability */
-:where(
-  [style*="background:#F5A623"],
+:where([style*="background:#F5A623"],
   [style*="background: #F5A623"],
   [style*="background:var(--coin)"],
   [style*="background: var(--coin)"],
   [style*="background:#E8B042"],
-  [style*="background: #E8B042"]
-) {
+  [style*="background: #E8B042"]) {
   color: #1d2433 !important;
 }
 
@@ -219,8 +217,7 @@ html:not([data-theme="dark"]) :where(a.btn-primary, a.btn-book, a.btn-auth, a.bt
 }
 
 /* Global card treatment across existing page-specific card classes */
-:where(
-  .card,
+:where(.card,
   .stat-card,
   .session-card,
   .quest-card,
@@ -233,8 +230,7 @@ html:not([data-theme="dark"]) :where(a.btn-primary, a.btn-book, a.btn-auth, a.bt
   .booking-card,
   .panel,
   .empty-state,
-  .skill-card
-) {
+  .skill-card) {
   background: var(--vs-card);
   border: 1px solid var(--vs-border);
   border-radius: var(--radius-lg);
@@ -242,12 +238,32 @@ html:not([data-theme="dark"]) :where(a.btn-primary, a.btn-book, a.btn-auth, a.bt
   transition: box-shadow var(--motion-base), transform var(--motion-base), border-color var(--motion-base);
 }
 
-.sb-logo{font-family:'Playfair Display',serif;font-size:1.45rem;color:var(--ink);display:flex;align-items:center;text-decoration:none;font-weight:700}
-.logo-img{height:1.25em;width:auto;vertical-align:middle;margin-right:8px;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
-.logo-text{text-transform:lowercase;letter-spacing:0.5px}
+.sb-logo {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.45rem;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  font-weight: 800;
+  letter-spacing: -0.5px
+}
 
-:where(
-  .card,
+.logo-img {
+  height: 1.25em;
+  width: auto;
+  vertical-align: middle;
+  margin-right: 8px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08)
+}
+
+.logo-text {
+  text-transform: lowercase;
+  letter-spacing: 0.5px
+}
+
+:where(.card,
   .stat-card,
   .session-card,
   .quest-card,
@@ -259,16 +275,14 @@ html:not([data-theme="dark"]) :where(a.btn-primary, a.btn-book, a.btn-auth, a.bt
   .teacher-card,
   .booking-card,
   .panel,
-  .skill-card
-):hover {
+  .skill-card):hover {
   box-shadow: var(--shadow-md);
   border-color: color-mix(in srgb, var(--vs-primary) 24%, var(--vs-border));
   transform: translateY(-1px);
 }
 
 /* Unified button baseline (keeps existing classes but normalizes visuals) */
-:where(
-  .btn,
+:where(.btn,
   .btn-primary,
   .btn-outline,
   .btn-book,
@@ -285,8 +299,7 @@ html:not([data-theme="dark"]) :where(a.btn-primary, a.btn-book, a.btn-auth, a.bt
   .es-btn,
   .wh-btn,
   button,
-  [role="button"]
-) {
+  [role="button"]) {
   border-radius: var(--radius-md);
   transition: background-color var(--motion-fast), color var(--motion-fast), border-color var(--motion-fast), box-shadow var(--motion-fast), transform var(--motion-fast);
 }
@@ -377,8 +390,7 @@ html:not([data-theme="dark"]) :where(a.btn-primary, a.btn-book, a.btn-auth, a.bt
   color: var(--ink, var(--vs-text)) !important;
 }
 
-[data-theme="dark"] :where(
-  .sidebar,
+[data-theme="dark"] :where(.sidebar,
   .topbar,
   .mobile-menu,
   .filter-bar,
@@ -403,16 +415,14 @@ html:not([data-theme="dark"]) :where(a.btn-primary, a.btn-book, a.btn-auth, a.bt
   .teacher-card,
   .panel,
   .empty-state,
-  .skill-card
-) {
+  .skill-card) {
   background: linear-gradient(180deg, color-mix(in srgb, var(--card, var(--vs-card)) 90%, #9ebeff 10%), var(--card, var(--vs-card))) !important;
   border-color: var(--border, var(--vs-border)) !important;
   box-shadow: var(--shadow-sm);
   color: var(--ink, var(--vs-text));
 }
 
-[data-theme="dark"] :where(
-  .card,
+[data-theme="dark"] :where(.card,
   .stat-card,
   .session-card,
   .quest-card,
@@ -421,14 +431,12 @@ html:not([data-theme="dark"]) :where(a.btn-primary, a.btn-book, a.btn-auth, a.bt
   .portfolio-item,
   .wallet-card,
   .teacher-card,
-  .skill-card
-):hover {
+  .skill-card):hover {
   border-color: color-mix(in srgb, var(--vs-primary) 50%, var(--border, var(--vs-border))) !important;
   box-shadow: var(--shadow-md), 0 0 0 1px rgba(155, 139, 255, 0.1);
 }
 
-[data-theme="dark"] :where(
-  .icon-btn,
+[data-theme="dark"] :where(.icon-btn,
   .ham-btn,
   .btn-outline,
   .btn-white,
@@ -444,21 +452,18 @@ html:not([data-theme="dark"]) :where(a.btn-primary, a.btn-book, a.btn-auth, a.bt
   .cat-tab,
   .filter-select,
   .btn-load,
-  .toggle-thumb
-) {
+  .toggle-thumb) {
   background: color-mix(in srgb, var(--card, var(--vs-card)) 88%, #0d1d36 12%) !important;
   border-color: var(--border, var(--vs-border)) !important;
   color: var(--ink, var(--vs-text)) !important;
 }
 
-[data-theme="dark"] :where(
-  .btn-primary,
+[data-theme="dark"] :where(.btn-primary,
   .btn-book,
   .btn-auth,
   .btn-start,
   .btn-submit,
-  .cta-btn
-) {
+  .cta-btn) {
   background: linear-gradient(180deg, color-mix(in srgb, var(--vs-primary) 78%, #ffffff 22%), var(--vs-primary)) !important;
   border-color: color-mix(in srgb, var(--vs-primary) 80%, #ffffff 20%) !important;
   color: #fff !important;
@@ -469,8 +474,7 @@ html:not([data-theme="dark"]) :where(a.btn-primary, a.btn-book, a.btn-auth, a.bt
   background: linear-gradient(180deg, color-mix(in srgb, var(--vs-primary-hover) 84%, #ffffff 16%), var(--vs-primary-hover)) !important;
 }
 
-[data-theme="dark"] :where(
-  input,
+[data-theme="dark"] :where(input,
   select,
   textarea,
   .form-input,
@@ -480,15 +484,13 @@ html:not([data-theme="dark"]) :where(a.btn-primary, a.btn-book, a.btn-auth, a.bt
   .topbar-search input,
   .note-input,
   .notes-textarea,
-  .editable
-) {
+  .editable) {
   background: color-mix(in srgb, var(--card, var(--vs-card)) 84%, #0f264a 16%) !important;
   border-color: var(--border, var(--vs-border)) !important;
   color: var(--ink, var(--vs-text)) !important;
 }
 
-[data-theme="dark"] :where(
-  .sys-msg,
+[data-theme="dark"] :where(.sys-msg,
   .stat-row,
   .modal-detail,
   .escrow-info,
@@ -499,25 +501,31 @@ html:not([data-theme="dark"]) :where(a.btn-primary, a.btn-book, a.btn-auth, a.bt
   .skill-tag,
   .pill-gray,
   .chat-input-area,
-  .cp-header
-) {
+  .cp-header) {
   background: color-mix(in srgb, var(--surface, var(--vs-surface)) 82%, #142a49 18%) !important;
   border-color: var(--border, var(--vs-border)) !important;
   color: var(--body, var(--vs-muted)) !important;
 }
 
-[data-theme="dark"] :where(
-  .pill,
-  .pill-indigo,
-  #topicChips button
-) {
+[data-theme="dark"] :where(.pill, .pill-indigo) {
   background: color-mix(in srgb, var(--card, var(--vs-card)) 84%, #163159 16%) !important;
   color: var(--body, var(--vs-muted)) !important;
   border-color: color-mix(in srgb, var(--vs-primary) 28%, var(--border, var(--vs-border))) !important;
 }
 
-[data-theme="dark"] :where(
-  h1,
+/* Topic chips: dark-mode base, but active state must stay visible */
+[data-theme="dark"] #topicChips button:not(.chip-active) {
+  background: color-mix(in srgb, var(--card, var(--vs-card)) 84%, #163159 16%) !important;
+  color: var(--body, var(--vs-muted)) !important;
+  border-color: color-mix(in srgb, var(--vs-primary) 28%, var(--border, var(--vs-border))) !important;
+}
+[data-theme="dark"] #topicChips button.chip-active {
+  background: color-mix(in srgb, var(--teal, #16a27b) 18%, var(--card, var(--vs-card))) !important;
+  color: var(--teal, #16a27b) !important;
+  border-color: var(--teal, #16a27b) !important;
+}
+
+[data-theme="dark"] :where(h1,
   h2,
   h3,
   h4,
@@ -537,13 +545,11 @@ html:not([data-theme="dark"]) :where(a.btn-primary, a.btn-book, a.btn-auth, a.bt
   .bc-title,
   .tx-title,
   .session-title,
-  .question-text
-) {
+  .question-text) {
   color: var(--ink, var(--vs-text)) !important;
 }
 
-[data-theme="dark"] :where(
-  p,
+[data-theme="dark"] :where(p,
   small,
   label,
   .page-sub,
@@ -559,8 +565,7 @@ html:not([data-theme="dark"]) :where(a.btn-primary, a.btn-book, a.btn-auth, a.bt
   .bc-desc,
   .tx-meta,
   .session-topic,
-  .verify-text
-) {
+  .verify-text) {
   color: var(--body, var(--vs-muted));
 }
 
@@ -572,10 +577,8 @@ html:not([data-theme="dark"]) :where(a.btn-primary, a.btn-book, a.btn-auth, a.bt
   color: var(--vs-primary-hover);
 }
 
-[data-theme="dark"] :where(
-  .spinner,
-  .spinner-white
-) {
+[data-theme="dark"] :where(.spinner,
+  .spinner-white) {
   border-color: rgba(255, 255, 255, 0.3) !important;
   border-top-color: #fff !important;
 }
@@ -603,8 +606,7 @@ html:not([data-theme="dark"]) :where(a.btn-primary, a.btn-book, a.btn-auth, a.bt
 }
 
 /* Landing/Login/Dashboard targeted dark-mode fixes */
-[data-theme="dark"] :where(
-  nav,
+[data-theme="dark"] :where(nav,
   footer,
   .hero,
   .trust-bar,
@@ -622,8 +624,7 @@ html:not([data-theme="dark"]) :where(a.btn-primary, a.btn-book, a.btn-auth, a.bt
   .topbar,
   .session-row,
   .skill-card,
-  .stat-card
-) {
+  .stat-card) {
   background: var(--card, var(--vs-card)) !important;
   border-color: var(--border, var(--vs-border)) !important;
 }
@@ -667,4 +668,58 @@ html:not([data-theme="dark"]) :where(a.btn-primary, a.btn-book, a.btn-auth, a.bt
     padding-left: var(--space-md);
     padding-right: var(--space-md);
   }
+}
+
+/* --- UI-UX-PRO-MAX Refactor Styles --- */
+
+/* Lucide Icon Inline Alignment */
+.icon-inline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  width: 1.2em;
+  height: 1.2em;
+  stroke-width: 2.2;
+}
+
+/* General SVG Icon Styling */
+svg.lucide {
+  vertical-align: middle;
+}
+
+/* Enforce Cursor Pointer */
+:where(.cursor-pointer, .card, .stat-card, .session-card, .quest-card, .bc, .tc, .portfolio-item, .wallet-card, .review-card, .teacher-card, .booking-card, .panel, .skill-card) {
+  cursor: pointer;
+}
+
+/* THEME TOGGLE (injected by dark-mode.js) */
+#vs-theme-toggle {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 9999;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  color: var(--body);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  transition: all 0.22s ease;
+}
+#vs-theme-toggle:hover {
+  border-color: var(--indigo);
+  color: var(--indigo);
+  transform: scale(1.08);
+  box-shadow: 0 6px 24px rgba(99, 102, 241, 0.2);
+}
+[data-theme="dark"] #vs-theme-toggle {
+  background: rgba(13, 24, 41, 0.95);
+  border-color: rgba(129, 140, 248, 0.25);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }

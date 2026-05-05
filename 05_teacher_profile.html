@@ -1,635 +1,2125 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" href="logo-v.png" type="image/png">
-<title>Vidyasetu — Teacher Profile</title>
-<link rel="stylesheet" href="ui-system.css">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--ink:#0D0D1A;--indigo:#5B45E0;--indigo-light:#F0EEF9;--indigo-dark:#3D2DB8;--teal:#16A27B;--teal-light:#F0FAF6;--coin:#F5A623;--coin-light:#FFF9EF;--danger:#E84040;--surface:#F7F8FA;--card:#FFFFFF;--border:#E5E7EB;--muted:#9CA3AF;--body:#4B5563;--sidebar:256px}
-body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--ink);display:flex;min-height:100vh}
-/* SIDEBAR */
-.sidebar{width:var(--sidebar);background:#fff;border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50;transition:transform .3s}
-.sb-top{padding:1.5rem 1.2rem 1rem;border-bottom:1px solid var(--border)}
-.sb-logo{font-family:'DM Serif Display',serif;font-size:1.35rem;color:var(--ink);display:flex;align-items:center;gap:8px;text-decoration:none}
-.sb-logo span{color:var(--indigo)}
-.sb-nav{flex:1;padding:1rem .8rem;overflow-y:auto}
-.sb-section{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:.4rem .6rem;margin-top:1rem;margin-bottom:.3rem}
-.sb-item{display:flex;align-items:center;gap:.75rem;padding:.65rem .8rem;border-radius:9px;text-decoration:none;color:var(--body);font-size:.9rem;font-weight:500;transition:all .18s;cursor:pointer;border:none;background:none;width:100%;text-align:left}
-.sb-item:hover{background:var(--surface);color:var(--ink)}
-.sb-item.active{background:var(--indigo-light);color:var(--indigo);font-weight:600}
-.sb-item .icon{width:20px;text-align:center;font-size:1rem;flex-shrink:0}
-.sb-item .badge{margin-left:auto;background:var(--indigo);color:#fff;font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:99px}
-.sb-bottom{padding:1rem 1.2rem;border-top:1px solid var(--border)}
-.sb-user{display:flex;align-items:center;gap:.75rem}
-.sb-avatar{width:40px;height:40px;border-radius:50%;background:var(--indigo);color:#fff;font-weight:700;font-size:.9rem;display:flex;align-items:center;justify-content:center}
-.sb-name{font-size:.88rem;font-weight:600;color:var(--ink)}
-.sb-coin{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--coin);font-weight:600}
-.main{margin-left:var(--sidebar);flex:1;min-width:0}
-.topbar{background:#fff;border-bottom:1px solid var(--border);padding:0 2rem;height:60px;display:flex;align-items:center;gap:1rem;position:sticky;top:0;z-index:40}
-.back-btn{display:flex;align-items:center;gap:.4rem;font-size:.88rem;font-weight:600;color:var(--body);text-decoration:none;transition:color .2s}
-.back-btn:hover{color:var(--indigo)}
-.topbar-right{margin-left:auto;display:flex;align-items:center;gap:.75rem}
-.icon-btn{width:38px;height:38px;border-radius:9px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:1rem;color:var(--body)}
-.icon-btn:hover{border-color:var(--indigo);color:var(--indigo)}
-.content{padding:2rem;max-width:1100px}
-/* PROFILE HEADER CARD */
-.profile-hero{background:#fff;border:1px solid var(--border);border-radius:20px;padding:2rem;margin-bottom:1.5rem;position:relative;overflow:hidden}
-.ph-banner{position:absolute;top:0;left:0;right:0;height:100px;background:linear-gradient(135deg,var(--indigo),var(--indigo-dark));opacity:.08;pointer-events:none}
-.ph-body{display:flex;gap:1.5rem;align-items:flex-start;flex-wrap:wrap}
-.ph-avatar{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:1.6rem;flex-shrink:0;border:3px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,.1)}
-.ph-info{flex:1;min-width:0}
-.ph-name{font-family:'DM Serif Display',serif;font-size:1.7rem;color:var(--ink);margin-bottom:.2rem}
-.ph-college{font-size:.9rem;color:var(--body);margin-bottom:.6rem}
-.ph-tags{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.8rem}
-.pill{display:inline-flex;align-items:center;gap:4px;border-radius:99px;padding:.25rem .65rem;font-size:.76rem;font-weight:600}
-.pill-indigo{background:var(--indigo-light);color:var(--indigo)}
-.pill-teal{background:var(--teal-light);color:var(--teal)}
-.pill-gold{background:var(--coin-light);color:var(--vs-warning-text)}
-.pill-gray{background:var(--surface);color:var(--body);border:1px solid var(--border)}
-.pill-green{background:rgba(22,162,123,.1);color:var(--teal)}
-.ph-bio{font-size:.9rem;color:var(--body);line-height:1.7;max-width:560px}
-.ph-actions{display:flex;flex-direction:column;gap:.6rem;align-items:flex-end;flex-shrink:0}
-.btn-book{background:var(--indigo);color:#fff;padding:.8rem 1.8rem;border-radius:10px;border:none;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:600;cursor:pointer;transition:all .25s;white-space:nowrap}
-.btn-book:hover{background:var(--indigo-dark);transform:translateY(-2px);box-shadow:0 8px 25px rgba(91,69,224,.3)}
-.btn-msg{background:transparent;color:var(--indigo);padding:.75rem 1.6rem;border-radius:10px;border:1.5px solid var(--indigo);font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
-.btn-msg:hover{background:var(--indigo-light)}
-.ph-rate{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--muted);text-align:right}
-.ph-rate strong{color:var(--coin);font-size:1rem}
-/* STATS ROW */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem}
-.stat-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:1.2rem 1.5rem;text-align:center}
-.stat-num{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:600;color:var(--ink)}
-.stat-label{font-size:.78rem;color:var(--muted);margin-top:.2rem}
-/* TWO COLUMN LAYOUT */
-.two-col{display:grid;grid-template-columns:1fr 340px;gap:1.5rem;align-items:start}
-.card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:1.4rem;margin-bottom:1.2rem}
-.card-title{font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:1.1rem;display:flex;align-items:center;gap:.4rem}
-/* SKILL SECTION */
-.skill-block{margin-bottom:1.4rem}
-.skill-block:last-child{margin-bottom:0}
-.sb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem}
-.sb-label{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
-.skill-tags{display:flex;gap:.5rem;flex-wrap:wrap}
-.skill-tag{display:flex;align-items:center;gap:.4rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.35rem .75rem;font-size:.82rem;font-weight:500;color:var(--body)}
-.skill-tag.teach{background:var(--teal-light);border-color:rgba(22,162,123,.2);color:var(--teal)}
-.skill-tag .tier-icon{font-size:.85rem}
-/* VERIFICATION */
-.verify-card{background:linear-gradient(135deg,rgba(22,162,123,.04),rgba(22,162,123,.01));border:1px solid rgba(22,162,123,.2);border-radius:12px;padding:1rem 1.2rem;display:flex;align-items:center;gap:.75rem;margin-bottom:1rem}
-.verify-icon{font-size:1.5rem}
-.verify-text{font-size:.85rem;color:var(--body);line-height:1.5}
-.verify-text strong{color:var(--teal)}
-/* AVAILABILITY CALENDAR */
-.avail-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:.75rem}
-.avail-day-label{text-align:center;font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;padding:.2rem 0}
-.avail-slot{border-radius:6px;padding:.3rem .2rem;text-align:center;font-size:.7rem;font-weight:600;cursor:pointer;transition:all .15s;border:1.5px solid transparent}
-.avail-slot.free{background:var(--teal-light);color:var(--teal);border-color:rgba(22,162,123,.2)}
-.avail-slot.free:hover{background:var(--teal);color:#fff}
-.avail-slot.busy{background:var(--surface);color:var(--muted);cursor:default}
-.avail-slot.selected{background:var(--indigo);color:#fff;border-color:var(--indigo)}
-.avail-time{font-size:.68rem;color:var(--muted);margin-top:.1rem}
-/* REVIEWS */
-.review-item{padding:1rem 0;border-bottom:1px solid var(--surface)}
-.review-item:last-child{border-bottom:none}
-.rev-top{display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem}
-.rev-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:.75rem;flex-shrink:0}
-.rev-name{font-size:.85rem;font-weight:600;color:var(--ink)}
-.rev-date{font-size:.75rem;color:var(--muted);margin-left:auto}
-.rev-stars{color:var(--coin);font-size:.85rem}
-.rev-text{font-size:.85rem;color:var(--body);line-height:1.6;font-style:italic}
-.rev-skill{font-size:.72rem;background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:.15rem .55rem;color:var(--muted);margin-top:.5rem;display:inline-block}
-/* RATING BREAKDOWN */
-.rating-bar-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem}
-.rb-label{font-size:.78rem;color:var(--body);width:32px}
-.rb-track{flex:1;height:6px;background:var(--surface);border-radius:3px;overflow:hidden}
-.rb-fill{height:100%;border-radius:3px;background:var(--coin)}
-.rb-count{font-size:.75rem;color:var(--muted);width:20px;text-align:right}
-/* STICKY BOOKING CARD */
-.booking-card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:1.4rem;position:sticky;top:76px}
-.bc-rate{display:flex;align-items:baseline;gap:.4rem;margin-bottom:1.2rem}
-.bc-coins{font-family:'JetBrains Mono',monospace;font-size:1.8rem;font-weight:600;color:var(--coin)}
-.bc-label{font-size:.85rem;color:var(--muted)}
-.bc-section{margin-bottom:1rem}
-.bc-section-label{font-size:.76rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem}
-.duration-btns{display:flex;gap:.4rem}
-.dur-btn{flex:1;padding:.5rem;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;background:#fff;color:var(--body);transition:all .2s;text-align:center}
-.dur-btn:hover{border-color:rgba(91,69,224,.3);color:var(--indigo)}
-.dur-btn.active{background:var(--indigo-light);border-color:var(--indigo);color:var(--indigo)}
-.escrow-note{background:var(--teal-light);border:1px solid rgba(22,162,123,.2);border-radius:10px;padding:.75rem;font-size:.78rem;color:var(--teal);line-height:1.5;margin-bottom:1rem}
-.coin-total{background:var(--coin-light);border:1px solid rgba(245,166,35,.2);border-radius:10px;padding:.9rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
-.ct-label{font-size:.82rem;color:var(--body)}
-.ct-amount{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;color:var(--coin)}
-.btn-book-now{width:100%;padding:.85rem;background:var(--indigo);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:600;cursor:pointer;transition:all .25s}
-.btn-book-now:hover{background:var(--indigo-dark);box-shadow:0 6px 20px rgba(91,69,224,.3)}
-.bc-guarantee{display:flex;align-items:center;gap:.5rem;font-size:.74rem;color:var(--muted);margin-top:.75rem;justify-content:center}
-/* RESPONSIVE */
-@media(max-width:900px){
-  .sidebar{transform:translateX(-100%)}
-  .sidebar.open{transform:translateX(0)}
-  .main{margin-left:0}
-  .two-col{grid-template-columns:1fr}
-  .stats-row{grid-template-columns:repeat(2,1fr)}
-  .ph-actions{align-items:flex-start}
-  #hamBtn{display:flex!important}
-}
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:49}
-.overlay.open{display:block}
-.ham-btn{display:none;width:38px;height:38px;border-radius:9px;border:1.5px solid var(--border);background:#fff;align-items:center;justify-content:center;cursor:pointer;flex-direction:column;gap:5px;flex-shrink:0}
-.ham-btn span{width:16px;height:1.5px;background:var(--ink);border-radius:2px}
-</style>
-<style>
-[data-theme="dark"] {
-  --ink: #EBE5DF;
-  --indigo: #8A78E5;
-  --indigo-light: rgba(138, 120, 229, 0.15);
-  --indigo-dark: #7463D0;
-  --teal: #45B08C;
-  --teal-light: rgba(69, 176, 140, 0.15);
-  --coin: #E8B042;
-  --coin-light: rgba(232, 176, 66, 0.15);
-  --danger: #D96161;
-  --surface: #1C1A19;
-  --card: #252220;
-  --border: #36312E;
-  --muted: #8C8279;
-  --body: #BDB3A8;
-}
-</style>
-<script>
-  (() => {
-    const t = localStorage.getItem('vs-theme');
-    if (t === 'dark') {
-      document.documentElement.setAttribute('data-theme', 'dark');
-    }
-  })();
-</script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js"></script>
-<script src="api.js"></script>
-<script src="demo-data.js"></script>
-</head>
-<body>
-
-<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
-
-<aside class="sidebar" id="sidebar">
-  <div class="sb-top"><a href="index.html" class="sb-logo"><img src="logo-v.png" alt="V" class="logo-img"><span class="logo-text">vidyasetu</span></a></div>
-  <nav class="sb-nav">
-    <div class="sb-section">Main</div>
-    <a href="03_dashboard.html" class="sb-item"><span class="icon">🏠</span> Dashboard</a>
-    <a href="04_explore.html" class="sb-item active"><span class="icon">🔍</span> Explore Teachers</a>
-    <a href="09_bounty.html" class="sb-item"><span class="icon">🎯</span> Bounty Hub <span class="badge" id="sb-bounty-badge">0</span></a>
-    <a href="14_game_learn.html" class="sb-item"><span class="icon">🎮</span> Code Quest</a>
-    <div class="sb-section">Messages</div>
-    <a href="16_messages.html" class="sb-item"><span class="icon">💬</span> My Inbox <span class="badge" id="sb-unread-count" style="display:none">0</span></a>
-    <div class="sb-section">My Learning</div>
-    <a href="11_my_sessions.html" class="sb-item"><span class="icon">📅</span> My Sessions</a>
-    <a href="13_skill_verify.html" class="sb-item"><span class="icon">🎓</span> Verify Skills</a>
-    <a href="08_wallet.html" class="sb-item"><span class="icon">🪙</span> Wallet</a>
-    <div class="sb-section">Account</div>
-    <a href="12_my_profile.html" class="sb-item"><span class="icon">👤</span> My Profile</a>
-    <a href="12_my_profile.html" class="sb-item"><span class="icon">⚙️</span> Settings</a>
-  </nav>
-  <div class="sb-bottom" id="sb-user-area">
-    <div class="sb-user">
-      <div class="sb-avatar">...</div>
-      <div>
-        <div class="sb-name">Loading...</div>
-        <div class="sb-coin">...</div>
-      </div>
-    </div>
-  </div>
-</aside>
-
-<div class="main">
-  <div class="topbar">
-    <button class="ham-btn" id="hamBtn" style="display:none" onclick="openSidebar()"><span></span><span></span><span></span></button>
-    <a href="04_explore.html" class="back-btn">← Back to Explore</a>
-    <div class="topbar-right">
-      <button class="icon-btn">🔔</button>
-      <button class="icon-btn" onclick="window.location.href='16_messages.html'">💬</button>
-    </div>
-  </div>
-
-  <div class="content" id="profileContent">
-    <!-- PROFILE HERO -->
-    <div class="profile-hero">
-      <div class="ph-banner"></div>
-      <div class="ph-body">
-        <div class="ph-avatar" id="phAvatar" style="background:#5B45E0">PV</div>
-        <div class="ph-info">
-          <h1 class="ph-name" id="phName">Loading...</h1>
-          <p class="ph-college" id="phCollege">🎓 IIT Delhi · B.Tech Computer Science · Final Year</p>
-          <div class="ph-tags" id="phTags">
-            <span class="pill pill-gold">🥇 Gold Expert</span>
-            <span class="pill pill-green">🟢 Online Now</span>
-            <span class="pill pill-indigo">⚡ Fast Responder</span>
-            <span class="pill pill-teal">📜 Verified Teacher</span>
-          </div>
-          <p class="ph-bio" id="phBio">Loading teacher bio...</p>
-        </div>
-        <div class="ph-actions">
-          <button class="btn-book" onclick="window.location.href='06_booking.html'">Book a Session →</button>
-          <button class="btn-msg" onclick="openMsgModal()">💬 Send Message</button>
-          <div class="ph-rate" id="phRate">...</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- STATS ROW -->
-    <div class="stats-row" id="statsRow">
-      <div class="stat-card">
-        <div class="stat-num" id="statRating">...</div>
-        <div class="stat-label">⭐ Avg Rating</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="statSessions">...</div>
-        <div class="stat-label">📅 Sessions Done</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="statReviews">...</div>
-        <div class="stat-label">💬 Reviews</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="statCompletion">...</div>
-        <div class="stat-label">✅ Completion Rate</div>
-      </div>
-    </div>
-
-    <!-- TWO COLUMN -->
-    <div class="two-col">
-      <!-- LEFT COLUMN -->
-      <div>
-        <!-- SKILLS CARD -->
-        <div class="card">
-          <div class="card-title">🎓 Skills & Verification</div>
-          <div class="verify-card" id="verifyCard">
-            <span class="verify-icon">🛡️</span>
-            <div class="verify-text" id="verifyText"><strong>MCQ Verified Teacher</strong> — Priya passed our automated skill test with 92% accuracy (Gold tier threshold: 85%). Last verified 2 weeks ago.</div>
-          </div>
-          <div class="skill-block">
-            <div class="sb-header"><span class="sb-label">Teaches (Verified)</span></div>
-            <div class="skill-tags" id="teachSkills">
-              <div class="skill-tag teach"><span class="tier-icon">🥇</span> React — Gold</div>
-              <div class="skill-tag teach"><span class="tier-icon">🥇</span> JavaScript — Gold</div>
-              <div class="skill-tag teach"><span class="tier-icon">🥈</span> TypeScript — Silver</div>
-              <div class="skill-tag teach"><span class="tier-icon">🥈</span> Next.js — Silver</div>
-            </div>
-          </div>
-          <div class="skill-block">
-            <div class="sb-header"><span class="sb-label">Wants to Learn</span></div>
-            <div class="skill-tags" id="wantSkills">
-              <div class="skill-tag">Machine Learning</div>
-              <div class="skill-tag">Data Analysis</div>
-              <div class="skill-tag">Python Advanced</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- REVIEWS CARD -->
-        <div class="card">
-          <div class="card-title" id="reviewTitle">⭐ Reviews (34)</div>
-          <!-- Rating breakdown -->
-          <div style="display:flex;gap:1.5rem;margin-bottom:1.4rem;align-items:center">
-            <div style="text-align:center">
-              <div style="font-family:'DM Serif Display',serif;font-size:3rem;color:var(--ink);line-height:1" id="bigRating">4.9</div>
-              <div style="color:var(--coin);font-size:1.1rem;margin:.2rem 0" id="bigStars">★★★★★</div>
-              <div style="font-size:.75rem;color:var(--muted)" id="reviewCount">34 reviews</div>
-            </div>
-            <div style="flex:1">
-              <div class="rating-bar-row"><span class="rb-label">5★</span><div class="rb-track"><div class="rb-fill" style="width:88%"></div></div><span class="rb-count">30</span></div>
-              <div class="rating-bar-row"><span class="rb-label">4★</span><div class="rb-track"><div class="rb-fill" style="width:9%"></div></div><span class="rb-count">3</span></div>
-              <div class="rating-bar-row"><span class="rb-label">3★</span><div class="rb-track"><div class="rb-fill" style="width:3%"></div></div><span class="rb-count">1</span></div>
-              <div class="rating-bar-row"><span class="rb-label">2★</span><div class="rb-track"><div class="rb-fill" style="width:0%"></div></div><span class="rb-count">0</span></div>
-              <div class="rating-bar-row"><span class="rb-label">1★</span><div class="rb-track"><div class="rb-fill" style="width:0%"></div></div><span class="rb-count">0</span></div>
-            </div>
-          </div>
-
-          <div id="reviewsList">
-            <div style="padding:2rem;text-align:center;color:var(--muted)">Loading reviews...</div>
-          </div>
-          <button style="width:100%;margin-top:1rem;padding:.65rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;color:var(--body);transition:all .2s" onmouseover="this.style.borderColor='rgba(91,69,224,.3)';this.style.color='var(--indigo)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--body)'" id="viewAllReviews">View all 34 reviews →</button>
-        </div>
-
-        <!-- AVAILABILITY CALENDAR -->
-        <div class="card">
-          <div class="card-title">📅 Availability — This Week</div>
-          <div class="avail-grid" id="availGrid"></div>
-          <p style="font-size:.75rem;color:var(--muted);margin-top:.5rem">
-            <span style="display:inline-block;width:10px;height:10px;background:var(--teal-light);border:1px solid rgba(22,162,123,.3);border-radius:3px;margin-right:3px;vertical-align:middle"></span>Available &nbsp;
-            <span style="display:inline-block;width:10px;height:10px;background:var(--surface);border:1px solid var(--border);border-radius:3px;margin-right:3px;vertical-align:middle"></span>Busy
-          </p>
-        </div>
-      </div>
-
-      <!-- RIGHT COLUMN: STICKY BOOKING CARD -->
-      <div>
-        <div class="booking-card">
-          <div class="bc-rate">
-            <span class="bc-coins" id="bcCoins">🪙 2</span>
-            <span class="bc-label">coins per hour</span>
-          </div>
-          <div class="bc-section">
-            <div class="bc-section-label">Session Duration</div>
-            <div class="duration-btns">
-              <button class="dur-btn" onclick="setDuration(this,1)">1h</button>
-              <button class="dur-btn active" onclick="setDuration(this,1.5)">1.5h</button>
-              <button class="dur-btn" onclick="setDuration(this,2)">2h</button>
-            </div>
-          </div>
-          <div class="bc-section">
-            <div class="bc-section-label">Pick a slot</div>
-            <div style="display:flex;gap:.5rem;flex-wrap:wrap" id="timeSlots">
-              <button class="dur-btn active" onclick="selectTime(this,'10:00 AM')">10:00 AM</button>
-              <button class="dur-btn" onclick="selectTime(this,'2:00 PM')">2:00 PM</button>
-              <button class="dur-btn" onclick="selectTime(this,'4:00 PM')">4:00 PM</button>
-              <button class="dur-btn" onclick="selectTime(this,'7:00 PM')">7:00 PM</button>
-            </div>
-          </div>
-          <div class="escrow-note">🔒 <strong>Escrow protected:</strong> Coins are held safely until session completes. If disconnected, coins are released pro-rata.</div>
-          <div class="coin-total">
-            <div class="ct-label" id="ctLabel">Total to escrow<br><span style="font-size:.72rem;color:var(--muted)">1.5h × 🪙2/hr</span></div>
-            <div class="ct-amount" id="coinTotal">🪙 3.0</div>
-          </div>
-          <button class="btn-book-now" onclick="window.location.href='06_booking.html'">Book Now — 🪙 3 coins →</button>
-          <div class="bc-guarantee">🛡️ 15-min free trial &nbsp;·&nbsp; Full refund if not satisfied</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- SEND MESSAGE MODAL -->
-<div id="msgModal" class="modal-overlay">
-  <div class="modal-card">
-    <div class="modal-header">
-      <h3 id="modalTitle">Message Teacher</h3>
-      <button class="close-btn" onclick="closeMsgModal()">×</button>
-    </div>
-    <div class="modal-body">
-      <textarea id="msgBody" class="modal-textarea" placeholder="Hi! I have a question about your React sessions..."></textarea>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-secondary" onclick="closeMsgModal()">Cancel</button>
-      <button class="btn-primary" id="sendMsgBtn" onclick="submitMsg()">Send Message</button>
-    </div>
-  </div>
-</div>
-
-<style>
-.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
-.modal-card { background: var(--card); border-radius: 16px; width: 90%; max-width: 480px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); border: 1px solid var(--border); overflow: hidden; }
-.modal-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-.modal-header h3 { font-family: 'DM Serif Display', serif; font-size: 1.25rem; color: var(--ink); }
-.close-btn { background: none; border: none; font-size: 1.5rem; color: var(--muted); cursor: pointer; }
-.modal-body { padding: 1.5rem; }
-.modal-textarea { width: 100%; height: 120px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--surface); padding: 1rem; font-family: inherit; font-size: .95rem; outline: none; resize: none; color: var(--ink); }
-.modal-textarea:focus { border-color: var(--indigo); }
-.modal-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: .75rem; background: var(--surface); }
-.btn-primary { background: var(--indigo); color: #fff; border: none; padding: .6rem 1.5rem; border-radius: 9px; font-weight: 600; cursor: pointer; }
-.btn-secondary { background: transparent; color: var(--body); border: 1px solid var(--border); padding: .6rem 1.5rem; border-radius: 9px; font-weight: 600; cursor: pointer; }
-</style>
-
-<script>
-// ═══ TEACHERS DATA ═══
-// Removed hardcoded TEACHERS object.
-
-const tierBadge = {gold:'🥇 Gold Expert',silver:'🥈 Silver',bronze:'🥉 Bronze'};
-const tierIcon = {gold:'🥇',silver:'🥈',bronze:'🥉'};
-
-// Parse URL param
-const urlParams = new URLSearchParams(window.location.search);
-const teacherId = urlParams.get('id');
-
-async function initProfile() {
-  VS.ui.updateSidebar();
-  
-  if (!teacherId) {
-    document.getElementById('profileContent').innerHTML = '<div style="padding:4rem;text-align:center"><h2>Teacher not found</h2><a href="04_explore.html" class="btn-book" style="display:inline-block;margin-top:1rem">Back to Explore</a></div>';
-    return;
-  }
-
-  try {
-    // Fetch teacher details from API
-    const t = await VS.api.getTeacher(teacherId);
-    if (!t) throw new Error('Teacher not found');
-
-    // Populate profile
-    const avatarEl = document.getElementById('phAvatar');
-    avatarEl.style.background = t.color || 'var(--indigo)';
-    avatarEl.textContent = t.initials || (t.name ? t.name.split(' ').map(n=>n[0]).join('') : '??');
-    
-    document.getElementById('phName').textContent = t.name;
-    document.getElementById('phCollege').textContent = '🎓 ' + (t.college || 'Verified Student') + ' · ' + (t.year || '');
-    document.getElementById('phBio').textContent = t.bio || 'No bio provided.';
-    document.getElementById('phRate').innerHTML = '<strong>🪙 ' + (t.rate || 0) + ' coins</strong> / hour';
-    document.title = 'Vidyasetu — ' + t.name;
-
-    // Tags
-    const tagsEl = document.getElementById('phTags');
-    tagsEl.innerHTML = `
-      <span class="pill pill-gold">${tierBadge[t.tier] || '🥉 Verified'}</span>
-      ${t.online ? '<span class="pill pill-green">🟢 Online Now</span>' : '<span class="pill pill-gray">⚫ Offline</span>'}
-      <span class="pill pill-indigo">⚡ Fast Responder</span>
-      <span class="pill pill-teal">📜 Verified Teacher</span>
-    `;
-
-    // Stats
-    document.getElementById('statRating').textContent = t.rating || 'N/A';
-    document.getElementById('statSessions').textContent = t.sessions || 0;
-    document.getElementById('statReviews').textContent = t.reviews_count || 0;
-    if (document.getElementById('statCompletion')) {
-      document.getElementById('statCompletion').textContent = (t.completion_rate || '100') + '%';
-    }
-
-    // Skills
-    if (t.teaches) {
-      document.getElementById('teachSkills').innerHTML = t.teaches.map(s =>
-        `<div class="skill-tag teach"><span class="tier-icon">${tierIcon[t.tier] || '🥉'}</span> ${s}</div>`
-      ).join('');
-    }
-    if (t.wants) {
-      document.getElementById('wantSkills').innerHTML = t.wants.map(s =>
-        `<div class="skill-tag">${s}</div>`
-      ).join('');
-    }
-
-    // Verify text
-    document.getElementById('verifyText').innerHTML = `<strong>MCQ Verified Teacher</strong> — ${t.name.split(' ')[0]} passed our automated skill test. Last verified recently.`;
-
-    // Reviews (demo logic removed, should fetch real reviews)
-    document.getElementById('reviewTitle').textContent = '⭐ Reviews (' + (t.reviews_count || 0) + ')';
-    document.getElementById('bigRating').textContent = t.rating || '0.0';
-    document.getElementById('reviewCount').textContent = (t.reviews_count || 0) + ' reviews';
-    document.getElementById('viewAllReviews').textContent = 'View all ' + (t.reviews_count || 0) + ' reviews →';
-    document.getElementById('reviewsList').innerHTML = '<div style="padding:2rem;text-align:center;color:var(--muted)">No reviews yet.</div>';
-
-    // Load real availability from DB
-    loadAvailabilityGrid(teacherId);
-
-    // Booking card rate
-    window.ratePerHour = t.rate || 0;
-    document.getElementById('bcCoins').textContent = '🪙 ' + window.ratePerHour;
-    updateBookingTotal(1.5);
-
-  } catch (err) {
-    console.error('Profile error:', err);
-    document.getElementById('profileContent').innerHTML = `<div style="padding:4rem;text-align:center"><h2>Teacher not found</h2><p>${err.message}</p><a href="04_explore.html" class="btn-book" style="display:inline-block;margin-top:1rem">Back to Explore</a></div>`;
-  }
-}
-
-function updateBookingTotal(h) {
-  const rate = window.ratePerHour || 0;
-  document.getElementById('coinTotal').textContent = '🪙 ' + (rate * h).toFixed(1);
-  document.getElementById('ctLabel').innerHTML = 'Total to escrow<br><span style="font-size:.72rem;color:var(--muted)">' + h + 'h × 🪙' + rate + '/hr</span>';
-  const btn = document.querySelector('.btn-book-now');
-  if (btn) btn.textContent = 'Book Now — 🪙 ' + Math.round(rate * h) + ' coins →';
-}
-
-// Availability calendar
-async function loadAvailabilityGrid(teacherId) {
-  const gridEl = document.getElementById('availGrid');
-  if (!gridEl) return;
-  const daysArr = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  gridEl.innerHTML = daysArr.map(d => `<div class="avail-day-label">${d}</div>`).join('');
-
-  try {
-    const sb = window.supabase?.createClient
-      ? window.supabase.createClient(window.APP_CONFIG.SUPABASE_URL, window.APP_CONFIG.SUPABASE_ANON_KEY)
-      : null;
-    if (!sb) throw new Error('no sb');
-    const { data } = await sb.from('availability_slots')
-      .select('*').eq('teacher_id', teacherId).eq('is_active', true);
-
-    if (data && data.length > 0) {
-      const timeBuckets = ['9AM','11AM','1PM','3PM','5PM','7PM'];
-      const slotMatrix = Array(6).fill(null).map(() => Array(7).fill(0));
-      data.forEach(slot => {
-        if (slot.is_recurring && slot.day_of_week != null) {
-          const [h] = (slot.start_time || '').split(':');
-          const hour = parseInt(h);
-          const timeBucket = hour <= 10 ? 0 : hour <= 12 ? 1 : hour <= 14 ? 2 : hour <= 16 ? 3 : hour <= 18 ? 4 : 5;
-          slotMatrix[timeBucket][slot.day_of_week] = 1;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="logo-v.png" type="image/png" />
+    <title>Vidyasetu — Teacher Profile</title>
+    <link rel="stylesheet" href="ui-system.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --ink: #0d0d1a;
+        --indigo: #5b45e0;
+        --indigo-light: #f0eef9;
+        --indigo-dark: #3d2db8;
+        --teal: #16a27b;
+        --teal-light: #f0faf6;
+        --coin: #f5a623;
+        --coin-light: #fff9ef;
+        --danger: #e84040;
+        --surface: #f7f8fa;
+        --card: #ffffff;
+        --border: #e5e7eb;
+        --muted: #9ca3af;
+        --body: #4b5563;
+        --sidebar: 256px;
+      }
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--surface);
+        color: var(--ink);
+        display: flex;
+        min-height: 100dvh;
+        overflow-x: hidden;
+      }
+      /* SIDEBAR */
+      .sidebar {
+        width: var(--sidebar);
+        background: #fff;
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 50;
+        transition: transform 0.3s;
+      }
+      .sb-top {
+        padding: 1.5rem 1.2rem 1rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .sb-logo {
+        font-family: "DM Serif Display", serif;
+        font-size: 1.35rem;
+        color: var(--ink);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+      }
+      .sb-logo span {
+        color: var(--indigo);
+      }
+      .sb-nav {
+        flex: 1;
+        padding: 1rem 0.8rem;
+        overflow-y: auto;
+      }
+      .sb-section {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding: 0.4rem 0.6rem;
+        margin-top: 1rem;
+        margin-bottom: 0.3rem;
+      }
+      .sb-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.65rem 0.8rem;
+        border-radius: 9px;
+        text-decoration: none;
+        color: var(--body);
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.18s;
+        cursor: pointer;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+      }
+      .sb-item:hover {
+        background: var(--surface);
+        color: var(--ink);
+      }
+      .sb-item.active {
+        background: var(--indigo-light);
+        color: var(--indigo);
+        font-weight: 600;
+      }
+      .sb-item .icon {
+        width: 20px;
+        text-align: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+      }
+      .sb-item .badge {
+        margin-left: auto;
+        background: var(--indigo);
+        color: #fff;
+        font-size: 0.68rem;
+        font-weight: 700;
+        padding: 2px 7px;
+        border-radius: 99px;
+      }
+      .sb-bottom {
+        padding: 1rem 1.2rem;
+        border-top: 1px solid var(--border);
+      }
+      .sb-user {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .sb-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--indigo);
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .sb-name {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .sb-coin {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.78rem;
+        color: var(--coin);
+        font-weight: 600;
+      }
+      .main {
+        margin-left: var(--sidebar);
+        flex: 1;
+        min-width: 0;
+        overflow-x: hidden;
+      }
+      .topbar {
+        background: #fff;
+        border-bottom: 1px solid var(--border);
+        padding: 0 2rem;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        position: sticky;
+        top: 0;
+        z-index: 40;
+      }
+      .back-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--body);
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+      .back-btn:hover {
+        color: var(--indigo);
+      }
+      .topbar-right {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .icon-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 9px;
+        border: 1.5px solid var(--border);
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 1rem;
+        color: var(--body);
+        flex-shrink: 0;
+      }
+      .icon-btn:hover {
+        border-color: var(--indigo);
+        color: var(--indigo);
+      }
+      .content {
+        padding: 2rem;
+        max-width: 1100px;
+      }
+      /* PROFILE HEADER CARD */
+      .profile-hero {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .ph-banner {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 100px;
+        background: linear-gradient(135deg, var(--indigo), var(--indigo-dark));
+        opacity: 0.08;
+        pointer-events: none;
+      }
+      .ph-body {
+        display: flex;
+        gap: 1.5rem;
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+      .ph-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: #fff;
+        font-size: 1.6rem;
+        flex-shrink: 0;
+        border: 3px solid #fff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      .ph-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .ph-name {
+        font-family: "DM Serif Display", serif;
+        font-size: 1.7rem;
+        color: var(--ink);
+        margin-bottom: 0.2rem;
+      }
+      .ph-college {
+        font-size: 0.9rem;
+        color: var(--body);
+        margin-bottom: 0.6rem;
+      }
+      .ph-tags {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.8rem;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        border-radius: 99px;
+        padding: 0.25rem 0.65rem;
+        font-size: 0.76rem;
+        font-weight: 600;
+      }
+      .pill-indigo {
+        background: var(--indigo-light);
+        color: var(--indigo);
+      }
+      .pill-teal {
+        background: var(--teal-light);
+        color: var(--teal);
+      }
+      .pill-gold {
+        background: var(--coin-light);
+        color: var(--vs-warning-text);
+      }
+      .pill-gray {
+        background: var(--surface);
+        color: var(--body);
+        border: 1px solid var(--border);
+      }
+      .pill-green {
+        background: rgba(22, 162, 123, 0.1);
+        color: var(--teal);
+      }
+      .ph-bio {
+        font-size: 0.9rem;
+        color: var(--body);
+        line-height: 1.7;
+        max-width: 560px;
+      }
+      .ph-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        align-items: flex-end;
+        flex-shrink: 0;
+      }
+      .btn-book {
+        background: var(--indigo);
+        color: #fff;
+        padding: 0.8rem 1.8rem;
+        border-radius: 10px;
+        border: none;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.25s;
+        white-space: nowrap;
+      }
+      .btn-book:hover {
+        background: var(--indigo-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(91, 69, 224, 0.3);
+      }
+      .btn-msg {
+        background: transparent;
+        color: var(--indigo);
+        padding: 0.75rem 1.6rem;
+        border-radius: 10px;
+        border: 1.5px solid var(--indigo);
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+      }
+      .btn-msg:hover {
+        background: var(--indigo-light);
+      }
+      .ph-rate {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.82rem;
+        color: var(--muted);
+        text-align: right;
+      }
+      .ph-rate strong {
+        color: var(--coin);
+        font-size: 1rem;
+      }
+      /* STATS ROW */
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .stat-card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.2rem 1.5rem;
+        text-align: center;
+      }
+      .stat-num {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .stat-label {
+        font-size: 0.78rem;
+        color: var(--muted);
+        margin-top: 0.2rem;
+      }
+      /* TWO COLUMN LAYOUT */
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 1.5rem;
+        align-items: start;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.4rem;
+        margin-bottom: 1.2rem;
+      }
+      .card-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      /* SKILL SECTION */
+      .skill-block {
+        margin-bottom: 1.4rem;
+      }
+      .skill-block:last-child {
+        margin-bottom: 0;
+      }
+      .sb-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.7rem;
+      }
+      .sb-label {
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+      }
+      .skill-tags {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+      .skill-tag {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.35rem 0.75rem;
+        font-size: 0.82rem;
+        font-weight: 500;
+        color: var(--body);
+      }
+      .skill-tag.teach {
+        background: var(--teal-light);
+        border-color: rgba(22, 162, 123, 0.2);
+        color: var(--teal);
+      }
+      .skill-tag .tier-icon {
+        font-size: 0.85rem;
+      }
+      /* VERIFICATION */
+      .verify-card {
+        background: linear-gradient(
+          135deg,
+          rgba(22, 162, 123, 0.04),
+          rgba(22, 162, 123, 0.01)
+        );
+        border: 1px solid rgba(22, 162, 123, 0.2);
+        border-radius: 12px;
+        padding: 1rem 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+      }
+      .verify-icon {
+        font-size: 1.5rem;
+      }
+      .verify-text {
+        font-size: 0.85rem;
+        color: var(--body);
+        line-height: 1.5;
+      }
+      .verify-text strong {
+        color: var(--teal);
+      }
+      /* AVAILABILITY CALENDAR */
+      .avail-grid {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(40px, 1fr));
+        gap: 4px;
+        margin-bottom: 0.75rem;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+      }
+      .avail-day-label {
+        text-align: center;
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        padding: 0.2rem 0;
+      }
+      .avail-slot {
+        border-radius: 6px;
+        padding: 0.3rem 0.2rem;
+        text-align: center;
+        font-size: 0.7rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s;
+        border: 1.5px solid transparent;
+      }
+      .avail-slot.free {
+        background: var(--teal-light);
+        color: var(--teal);
+        border-color: rgba(22, 162, 123, 0.2);
+      }
+      .avail-slot.free:hover {
+        background: var(--teal);
+        color: #fff;
+      }
+      .avail-slot.busy {
+        background: var(--surface);
+        color: var(--muted);
+        cursor: default;
+      }
+      .avail-slot.selected {
+        background: var(--indigo);
+        color: #fff;
+        border-color: var(--indigo);
+      }
+      .avail-time {
+        font-size: 0.68rem;
+        color: var(--muted);
+        margin-top: 0.1rem;
+      }
+      /* REVIEWS */
+      .review-item {
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--surface);
+      }
+      .review-item:last-child {
+        border-bottom: none;
+      }
+      .rev-top {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-bottom: 0.5rem;
+      }
+      .rev-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: #fff;
+        font-size: 0.75rem;
+        flex-shrink: 0;
+      }
+      .rev-name {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .rev-date {
+        font-size: 0.75rem;
+        color: var(--muted);
+        margin-left: auto;
+      }
+      .rev-stars {
+        color: var(--coin);
+        font-size: 0.85rem;
+      }
+      .rev-text {
+        font-size: 0.85rem;
+        color: var(--body);
+        line-height: 1.6;
+        font-style: italic;
+      }
+      .rev-skill {
+        font-size: 0.72rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 99px;
+        padding: 0.15rem 0.55rem;
+        color: var(--muted);
+        margin-top: 0.5rem;
+        display: inline-block;
+      }
+      /* RATING BREAKDOWN */
+      .rating-bar-row {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-bottom: 0.5rem;
+      }
+      .rb-label {
+        font-size: 0.78rem;
+        color: var(--body);
+        width: 32px;
+      }
+      .rb-track {
+        flex: 1;
+        height: 6px;
+        background: var(--surface);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      .rb-fill {
+        height: 100%;
+        border-radius: 3px;
+        background: var(--coin);
+      }
+      .rb-count {
+        font-size: 0.75rem;
+        color: var(--muted);
+        width: 20px;
+        text-align: right;
+      }
+      /* STICKY BOOKING CARD */
+      .booking-card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.4rem;
+        position: sticky;
+        top: 76px;
+      }
+      .bc-rate {
+        display: flex;
+        align-items: baseline;
+        gap: 0.4rem;
+        margin-bottom: 1.2rem;
+      }
+      .bc-coins {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: var(--coin);
+      }
+      .bc-label {
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+      .bc-section {
+        margin-bottom: 1rem;
+      }
+      .bc-section-label {
+        font-size: 0.76rem;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 0.5rem;
+      }
+      .duration-btns {
+        display: flex;
+        gap: 0.4rem;
+      }
+      .dur-btn {
+        flex: 1;
+        padding: 0.5rem;
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        background: #fff;
+        color: var(--body);
+        transition: all 0.2s;
+        text-align: center;
+      }
+      .dur-btn:hover {
+        border-color: rgba(91, 69, 224, 0.3);
+        color: var(--indigo);
+      }
+      .dur-btn.active {
+        background: var(--indigo-light);
+        border-color: var(--indigo);
+        color: var(--indigo);
+      }
+      .escrow-note {
+        background: var(--teal-light);
+        border: 1px solid rgba(22, 162, 123, 0.2);
+        border-radius: 10px;
+        padding: 0.75rem;
+        font-size: 0.78rem;
+        color: var(--teal);
+        line-height: 1.5;
+        margin-bottom: 1rem;
+      }
+      .coin-total {
+        background: var(--coin-light);
+        border: 1px solid rgba(245, 166, 35, 0.2);
+        border-radius: 10px;
+        padding: 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+      }
+      .ct-label {
+        font-size: 0.82rem;
+        color: var(--body);
+      }
+      .ct-amount {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--coin);
+      }
+      .btn-book-now {
+        width: 100%;
+        padding: 0.85rem;
+        background: var(--indigo);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.25s;
+      }
+      .btn-book-now:hover {
+        background: var(--indigo-dark);
+        box-shadow: 0 6px 20px rgba(91, 69, 224, 0.3);
+      }
+      .bc-guarantee {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.74rem;
+        color: var(--muted);
+        margin-top: 0.75rem;
+        justify-content: center;
+      }
+      /* RESPONSIVE DESIGN */
+      @media (max-width: 1024px) {
+        .sidebar {
+          transform: translateX(-100%);
         }
-      });
-      timeBuckets.forEach((time, ri) => {
-        Array(7).fill(0).map((_, di) => {
-          const free = slotMatrix[ri][di];
-          const el = document.createElement('div');
-          el.className = 'avail-slot ' + (free ? 'free' : 'busy');
-          el.textContent = time;
-          if (free) el.onclick = () => {
-            document.querySelectorAll('.avail-slot.selected').forEach(e => e.classList.remove('selected'));
-            el.classList.add('selected');
-          };
-          gridEl.appendChild(el);
-        });
-      });
-      return;
-    }
-  } catch(e) { console.warn('Availability load failed, using defaults'); }
+        .sidebar.open {
+          transform: translateX(0);
+          box-shadow: 4px 0 24px rgba(0,0,0,0.1);
+        }
+        .main {
+          margin-left: 0;
+        }
+        #hamBtn {
+          display: flex !important;
+        }
+        .two-col {
+          grid-template-columns: 1fr;
+        }
+        .topbar {
+          padding: 0 1rem;
+        }
+        .booking-card {
+          position: relative;
+          top: 0;
+        }
+      }
+      @media (max-width: 860px) {
+        .stats-row {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 768px) {
+        .content {
+          padding: 1.5rem;
+        }
+        .ph-body {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .ph-avatar {
+          margin-bottom: 0.5rem;
+        }
+        .ph-actions {
+          align-items: stretch;
+          margin-top: 1rem;
+        }
+        .btn-book, .btn-msg {
+          width: 100%;
+          text-align: center;
+          justify-content: center;
+        }
+        .ph-rate {
+          text-align: center;
+          margin-top: 0.5rem;
+        }
+      }
+      @media (max-width: 480px) {
+        .content {
+          padding: 1rem;
+        }
+        .topbar {
+          gap: 0.5rem;
+        }
+        .stats-row {
+          grid-template-columns: 1fr;
+        }
+        .duration-btns {
+          flex-wrap: wrap;
+        }
+      }
+      .overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.3);
+        z-index: 49;
+      }
+      .overlay.open {
+        display: block;
+      }
+      .ham-btn {
+        display: none;
+        width: 38px;
+        height: 38px;
+        border-radius: 9px;
+        border: 1.5px solid var(--border);
+        background: #fff;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        flex-direction: column;
+        gap: 5px;
+        flex-shrink: 0;
+      }
+      .ham-btn span {
+        width: 16px;
+        height: 1.5px;
+        background: var(--ink);
+        border-radius: 2px;
+      }
+    </style>
+    <style>
+      /* ═══════════════════════════════════════════════
+   DARK MODE — Teacher Profile
+   ui-ux-pro-max | OLED Navy + Indigo accent
+═══════════════════════════════════════════════ */
 
-  // Fallback defaults
-  const fallbackSlots = [[1,1,0,1,0,1,0],[1,0,1,1,0,0,0],[1,1,1,0,1,0,0],[0,1,0,1,1,0,0],[1,1,0,0,1,1,0],[0,0,1,1,0,0,0]];
-  const timesArr = ['9AM','11AM','1PM','3PM','5PM','7PM'];
-  fallbackSlots.forEach((row, ri) => {
-    row.forEach((free, di) => {
-      const el = document.createElement('div');
-      el.className = 'avail-slot ' + (free ? 'free' : 'busy');
-      el.textContent = timesArr[ri];
-      if (free) el.onclick = () => {
-        document.querySelectorAll('.avail-slot.selected').forEach(e => e.classList.remove('selected'));
-        el.classList.add('selected');
+      *,
+      *::before,
+      *::after {
+        transition:
+          background-color 0.22s ease,
+          border-color 0.22s ease,
+          color 0.18s ease,
+          box-shadow 0.22s ease;
+      }
+
+      [data-theme="dark"] {
+        --ink: #e8eeff;
+        --indigo: #818cf8;
+        --indigo-light: rgba(129, 140, 248, 0.14);
+        --indigo-dark: #6366f1;
+        --teal: #34d399;
+        --teal-light: rgba(52, 211, 153, 0.13);
+        --coin: #fbbf24;
+        --coin-light: rgba(251, 191, 36, 0.14);
+        --danger: #f87171;
+        --surface: #060d1a;
+        --card: #0d1829;
+        --border: #1a2d4a;
+        --muted: #4a5568;
+        --body: #94a3b8;
+      }
+
+      /* Body — OLED navy + ambient glows */
+      [data-theme="dark"] body {
+        background:
+          radial-gradient(
+            ellipse 900px 600px at -5% -10%,
+            rgba(99, 102, 241, 0.08) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse 700px 500px at 110% 5%,
+            rgba(52, 211, 153, 0.05) 0%,
+            transparent 55%
+          ),
+          #060d1a;
+        color: var(--ink);
+      }
+
+      /* SIDEBAR — glassmorphism */
+      [data-theme="dark"] .sidebar {
+        background: rgba(10, 18, 38, 0.92);
+        border-right: 1px solid rgba(129, 140, 248, 0.12);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        box-shadow: 2px 0 24px rgba(0, 0, 0, 0.4);
+      }
+      [data-theme="dark"] .sb-top,
+      [data-theme="dark"] .sb-bottom {
+        border-color: rgba(129, 140, 248, 0.1);
+      }
+      [data-theme="dark"] .sb-section {
+        color: rgba(129, 140, 248, 0.5);
+      }
+      [data-theme="dark"] .sb-item {
+        color: var(--body);
+      }
+      [data-theme="dark"] .sb-item:hover {
+        background: rgba(129, 140, 248, 0.08);
+        color: var(--ink);
+      }
+      [data-theme="dark"] .sb-item.active {
+        background: rgba(129, 140, 248, 0.15);
+        color: var(--indigo);
+        border-left: 3px solid var(--indigo);
+      }
+      [data-theme="dark"] .sb-name {
+        color: var(--ink);
+      }
+      [data-theme="dark"] .sb-coin {
+        color: var(--coin);
+      }
+      [data-theme="dark"] .sb-item .badge {
+        background: var(--indigo);
+      }
+
+      /* TOPBAR — frosted glass */
+      [data-theme="dark"] .topbar {
+        background: rgba(6, 13, 26, 0.88);
+        border-bottom: 1px solid rgba(129, 140, 248, 0.1);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+      }
+      [data-theme="dark"] .back-btn {
+        color: var(--body);
+      }
+      [data-theme="dark"] .back-btn:hover {
+        color: var(--indigo);
+      }
+      [data-theme="dark"] .icon-btn {
+        background: rgba(13, 24, 41, 0.9);
+        border-color: rgba(129, 140, 248, 0.18);
+        color: var(--body);
+      }
+      [data-theme="dark"] .icon-btn:hover {
+        border-color: var(--indigo);
+        color: var(--indigo);
+        box-shadow: 0 0 10px rgba(129, 140, 248, 0.2);
+      }
+      [data-theme="dark"] .ham-btn {
+        background: rgba(13, 24, 41, 0.9);
+        border-color: rgba(129, 140, 248, 0.18);
+      }
+      [data-theme="dark"] .ham-btn span {
+        background: var(--ink);
+      }
+
+      /* PROFILE HERO — premium glass card */
+      [data-theme="dark"] .profile-hero {
+        background: linear-gradient(
+          160deg,
+          rgba(13, 24, 41, 0.97),
+          rgba(9, 18, 35, 0.99)
+        );
+        border-color: rgba(129, 140, 248, 0.15);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      }
+      [data-theme="dark"] .ph-banner {
+        opacity: 0.15;
+      }
+      [data-theme="dark"] .ph-avatar {
+        border-color: #0d1829;
+      }
+      [data-theme="dark"] .ph-name {
+        color: var(--ink);
+      }
+      [data-theme="dark"] .ph-college {
+        color: var(--body);
+      }
+      [data-theme="dark"] .ph-bio {
+        color: var(--body);
+      }
+      [data-theme="dark"] .ph-rate {
+        color: var(--body);
+      }
+      [data-theme="dark"] .ph-rate strong {
+        color: var(--coin);
+      }
+
+      /* Buttons */
+      [data-theme="dark"] .btn-book:hover {
+        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.25);
+      }
+      [data-theme="dark"] .btn-msg {
+        border-color: rgba(129, 140, 248, 0.4);
+        color: var(--indigo);
+      }
+      [data-theme="dark"] .btn-msg:hover {
+        background: rgba(129, 140, 248, 0.12);
+        color: var(--indigo);
+      }
+
+      /* STATS CARDS */
+      [data-theme="dark"] .stat-card {
+        background: rgba(13, 24, 41, 0.9);
+        border-color: rgba(129, 140, 248, 0.14);
+      }
+      [data-theme="dark"] .stat-num {
+        color: var(--ink);
+      }
+      [data-theme="dark"] .stat-label {
+        color: var(--body);
+      }
+
+      /* MAIN CONTENT CARDS */
+      [data-theme="dark"] .card {
+        background: rgba(13, 24, 41, 0.95);
+        border-color: rgba(129, 140, 248, 0.14);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      }
+      [data-theme="dark"] .card-title {
+        color: var(--ink);
+      }
+
+      /* PILLS & TAGS */
+      [data-theme="dark"] .pill-indigo {
+        background: rgba(129, 140, 248, 0.15);
+        color: var(--indigo);
+      }
+      [data-theme="dark"] .pill-teal {
+        background: rgba(52, 211, 153, 0.13);
+        color: var(--teal);
+      }
+      [data-theme="dark"] .pill-gold {
+        background: rgba(251, 191, 36, 0.14);
+        color: var(--coin);
+      }
+      [data-theme="dark"] .pill-green {
+        background: rgba(52, 211, 153, 0.08);
+        color: var(--teal);
+      }
+      [data-theme="dark"] .pill-gray {
+        background: rgba(13, 24, 41, 0.8);
+        color: var(--body);
+        border-color: rgba(129, 140, 248, 0.1);
+      }
+
+      [data-theme="dark"] .skill-tag {
+        background: rgba(6, 13, 26, 0.5);
+        border-color: rgba(129, 140, 248, 0.1);
+        color: var(--body);
+      }
+      [data-theme="dark"] .skill-tag.teach {
+        background: rgba(52, 211, 153, 0.1);
+        border-color: rgba(52, 211, 153, 0.2);
+        color: var(--teal);
+      }
+      [data-theme="dark"] .sb-label {
+        color: rgba(129, 140, 248, 0.5);
+      }
+
+      /* VERIFICATION CARD */
+      [data-theme="dark"] .verify-card {
+        background: rgba(52, 211, 153, 0.04);
+        border-color: rgba(52, 211, 153, 0.15);
+      }
+      [data-theme="dark"] .verify-text {
+        color: var(--body);
+      }
+      [data-theme="dark"] .verify-text strong {
+        color: var(--teal);
+      }
+
+      /* AVAILABILITY CALENDAR */
+      [data-theme="dark"] .avail-day-label {
+        color: rgba(129, 140, 248, 0.5);
+      }
+      [data-theme="dark"] .avail-slot.free {
+        background: rgba(52, 211, 153, 0.08);
+        border-color: rgba(52, 211, 153, 0.15);
+        color: var(--teal);
+      }
+      [data-theme="dark"] .avail-slot.free:hover {
+        background: var(--teal);
+        color: #fff;
+      }
+      [data-theme="dark"] .avail-slot.busy {
+        background: rgba(13, 24, 41, 0.8);
+        color: var(--muted);
+      }
+      [data-theme="dark"] .avail-slot.selected {
+        background: var(--indigo);
+        border-color: var(--indigo);
+        color: #fff;
+      }
+      [data-theme="dark"] .avail-time {
+        color: var(--muted);
+      }
+
+      /* REVIEWS */
+      [data-theme="dark"] .review-item {
+        border-bottom-color: rgba(129, 140, 248, 0.08);
+      }
+      [data-theme="dark"] .rev-name {
+        color: var(--ink);
+      }
+      [data-theme="dark"] .rev-text {
+        color: var(--body);
+      }
+      [data-theme="dark"] .rev-stars {
+        color: var(--coin);
+      }
+      [data-theme="dark"] .rev-date {
+        color: var(--muted);
+      }
+      [data-theme="dark"] .rev-skill {
+        background: rgba(13, 24, 41, 0.8);
+        border-color: rgba(129, 140, 248, 0.1);
+        color: var(--body);
+      }
+      [data-theme="dark"] #bigRating {
+        color: var(--ink);
+      }
+      [data-theme="dark"] .rb-label {
+        color: var(--body);
+      }
+      [data-theme="dark"] .rb-track {
+        background: rgba(13, 24, 41, 1);
+      }
+      [data-theme="dark"] .rb-count {
+        color: var(--muted);
+      }
+      [data-theme="dark"] #viewAllReviews {
+        background: rgba(13, 24, 41, 0.8);
+        border-color: rgba(129, 140, 248, 0.14);
+        color: var(--body);
+      }
+      [data-theme="dark"] #viewAllReviews:hover {
+        border-color: var(--indigo);
+        color: var(--indigo);
+      }
+
+      /* BOOKING CARD — sticky side card */
+      [data-theme="dark"] .booking-card {
+        background: linear-gradient(160deg, #0d1829, #091222);
+        border-color: rgba(129, 140, 248, 0.18);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+      }
+      [data-theme="dark"] .bc-coins {
+        color: var(--coin);
+      }
+      [data-theme="dark"] .bc-label,
+      [data-theme="dark"] .bc-section-label {
+        color: var(--body);
+      }
+      [data-theme="dark"] .dur-btn {
+        background: rgba(13, 24, 41, 0.8);
+        border-color: rgba(129, 140, 248, 0.18);
+        color: var(--body);
+      }
+      [data-theme="dark"] .dur-btn:hover {
+        border-color: var(--indigo);
+        color: var(--indigo);
+      }
+      [data-theme="dark"] .dur-btn.active {
+        background: rgba(129, 140, 248, 0.15);
+        border-color: var(--indigo);
+        color: var(--indigo);
+      }
+      [data-theme="dark"] .escrow-note {
+        background: rgba(52, 211, 153, 0.08);
+        border-color: rgba(52, 211, 153, 0.15);
+        color: var(--teal);
+      }
+      [data-theme="dark"] .coin-total {
+        background: rgba(251, 191, 36, 0.08);
+        border-color: rgba(251, 191, 36, 0.2);
+      }
+      [data-theme="dark"] .ct-label {
+        color: var(--body);
+      }
+      [data-theme="dark"] .ct-amount {
+        color: var(--coin);
+      }
+      [data-theme="dark"] .btn-book-now:hover {
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+      }
+      [data-theme="dark"] .bc-guarantee {
+        color: var(--muted);
+      }
+
+      /* MODALS — send message */
+      [data-theme="dark"] .modal-card {
+        background: #0a1628;
+        border-color: rgba(129, 140, 248, 0.18);
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+      }
+      [data-theme="dark"] .modal-header {
+        border-bottom-color: rgba(129, 140, 248, 0.14);
+      }
+      [data-theme="dark"] .modal-header h3 {
+        color: var(--ink);
+      }
+      [data-theme="dark"] .modal-textarea {
+        background: rgba(6, 13, 26, 0.8);
+        border-color: rgba(129, 140, 248, 0.18);
+        color: var(--ink);
+      }
+      [data-theme="dark"] .modal-textarea:focus {
+        border-color: var(--indigo);
+      }
+      [data-theme="dark"] .modal-footer {
+        background: rgba(6, 13, 26, 0.6);
+        border-top-color: rgba(129, 140, 248, 0.14);
+      }
+      [data-theme="dark"] .btn-secondary {
+        border-color: rgba(129, 140, 248, 0.18);
+        color: var(--body);
+      }
+    </style>
+    <script src="js/dark-mode.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script type="module" src="api.js"></script>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </head>
+  <body>
+    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+    <aside class="sidebar" id="sidebar">
+      <div class="sb-top">
+        <a href="index.html" class="sb-logo"
+          ><img src="logo-v.png" alt="V" class="logo-img" /><span
+            class="logo-text"
+            >vidyasetu</span
+          ></a
+        >
+      </div>
+      <nav class="sb-nav">
+        <div class="sb-section">Main</div>
+        <a href="03_dashboard.html" class="sb-item"
+          ><span class="icon">🏠</span> Dashboard</a
+        >
+        <a href="04_explore.html" class="sb-item active"
+          ><span class="icon">🔍</span> Explore Teachers</a
+        >
+        <a href="09_bounty.html" class="sb-item"
+          ><span class="icon">🎯</span> Bounty Hub
+          <span class="badge" id="sb-bounty-badge">0</span></a
+        >
+        <a href="14_game_learn.html" class="sb-item"
+          ><span class="icon">🎮</span> Code Quest</a
+        >
+        <div class="sb-section">Messages</div>
+        <a href="16_messages.html" class="sb-item"
+          ><span class="icon">💬</span> My Inbox
+          <span class="badge" id="sb-unread-count" style="display: none"
+            >0</span
+          ></a
+        >
+        <div class="sb-section">My Learning</div>
+        <a href="11_my_sessions.html" class="sb-item"
+          ><span class="icon">📅</span> My Sessions</a
+        >
+        <a href="08_wallet.html" class="sb-item"
+          ><span class="icon">🪙</span> Wallet</a
+        >
+        <div class="sb-section">Account</div>
+        <a href="12_my_profile.html" class="sb-item"
+          ><span class="icon">👤</span> My Profile</a
+        >
+        <a href="12_my_profile.html" class="sb-item"
+          ><span class="icon">⚙️</span> Settings</a
+        >
+      </nav>
+      <div class="sb-bottom" id="sb-user-area">
+        <div class="sb-user">
+          <div class="sb-avatar">...</div>
+          <div>
+            <div class="sb-name">Loading...</div>
+            <div class="sb-coin">...</div>
+                      <div class="xph-level" style="font-size:0.7rem;color:var(--muted);margin-bottom:0.2rem;font-weight:600">Level 1</div>
+            <div class="xph-bar" style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:0.2rem;width:100%">
+               <div class="xph-fill" style="height:100%;background:var(--coin);width:0%;transition:width 1s"></div>
+            </div>
+            <div class="xph-xp" style="font-size:0.65rem;color:var(--muted);font-family:'JetBrains Mono',monospace">0 / 500 XP</div>
+</div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main">
+      <div class="topbar">
+        <button
+          class="ham-btn"
+          id="hamBtn"
+          style="display: none"
+          onclick="openSidebar()"
+        >
+          <span></span><span></span><span></span>
+        </button>
+        <a href="04_explore.html" class="back-btn">← Back to Explore</a>
+        <div class="topbar-right">
+          <button class="icon-btn">🔔</button>
+          <button
+            class="icon-btn"
+            onclick="window.location.href = '16_messages.html'"
+          >
+            💬
+          </button>
+        </div>
+      </div>
+
+      <div class="content" id="profileContent">
+        <!-- PROFILE HERO -->
+        <div class="profile-hero">
+          <div class="ph-banner"></div>
+          <div class="ph-body">
+            <div class="ph-avatar" id="phAvatar" style="background: #5b45e0">
+              PV
+            </div>
+            <div class="ph-info">
+              <h1 class="ph-name" id="phName">Loading...</h1>
+              <p class="ph-college" id="phCollege">
+                🎓 IIT Delhi · B.Tech Computer Science · Final Year
+              </p>
+              <div class="ph-tags" id="phTags">
+                <span class="pill pill-gold">🥇 Gold Expert</span>
+                <span class="pill pill-green">🟢 Online Now</span>
+                <span class="pill pill-indigo">⚡ Fast Responder</span>
+                <span class="pill pill-teal">📜 Verified Teacher</span>
+              </div>
+              <p class="ph-bio" id="phBio">Loading teacher bio...</p>
+            </div>
+            <div class="ph-actions">
+              <a
+                class="btn-book"
+                href="#"
+                onclick="localStorage.setItem('booking_teacher_id', new URLSearchParams(window.location.search).get('id')); this.href = '06_booking?id=' + new URLSearchParams(window.location.search).get('id')"
+                style="display:flex; justify-content:center; text-decoration:none"
+              >
+                Book a Session →
+              </a>
+              <button class="btn-msg" onclick="openMsgModal()">
+                💬 Send Message
+              </button>
+              <div class="ph-rate" id="phRate">...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STATS ROW -->
+        <div class="stats-row" id="statsRow">
+          <div class="stat-card">
+            <div class="stat-num" id="statRating">...</div>
+            <div class="stat-label">⭐ Avg Rating</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="statSessions">...</div>
+            <div class="stat-label">📅 Sessions Done</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="statReviews">...</div>
+            <div class="stat-label">💬 Reviews</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="statCompletion">...</div>
+            <div class="stat-label">✅ Completion Rate</div>
+          </div>
+        </div>
+
+        <!-- TWO COLUMN -->
+        <div class="two-col">
+          <!-- LEFT COLUMN -->
+          <div>
+            <!-- SKILLS CARD -->
+            <div class="card">
+              <div class="card-title">🎓 Skills & Verification</div>
+              <div class="verify-card" id="verifyCard">
+                <span class="verify-icon">🛡️</span>
+                <div class="verify-text" id="verifyText">
+                  <strong>MCQ Verified Teacher</strong> — Priya passed our
+                  automated skill test with 92% accuracy (Gold tier threshold:
+                  85%). Last verified 2 weeks ago.
+                </div>
+              </div>
+              <div class="skill-block">
+                <div class="sb-header">
+                  <span class="sb-label">Teaches (Verified)</span>
+                </div>
+                <div class="skill-tags" id="teachSkills">
+                  <div class="skill-tag teach">
+                    <span class="tier-icon">🥇</span> React — Gold
+                  </div>
+                  <div class="skill-tag teach">
+                    <span class="tier-icon">🥇</span> JavaScript — Gold
+                  </div>
+                  <div class="skill-tag teach">
+                    <span class="tier-icon">🥈</span> TypeScript — Silver
+                  </div>
+                  <div class="skill-tag teach">
+                    <span class="tier-icon">🥈</span> Next.js — Silver
+                  </div>
+                </div>
+              </div>
+              <div class="skill-block">
+                <div class="sb-header">
+                  <span class="sb-label">Wants to Learn</span>
+                </div>
+                <div class="skill-tags" id="wantSkills">
+                  <div class="skill-tag">Machine Learning</div>
+                  <div class="skill-tag">Data Analysis</div>
+                  <div class="skill-tag">Python Advanced</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- REVIEWS CARD -->
+            <div class="card">
+              <div class="card-title" id="reviewTitle">⭐ Reviews (34)</div>
+              <!-- Rating breakdown -->
+              <div
+                style="
+                  display: flex;
+                  gap: 1.5rem;
+                  margin-bottom: 1.4rem;
+                  align-items: center;
+                "
+              >
+                <div style="text-align: center">
+                  <div
+                    style="
+                      font-family: &quot;DM Serif Display&quot;, serif;
+                      font-size: 3rem;
+                      color: var(--ink);
+                      line-height: 1;
+                    "
+                    id="bigRating"
+                  >
+                    4.9
+                  </div>
+                  <div
+                    style="
+                      color: var(--coin);
+                      font-size: 1.1rem;
+                      margin: 0.2rem 0;
+                    "
+                    id="bigStars"
+                  >
+                    ★★★★★
+                  </div>
+                  <div
+                    style="font-size: 0.75rem; color: var(--muted)"
+                    id="reviewCount"
+                  >
+                    34 reviews
+                  </div>
+                </div>
+                <div style="flex: 1">
+                  <div class="rating-bar-row">
+                    <span class="rb-label">5★</span>
+                    <div class="rb-track">
+                      <div class="rb-fill" style="width: 88%"></div>
+                    </div>
+                    <span class="rb-count">30</span>
+                  </div>
+                  <div class="rating-bar-row">
+                    <span class="rb-label">4★</span>
+                    <div class="rb-track">
+                      <div class="rb-fill" style="width: 9%"></div>
+                    </div>
+                    <span class="rb-count">3</span>
+                  </div>
+                  <div class="rating-bar-row">
+                    <span class="rb-label">3★</span>
+                    <div class="rb-track">
+                      <div class="rb-fill" style="width: 3%"></div>
+                    </div>
+                    <span class="rb-count">1</span>
+                  </div>
+                  <div class="rating-bar-row">
+                    <span class="rb-label">2★</span>
+                    <div class="rb-track">
+                      <div class="rb-fill" style="width: 0%"></div>
+                    </div>
+                    <span class="rb-count">0</span>
+                  </div>
+                  <div class="rating-bar-row">
+                    <span class="rb-label">1★</span>
+                    <div class="rb-track">
+                      <div class="rb-fill" style="width: 0%"></div>
+                    </div>
+                    <span class="rb-count">0</span>
+                  </div>
+                </div>
+              </div>
+
+              <div id="reviewsList">
+                <div
+                  style="padding: 2rem; text-align: center; color: var(--muted)"
+                >
+                  Loading reviews...
+                </div>
+              </div>
+              <button
+                style="
+                  width: 100%;
+                  margin-top: 1rem;
+                  padding: 0.65rem;
+                  background: var(--surface);
+                  border: 1px solid var(--border);
+                  border-radius: 8px;
+                  font-family: &quot;DM Sans&quot;, sans-serif;
+                  font-size: 0.85rem;
+                  font-weight: 600;
+                  cursor: pointer;
+                  color: var(--body);
+                  transition: all 0.2s;
+                "
+                onmouseover="
+                  this.style.borderColor = 'rgba(91,69,224,.3)';
+                  this.style.color = 'var(--indigo)';
+                "
+                onmouseout="
+                  this.style.borderColor = 'var(--border)';
+                  this.style.color = 'var(--body)';
+                "
+                id="viewAllReviews"
+              >
+                View all 34 reviews →
+              </button>
+            </div>
+
+            <!-- AVAILABILITY CALENDAR -->
+            <div class="card">
+              <div class="card-title">📅 Availability — This Week</div>
+              <div class="avail-grid" id="availGrid"></div>
+              <p
+                style="
+                  font-size: 0.75rem;
+                  color: var(--muted);
+                  margin-top: 0.5rem;
+                "
+              >
+                <span
+                  style="
+                    display: inline-block;
+                    width: 10px;
+                    height: 10px;
+                    background: var(--teal-light);
+                    border: 1px solid rgba(22, 162, 123, 0.3);
+                    border-radius: 3px;
+                    margin-right: 3px;
+                    vertical-align: middle;
+                  "
+                ></span
+                >Available &nbsp;
+                <span
+                  style="
+                    display: inline-block;
+                    width: 10px;
+                    height: 10px;
+                    background: var(--surface);
+                    border: 1px solid var(--border);
+                    border-radius: 3px;
+                    margin-right: 3px;
+                    vertical-align: middle;
+                  "
+                ></span
+                >Busy
+              </p>
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN: STICKY BOOKING CARD -->
+          <div>
+            <div class="booking-card">
+              <div class="bc-rate">
+                <span class="bc-coins" id="bcCoins">🪙 2</span>
+                <span class="bc-label">coins per hour</span>
+              </div>
+              <div class="bc-section">
+                <div class="bc-section-label">Session Duration</div>
+                <div class="duration-btns">
+                  <button class="dur-btn" onclick="setDuration(this, 1)">
+                    1h
+                  </button>
+                  <button
+                    class="dur-btn active"
+                    onclick="setDuration(this, 1.5)"
+                  >
+                    1.5h
+                  </button>
+                  <button class="dur-btn" onclick="setDuration(this, 2)">
+                    2h
+                  </button>
+                </div>
+              </div>
+              <div class="bc-section">
+                <div class="bc-section-label">Pick a slot</div>
+                <div
+                  style="display: flex; gap: 0.5rem; flex-wrap: wrap"
+                  id="timeSlots"
+                >
+                  <button
+                    class="dur-btn active"
+                    onclick="selectTime(this, '10:00 AM')"
+                  >
+                    10:00 AM
+                  </button>
+                  <button class="dur-btn" onclick="selectTime(this, '2:00 PM')">
+                    2:00 PM
+                  </button>
+                  <button class="dur-btn" onclick="selectTime(this, '4:00 PM')">
+                    4:00 PM
+                  </button>
+                  <button class="dur-btn" onclick="selectTime(this, '7:00 PM')">
+                    7:00 PM
+                  </button>
+                </div>
+              </div>
+              <div class="escrow-note">
+                🔒 <strong>Escrow protected:</strong> Coins are held safely
+                until session completes. If disconnected, coins are released
+                pro-rata.
+              </div>
+              <div class="coin-total">
+                <div class="ct-label" id="ctLabel">
+                  Total to escrow<br /><span
+                    style="font-size: 0.72rem; color: var(--muted)"
+                    >1.5h × 🪙2/hr</span
+                  >
+                </div>
+                <div class="ct-amount" id="coinTotal">🪙 3.0</div>
+              </div>
+              <a
+                class="btn-book-now"
+                href="#"
+                onclick="localStorage.setItem('booking_teacher_id', new URLSearchParams(window.location.search).get('id')); this.href = '06_booking?id=' + new URLSearchParams(window.location.search).get('id')"
+                style="display:flex; justify-content:center; text-decoration:none"
+              >
+                Book Now — 🪙 3 coins →
+              </a>
+              <div class="bc-guarantee">
+                🛡️ 15-min free trial &nbsp;·&nbsp; Full refund if not satisfied
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEND MESSAGE MODAL -->
+    <div id="msgModal" class="modal-overlay">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 id="modalTitle">Message Teacher</h3>
+          <button class="close-btn" onclick="closeMsgModal()">×</button>
+        </div>
+        <div class="modal-body">
+          <textarea
+            id="msgBody"
+            class="modal-textarea"
+            placeholder="Hi! I have a question about your React sessions..."
+          ></textarea>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" onclick="closeMsgModal()">
+            Cancel
+          </button>
+          <button class="btn-primary" id="sendMsgBtn" onclick="submitMsg()">
+            Send Message
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 200;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(4px);
+      }
+      .modal-card {
+        background: var(--card);
+        border-radius: 16px;
+        width: 90%;
+        max-width: 480px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--border);
+        overflow: hidden;
+      }
+      .modal-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .modal-header h3 {
+        font-family: "DM Serif Display", serif;
+        font-size: 1.25rem;
+        color: var(--ink);
+      }
+      .close-btn {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--muted);
+        cursor: pointer;
+      }
+      .modal-body {
+        padding: 1.5rem;
+      }
+      .modal-textarea {
+        width: 100%;
+        height: 120px;
+        border-radius: 12px;
+        border: 1.5px solid var(--border);
+        background: var(--surface);
+        padding: 1rem;
+        font-family: inherit;
+        font-size: 0.95rem;
+        outline: none;
+        resize: none;
+        color: var(--ink);
+      }
+      .modal-textarea:focus {
+        border-color: var(--indigo);
+      }
+      .modal-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--border);
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        background: var(--surface);
+      }
+      .btn-primary {
+        background: var(--indigo);
+        color: #fff;
+        border: none;
+        padding: 0.6rem 1.5rem;
+        border-radius: 9px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .btn-secondary {
+        background: transparent;
+        color: var(--body);
+        border: 1px solid var(--border);
+        padding: 0.6rem 1.5rem;
+        border-radius: 9px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+    </style>
+
+    <script>
+      // ═══ TEACHERS DATA ═══
+      // Removed hardcoded TEACHERS object.
+
+      const tierBadge = {
+        gold: "🥇 Gold Expert",
+        silver: "🥈 Silver",
+        bronze: "🥉 Bronze",
       };
-      gridEl.appendChild(el);
-    });
-  });
-}
+      const tierIcon = { gold: "🥇", silver: "🥈", bronze: "🥉" };
 
-function setDuration(btn, h) {
-  document.querySelectorAll('.duration-btns .dur-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  updateBookingTotal(h);
-}
-function selectTime(btn, t) {
-  document.querySelectorAll('#timeSlots .dur-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-}
+      // Parse URL param
+      const urlParams = new URLSearchParams(window.location.search);
+      const teacherId = urlParams.get("id") || localStorage.getItem("vidya_selected_user_id");
 
-// MESSAGE MODAL LOGIC
-function openMsgModal() {
-  document.getElementById('modalTitle').textContent = `Message ${document.getElementById('phName').textContent}`;
-  document.getElementById('msgModal').style.display = 'flex';
-  document.getElementById('msgBody').focus();
-}
-function closeMsgModal() {
-  document.getElementById('msgModal').style.display = 'none';
-}
-async function submitMsg() {
-  const content = document.getElementById('msgBody').value.trim();
-  if (!content) return;
-  
-  const btn = document.getElementById('sendMsgBtn');
-  btn.disabled = true;
-  btn.textContent = 'Sending...';
-  
-  try {
-    await VS.dm.send(teacherId, content);
-    closeMsgModal();
-    // Redirect to inbox
-    window.location.href = `16_messages.html?peer=${teacherId}`;
-  } catch (err) {
-    alert('Failed to send message: ' + err.message);
-    btn.disabled = false;
-    btn.textContent = 'Send Message';
-  }
-}
+      async function initProfile() {
+        if (typeof VS !== "undefined" && VS.ui) VS.ui.updateSidebar();
 
-function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('open')}
-function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('open')}
-initProfile();
-if(window.innerWidth<=900){document.getElementById('hamBtn').style.display='flex'}
-window.addEventListener('resize',()=>{if(window.innerWidth<=900)document.getElementById('hamBtn').style.display='flex';else document.getElementById('hamBtn').style.display='none'})
-</script>
-<button onclick="toggleTheme()" id="globalThemeBtn" class="floating-theme-btn" title="Toggle Dark/Light Mode">🌙</button>
-<style>
-.floating-theme-btn {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: var(--card);
-  border: 1px solid var(--border);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  font-size: 20px;
-  cursor: pointer;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-  color: var(--ink);
-}
-.floating-theme-btn:hover {
-  transform: scale(1.05);
-}
-</style>
-<script>
-  function toggleTheme() {
-    const html = document.documentElement;
-    const isDark = html.getAttribute('data-theme') === 'dark';
-    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
-    document.getElementById('globalThemeBtn').textContent = isDark ? '🌙' : '☀️';
-    localStorage.setItem('vs-theme', isDark ? 'light' : 'dark');
-  }
-  if (document.documentElement.getAttribute('data-theme') === 'dark') {
-    document.getElementById('globalThemeBtn').textContent = '☀️';
-  }
-</script>
-</body>
+        if (!teacherId) {
+          document.getElementById("profileContent").innerHTML =
+            `<div style="padding:4rem;text-align:center">
+               <h2>Teacher not found</h2>
+               <p style="color:var(--danger);font-family:monospace;background:var(--surface);padding:1rem;margin:1rem 0;">
+                 DEBUG: Hit !teacherId block. URL param "id" is empty.
+               </p>
+               <a href="04_explore.html" class="btn-book" style="display:inline-block;margin-top:1rem">Back to Explore</a>
+             </div>`;
+          return;
+        }
+
+        try {
+          // Fetch teacher details from API
+          const user = await VS.teachers.get(teacherId);
+          if (!user) throw new Error("Teacher not found");
+
+          // Adapt DB user object to UI model
+          const t = {
+            id: user.id,
+            name: user.name,
+            college: user.college,
+            color: user.avatar_color,
+            bio: user.bio,
+            initials: user.name
+              ? user.name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")
+                  .substring(0, 2)
+                  .toUpperCase()
+              : "??",
+            teaches: (user.skills || [])
+              .filter((s) => s.is_teaching),
+            wants: (user.skills || [])
+              .filter((s) => !s.is_teaching),
+            rate:
+              user.skills && user.skills.length > 0
+                ? Math.max(...user.skills.map((s) => s.coin_rate || 2))
+                : 2,
+            tier:
+              user.skills && user.skills.length > 0
+                ? user.skills[0].tier
+                : "bronze",
+            online:
+              new Date(user.last_active_at) > new Date(Date.now() - 15 * 60000), // active in last 15 mins
+          };
+
+          // Fetch real stats
+          const stats = await VS.teachers.getStats(teacherId);
+          t.rating = stats.avgRating;
+          t.sessions = stats.totalSessions;
+          t.reviews_count = stats.reviewsCount;
+          t.distribution = stats.distribution;
+          t.recentReviews = stats.recentReviews;
+
+          // Populate profile
+          const avatarEl = document.getElementById("phAvatar");
+          avatarEl.style.background = t.color || "var(--indigo)";
+          avatarEl.textContent = t.initials;
+
+          document.getElementById("phName").textContent = t.name;
+          document.getElementById("phCollege").textContent =
+            "🎓 " + (t.college || "Verified Student");
+          document.getElementById("phBio").textContent =
+            t.bio || "No bio provided.";
+          document.getElementById("phRate").innerHTML =
+            "<strong>🪙 " + (t.rate || 0) + " coins</strong> / hour";
+          document.title = "Vidyasetu — " + t.name;
+
+          // Tags
+          const tagsEl = document.getElementById("phTags");
+          tagsEl.innerHTML = `
+            <span class="pill pill-gold">${tierBadge[t.tier] || "🥉 Verified"}</span>
+            ${t.online ? '<span class="pill pill-green">🟢 Online Now</span>' : '<span class="pill pill-gray">⚫ Offline</span>'}
+            ${t.sessions > 5 ? '<span class="pill pill-indigo">⚡ Experienced</span>' : ""}
+            ${t.rating >= 4.5 ? '<span class="pill pill-teal">⭐ Top Rated</span>' : ""}
+          `;
+
+          // Stats
+          document.getElementById("statRating").textContent = t.rating > 0 ? t.rating : "N/A";
+          document.getElementById("statSessions").textContent = t.sessions || 0;
+          document.getElementById("statReviews").textContent = t.reviews_count || 0;
+
+          // Update rating bars (distribution)
+          if (t.reviews_count > 0) {
+            const bars = document.querySelectorAll(".rating-bar-row");
+            [5, 4, 3, 2, 1].forEach((star, i) => {
+              const count = t.distribution[star] || 0;
+              const pct = Math.round((count / t.reviews_count) * 100);
+              const bar = bars[i];
+              if (bar) {
+                bar.querySelector(".rb-fill").style.width = pct + "%";
+                bar.querySelector(".rb-count").textContent = count;
+              }
+            });
+          } else {
+             document.querySelectorAll(".rb-fill").forEach(f => f.style.width = "0%");
+             document.querySelectorAll(".rb-count").forEach(c => c.textContent = "0");
+          }
+
+          // Skills
+          const tierIcon = { gold: "🥇", silver: "🥈", bronze: "🥉" };
+          
+          if (t.teaches && t.teaches.length > 0) {
+            document.getElementById("teachSkills").innerHTML = t.teaches
+              .map(
+                (s) =>
+                  `<div class="skill-tag teach"><span class="tier-icon">${tierIcon[s.tier] || "🥉"}</span> ${s.name} — ${s.tier ? s.tier.charAt(0).toUpperCase() + s.tier.slice(1) : "Unverified"}</div>`
+              )
+              .join("");
+          } else {
+            document.getElementById("teachSkills").innerHTML =
+              '<div style="color:var(--muted);font-size:0.85rem">No verified teaching skills yet.</div>';
+          }
+
+          if (t.wants && t.wants.length > 0) {
+            document.getElementById("wantSkills").innerHTML = t.wants
+              .map((s) => `<div class="skill-tag">${s.name}</div>`)
+              .join("");
+          } else {
+            document.getElementById("wantSkills").innerHTML =
+              '<div style="color:var(--muted);font-size:0.85rem">Not looking to learn currently.</div>';
+          }
+
+          // Verify text
+          document.getElementById("verifyText").innerHTML =
+            `<strong>MCQ Verified Teacher</strong> — ${t.name.split(" ")[0]} passed our automated skill test. Last verified recently.`;
+
+          // Reviews
+          document.getElementById("reviewTitle").textContent =
+            "⭐ Reviews (" + (t.reviews_count || 0) + ")";
+          document.getElementById("bigRating").textContent = t.rating > 0 ? t.rating : "0.0";
+          document.getElementById("reviewCount").textContent =
+            (t.reviews_count || 0) + " reviews";
+          document.getElementById("viewAllReviews").textContent =
+            "View all " + (t.reviews_count || 0) + " reviews →";
+          
+          if (t.recentReviews && t.recentReviews.length > 0) {
+            document.getElementById("reviewsList").innerHTML = t.recentReviews.map(r => `
+              <div class="review-card" style="margin-top:1.5rem; border-top:1px solid var(--surface); padding-top:1.5rem">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem">
+                  <div style="display:flex; align-items:center; gap:0.6rem">
+                    <div style="width:32px; height:32px; border-radius:50%; background:${r.learnerColor}; display:flex; align-items:center; justify-content:center; color:#fff; font-size:0.75rem; font-weight:700">
+                      ${r.learnerName.charAt(0)}
+                    </div>
+                    <div>
+                      <div style="font-size:0.88rem; font-weight:600; color:var(--ink)">${r.learnerName}</div>
+                      <div style="font-size:0.72rem; color:var(--muted)">${new Date(r.date).toLocaleDateString()}</div>
+                    </div>
+                  </div>
+                  <div style="color:var(--coin); font-size:0.85rem">${"★".repeat(r.rating)}${"☆".repeat(5-r.rating)}</div>
+                </div>
+                <p style="font-size:0.88rem; color:var(--body); line-height:1.6">${r.review || "No written review."}</p>
+              </div>
+            `).join("");
+          } else {
+            document.getElementById("reviewsList").innerHTML =
+              '<div style="padding:2rem;text-align:center;color:var(--muted)">No reviews yet.</div>';
+          }
+
+          // Load real availability from DB
+          loadAvailabilityGrid(teacherId);
+
+          // Booking card rate
+          window.ratePerHour = t.rate || 0;
+          document.getElementById("bcCoins").textContent =
+            "🪙 " + window.ratePerHour;
+          updateBookingTotal(1.5);
+        } catch (err) {
+          console.error("Profile error:", err);
+          document.getElementById("profileContent").innerHTML =
+            `<div style="padding:4rem;text-align:center">
+               <h2>Teacher not found</h2>
+               <p style="color:var(--danger);font-family:monospace;background:var(--surface);padding:1rem;margin:1rem 0;word-break:break-all;">
+                 DEBUG: teacherId="${teacherId}"<br>
+                 ERROR: ${err.message || 'Unknown error'}
+               </p>
+               <a href="04_explore.html" class="btn-book" style="display:inline-block;margin-top:1rem">Back to Explore</a>
+             </div>`;
+        }
+      }
+
+      function updateBookingTotal(h) {
+        const rate = window.ratePerHour || 0;
+        document.getElementById("coinTotal").textContent =
+          "🪙 " + (rate * h).toFixed(1);
+        document.getElementById("ctLabel").innerHTML =
+          'Total to escrow<br><span style="font-size:.72rem;color:var(--muted)">' +
+          h +
+          "h × 🪙" +
+          rate +
+          "/hr</span>";
+        const btn = document.querySelector(".btn-book-now");
+        if (btn)
+          btn.textContent =
+            "Book Now — 🪙 " + Math.round(rate * h) + " coins →";
+      }
+
+      // Availability calendar
+      async function loadAvailabilityGrid(teacherId) {
+        const gridEl = document.getElementById("availGrid");
+        if (!gridEl) return;
+        gridEl.innerHTML = '<div style="color:var(--muted); padding:1rem;">Loading availability...</div>';
+
+        try {
+          // Reuse the singleton client
+          const sb = typeof window.getSupabase === "function" ? window.getSupabase() : null;
+          if (!sb) throw new Error("no sb");
+          const { data } = await sb
+            .from("availability_slots")
+            .select("*")
+            .eq("teacher_id", teacherId)
+            .eq("is_active", true);
+
+          if (data && data.length > 0) {
+            const daysArr = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            let html = '<div style="display:flex; flex-direction:column; gap:0.5rem; width:100%;">';
+            
+            for (let i = 0; i < 7; i++) {
+              const daySlots = data.filter(s => s.is_recurring && s.day_of_week === i);
+              if (daySlots.length > 0) {
+                const slotsHtml = daySlots.map(s => {
+                  let [sh, sm] = s.start_time.split(":");
+                  let [eh, em] = s.end_time.split(":");
+                  let shI = parseInt(sh), ehI = parseInt(eh);
+                  let ampm1 = shI >= 12 ? "PM" : "AM";
+                  let ampm2 = ehI >= 12 ? "PM" : "AM";
+                  let fsh = shI > 12 ? shI - 12 : (shI === 0 ? 12 : shI);
+                  let feh = ehI > 12 ? ehI - 12 : (ehI === 0 ? 12 : ehI);
+                  return `<span style="background:var(--surface); padding:4px 8px; border-radius:6px; font-size:0.8rem; font-weight:600; border:1px solid var(--border);">${fsh}:${sm} ${ampm1} - ${feh}:${em} ${ampm2}</span>`;
+                }).join("");
+                
+                html += `
+                  <div style="display:flex; align-items:center; justify-content:space-between; padding:0.8rem; border-bottom:1px solid var(--border);">
+                    <div style="font-weight:700; font-size:0.9rem; color:var(--ink); width:90px;">${daysArr[i]}</div>
+                    <div style="display:flex; gap:0.4rem; flex-wrap:wrap; flex:1; justify-content:flex-end;">${slotsHtml}</div>
+                  </div>
+                `;
+              }
+            }
+            html += '</div>';
+            gridEl.innerHTML = html;
+            gridEl.style.display = "block"; // overriding grid layout if necessary
+            return;
+          }
+        } catch (e) {
+          console.warn("Availability load failed:", e);
+        }
+
+        // No slots found
+        gridEl.innerHTML = `
+          <div style="grid-column: 1 / -1; padding: 2.5rem; text-align: center; background: var(--surface); border-radius: 12px; border: 1px dashed var(--border);">
+            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📅</div>
+            <div style="font-size: 0.88rem; color: var(--ink); font-weight: 600;">No availability set</div>
+            <div style="font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem;">This teacher hasn't defined their weekly schedule yet.</div>
+          </div>
+        `;
+      }
+
+      function setDuration(btn, h) {
+        document
+          .querySelectorAll(".duration-btns .dur-btn")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        updateBookingTotal(h);
+      }
+      function selectTime(btn, t) {
+        document
+          .querySelectorAll("#timeSlots .dur-btn")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+      }
+
+      // MESSAGE MODAL LOGIC
+      function openMsgModal() {
+        document.getElementById("modalTitle").textContent =
+          `Message ${document.getElementById("phName").textContent}`;
+        document.getElementById("msgModal").style.display = "flex";
+        document.getElementById("msgBody").focus();
+      }
+      function closeMsgModal() {
+        document.getElementById("msgModal").style.display = "none";
+      }
+      async function submitMsg() {
+        const content = document.getElementById("msgBody").value.trim();
+        if (!content) return;
+
+        const btn = document.getElementById("sendMsgBtn");
+        btn.disabled = true;
+        btn.textContent = "Sending...";
+
+        try {
+          await VS.dm.send(teacherId, content);
+          closeMsgModal();
+          // Redirect to inbox
+          window.location.href = `16_messages.html?peer=${teacherId}`;
+        } catch (err) {
+          alert("Failed to send message: " + err.message);
+          btn.disabled = false;
+          btn.textContent = "Send Message";
+        }
+      }
+
+      function openSidebar() {
+        document.getElementById("sidebar").classList.add("open");
+        document.getElementById("overlay").classList.add("open");
+      }
+      function closeSidebar() {
+        document.getElementById("sidebar").classList.remove("open");
+        document.getElementById("overlay").classList.remove("open");
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        initProfile();
+      });
+
+      if (window.innerWidth <= 1024) {
+        document.getElementById("hamBtn").style.display = "flex";
+      }
+      window.addEventListener("resize", () => {
+        if (window.innerWidth <= 1024)
+          document.getElementById("hamBtn").style.display = "flex";
+        else document.getElementById("hamBtn").style.display = "none";
+      });
+    </script>
+    <!-- Theme toggle auto-injected by js/dark-mode.js -->
+
+    <script>
+      if (typeof lucide !== "undefined") {
+        lucide.createIcons();
+      }
+    </script>
+  </body>
 </html>

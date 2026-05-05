@@ -1,595 +1,1593 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" href="logo-v.png" type="image/png">
-<title>Vidyasetu — My Profile</title>
-<link rel="stylesheet" href="ui-system.css">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js"></script>
-<script src="api.js"></script>
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--ink:#0D0D1A;--indigo:#5B45E0;--indigo-light:#F0EEF9;--indigo-dark:#3D2DB8;--teal:#16A27B;--teal-light:#F0FAF6;--coin:#F5A623;--coin-light:#FFF9EF;--danger:#E84040;--surface:#F7F8FA;--card:#FFFFFF;--border:#E5E7EB;--muted:#9CA3AF;--body:#4B5563;--sidebar:256px}
-body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--ink);display:flex;min-height:100vh}
-.sidebar{width:var(--sidebar);background:#fff;border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50;transition:transform .3s}
-.sb-top{padding:1.5rem 1.2rem 1rem;border-bottom:1px solid var(--border)}
-.sb-logo{font-family:'DM Serif Display',serif;font-size:1.35rem;color:var(--ink);display:flex;align-items:center;gap:8px;text-decoration:none}
-.sb-logo span{color:var(--indigo)}
-.sb-nav{flex:1;padding:1rem .8rem;overflow-y:auto}
-.sb-section{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:.4rem .6rem;margin-top:1rem;margin-bottom:.3rem}
-.sb-item{display:flex;align-items:center;gap:.75rem;padding:.65rem .8rem;border-radius:9px;text-decoration:none;color:var(--body);font-size:.9rem;font-weight:500;transition:all .18s;cursor:pointer;border:none;background:none;width:100%;text-align:left}
-.sb-item:hover{background:var(--surface);color:var(--ink)}
-.sb-item.active{background:var(--indigo-light);color:var(--indigo);font-weight:600}
-.sb-item .icon{width:20px;text-align:center;font-size:1rem;flex-shrink:0}
-.sb-item .badge{margin-left:auto;background:var(--indigo);color:#fff;font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:99px}
-.sb-bottom{padding:1rem 1.2rem;border-top:1px solid var(--border)}
-.sb-user{display:flex;align-items:center;gap:.75rem}
-.sb-avatar{width:40px;height:40px;border-radius:50%;background:var(--indigo);color:#fff;font-weight:700;font-size:.9rem;display:flex;align-items:center;justify-content:center}
-.sb-name{font-size:.88rem;font-weight:600;color:var(--ink)}
-.sb-coin{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--coin);font-weight:600}
-.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-width:0}
-.topbar{background:#fff;border-bottom:1px solid var(--border);padding:0 2rem;height:60px;display:flex;align-items:center;gap:1rem;position:sticky;top:0;z-index:40}
-.topbar-right{margin-left:auto;display:flex;align-items:center;gap:.75rem}
-.icon-btn{width:38px;height:38px;border-radius:9px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:.95rem;color:var(--body)}
-.icon-btn:hover{border-color:var(--indigo);color:var(--indigo)}
-.content{padding:2rem;flex:1;max-width:1000px}
-
-/* PROFILE HERO */
-.profile-hero{background:#fff;border:1px solid var(--border);border-radius:20px;padding:2rem;margin-bottom:1.5rem;position:relative;overflow:hidden}
-.ph-banner{position:absolute;top:0;left:0;right:0;height:100px;background:linear-gradient(135deg,var(--indigo),var(--indigo-dark));opacity:.08;pointer-events:none}
-.ph-body{display:flex;gap:1.5rem;align-items:flex-start;flex-wrap:wrap}
-.ph-avatar{width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:1.8rem;flex-shrink:0;border:3px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,.1);position:relative}
-.ph-avatar-edit{position:absolute;bottom:0;right:0;width:28px;height:28px;background:var(--indigo);border-radius:50%;border:2px solid #fff;display:none;align-items:center;justify-content:center;font-size:.7rem;cursor:pointer;color:#fff}
-.editing .ph-avatar-edit{display:flex}
-.ph-info{flex:1;min-width:0}
-.ph-name{font-family:'DM Serif Display',serif;font-size:1.7rem;color:var(--ink);margin-bottom:.2rem}
-.ph-college{font-size:.9rem;color:var(--body);margin-bottom:.6rem}
-.ph-tags{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.8rem}
-.pill{display:inline-flex;align-items:center;gap:4px;border-radius:99px;padding:.25rem .65rem;font-size:.76rem;font-weight:600}
-.pill-indigo{background:var(--indigo-light);color:var(--indigo)}
-.pill-teal{background:var(--teal-light);color:var(--teal)}
-.pill-gold{background:var(--coin-light);color:var(--vs-warning-text)}
-.pill-gray{background:var(--surface);color:var(--body);border:1px solid var(--border)}
-.ph-bio{font-size:.9rem;color:var(--body);line-height:1.7;max-width:520px}
-.ph-actions{display:flex;gap:.5rem;flex-shrink:0}
-.btn-edit{padding:.6rem 1.2rem;border-radius:9px;border:1.5px solid var(--border);background:#fff;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s;color:var(--body);display:flex;align-items:center;gap:.4rem}
-.btn-edit:hover{border-color:var(--indigo);color:var(--indigo)}
-.btn-edit.active{background:var(--indigo);color:#fff;border-color:var(--indigo)}
-.btn-edit.save{background:var(--teal);color:#fff;border-color:var(--teal)}
-.btn-edit.save:hover{background:#128b68}
-/* Editable inline fields */
-.editable{border:1.5px solid transparent;border-radius:8px;padding:2px 6px;margin:-2px -6px;transition:all .2s}
-.editing .editable{border-color:var(--border);background:var(--surface);cursor:text}
-.editing .editable:focus{border-color:var(--indigo);background:#fff;outline:none}
-
-/* STATS */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem}
-.stat-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:1.2rem 1.5rem;text-align:center;transition:all .2s}
-.stat-card:hover{border-color:rgba(91,69,224,.2);box-shadow:0 4px 16px rgba(91,69,224,.06)}
-.stat-num{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:600;color:var(--ink)}
-.stat-label{font-size:.78rem;color:var(--muted);margin-top:.2rem}
-
-/* TWO COL */
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start;margin-bottom:1.5rem}
-.card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:1.4rem;margin-bottom:1.2rem}
-.card-title{font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:1.1rem;display:flex;align-items:center;gap:.4rem}
-
-/* SKILLS */
-.skill-block{margin-bottom:1.4rem}
-.skill-block:last-child{margin-bottom:0}
-.sb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem}
-.sb-label{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
-.skill-tags{display:flex;gap:.5rem;flex-wrap:wrap}
-.skill-tag{display:flex;align-items:center;gap:.4rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.35rem .75rem;font-size:.82rem;font-weight:500;color:var(--body)}
-.skill-tag.teach{background:var(--teal-light);border-color:rgba(22,162,123,.2);color:var(--teal)}
-.skill-tag .tier-icon{font-size:.85rem}
-.btn-add-skill{display:flex;align-items:center;gap:6px;padding:.4rem .85rem;border-radius:8px;border:1.5px dashed var(--border);background:transparent;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;color:var(--muted);transition:all .2s}
-.btn-add-skill:hover{border-color:var(--indigo);color:var(--indigo)}
-
-/* PORTFOLIO */
-.portfolio-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem;margin-bottom:.75rem;display:flex;align-items:center;gap:1rem;transition:all .2s}
-.portfolio-item:last-child{margin-bottom:0}
-.portfolio-item:hover{border-color:rgba(91,69,224,.2)}
-.pi-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:.82rem;flex-shrink:0}
-.pi-info{flex:1;min-width:0}
-.pi-name{font-size:.88rem;font-weight:600;color:var(--ink);margin-bottom:.15rem}
-.pi-detail{font-size:.75rem;color:var(--muted)}
-.pi-right{text-align:right;flex-shrink:0}
-.pi-rating{font-size:.82rem;color:var(--coin);font-weight:600}
-.pi-date{font-size:.72rem;color:var(--muted)}
-
-/* SETTINGS */
-.settings-card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:1.4rem}
-.setting-row{display:flex;align-items:center;justify-content:space-between;padding:.85rem 0;border-bottom:1px solid var(--surface)}
-.setting-row:last-child{border-bottom:none}
-.sr-label{font-size:.88rem;font-weight:500;color:var(--ink)}
-.sr-sub{font-size:.75rem;color:var(--muted);margin-top:.15rem}
-.toggle{position:relative;width:44px;height:24px;cursor:pointer;flex-shrink:0}
-.toggle input{display:none}
-.toggle-track{position:absolute;inset:0;background:var(--border);border-radius:12px;transition:background .2s}
-.toggle input:checked+.toggle-track{background:var(--indigo)}
-.toggle-thumb{position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.15)}
-.toggle input:checked~.toggle-thumb{transform:translateX(20px)}
-.btn-danger{padding:.55rem 1rem;border-radius:8px;border:1.5px solid rgba(232,64,64,.3);background:rgba(232,64,64,.05);color:var(--danger);font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s}
-.btn-danger:hover{background:rgba(232,64,64,.1);border-color:rgba(232,64,64,.5)}
-
-/* Toast */
-.toast-wrap{position:fixed;bottom:24px;right:24px;z-index:400;display:flex;flex-direction:column;gap:.5rem;pointer-events:none}
-.toast{background:#fff;border:1px solid var(--border);border-radius:12px;padding:.7rem 1rem;font-size:.83rem;font-weight:500;color:var(--ink);box-shadow:0 8px 24px rgba(0,0,0,.12);display:flex;align-items:center;gap:.5rem;animation:toastIn .35s cubic-bezier(.34,1.56,.64,1) both;pointer-events:auto;max-width:280px}
-@keyframes toastIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
-
-/* MOBILE */
-@media(max-width:900px){
-  .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0}
-  .stats-row{grid-template-columns:repeat(2,1fr)}
-  .two-col{grid-template-columns:1fr}
-  .ph-actions{width:100%}
-  #hamBtn{display:flex!important}
-}
-@media(max-width:560px){.stats-row{grid-template-columns:1fr}.content{padding:1rem}}
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:49}.overlay.open{display:block}
-.ham-btn{display:none;width:38px;height:38px;border-radius:9px;border:1.5px solid var(--border);background:#fff;align-items:center;justify-content:center;cursor:pointer;flex-direction:column;gap:5px;flex-shrink:0}
-.ham-btn span{width:16px;height:1.5px;background:var(--ink);border-radius:2px}
-</style>
-<style>
-[data-theme="dark"] {
-  --ink: #EBE5DF;
-  --indigo: #8A78E5;
-  --indigo-light: rgba(138, 120, 229, 0.15);
-  --indigo-dark: #7463D0;
-  --teal: #45B08C;
-  --teal-light: rgba(69, 176, 140, 0.15);
-  --coin: #E8B042;
-  --coin-light: rgba(232, 176, 66, 0.15);
-  --danger: #D96161;
-  --surface: #1C1A19;
-  --card: #252220;
-  --border: #36312E;
-  --muted: #8C8279;
-  --body: #BDB3A8;
-}
-</style>
-<script>
-  (() => {
-    const t = localStorage.getItem('vs-theme');
-    if (t === 'dark') {
-      document.documentElement.setAttribute('data-theme', 'dark');
-    }
-  })();
-</script>
-</head>
-<body>
-
-<div class="toast-wrap" id="toastWrap"></div>
-<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
-
-<aside class="sidebar" id="sidebar">
-  <div class="sb-top"><a href="index.html" class="sb-logo"><img src="logo-v.png" alt="V" class="logo-img"><span class="logo-text">vidyasetu</span></a></div>
-  <nav class="sb-nav">
-    <div class="sb-section">Main</div>
-    <a href="03_dashboard.html" class="sb-item"><span class="icon">🏠</span> Dashboard</a>
-    <a href="04_explore.html" class="sb-item"><span class="icon">🔍</span> Explore Teachers</a>
-    <a href="09_bounty.html" class="sb-item"><span class="icon">🎯</span> Bounty Hub <span class="badge" id="sb-bounty-badge">0</span></a>
-    <a href="15_campus_collab.html" class="sb-item"><span class="icon">☕</span> Campus Collab <span class="badge" id="sb-campus-badge">0</span></a>
-    <a href="14_game_learn.html" class="sb-item"><span class="icon">🎮</span> Code Quest</a>
-    <div class="sb-section">My Learning</div>
-    <a href="11_my_sessions.html" class="sb-item"><span class="icon">📅</span> My Sessions</a>
-    <a href="13_skill_verify.html" class="sb-item"><span class="icon">🎓</span> Verify Skills</a>
-    <a href="08_wallet.html" class="sb-item"><span class="icon">🪙</span> Wallet</a>
-    <div class="sb-section">Account</div>
-    <a href="12_my_profile.html" class="sb-item active"><span class="icon">👤</span> My Profile</a>
-  </nav>
-  <div class="sb-bottom" id="sb-user-area">
-    <div class="sb-user">
-      <div class="sb-avatar">...</div>
-      <div>
-        <div class="sb-name">Loading...</div>
-        <div class="sb-coin">...</div>
-      </div>
-    </div>
-  </div>
-</aside>
-
-<div class="main">
-  <div class="topbar">
-    <button class="ham-btn" id="hamBtn" style="display:none" onclick="openSidebar()"><span></span><span></span><span></span></button>
-    <div style="font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--ink)">My Profile</div>
-    <div class="topbar-right">
-      <button class="icon-btn" title="Notifications">🔔</button>
-      <button class="icon-btn" title="Share profile" onclick="showToast('📋','Profile link copied!')">🔗</button>
-    </div>
-  </div>
-
-  <div class="content" id="profileWrap">
-    <!-- PROFILE HERO -->
-    <div class="profile-hero" id="profileHero">
-      <div class="ph-banner"></div>
-      <div class="ph-body">
-        <div class="ph-avatar" style="background:var(--indigo)" id="profileAvatar">...</div>
-        <div class="ph-info">
-          <h1 class="ph-name"><span class="editable" id="editName" contenteditable="false">Loading...</span></h1>
-          <p class="ph-college"><span class="editable" id="editCollege" contenteditable="false">...</span></p>
-          <div class="ph-tags" id="profileTags">
-            <span class="pill pill-gold" id="profileTier">... Tier</span>
-            <span class="pill pill-teal" id="profileSkillsCount">... Verified Skills</span>
-            <span class="pill pill-indigo">⚡ Fast Responder</span>
-            <span class="pill pill-gray" id="profileJoined">🗓️ Joined ...</span>
-          </div>
-          <p class="ph-bio"><span class="editable" id="editBio" contenteditable="false">...</span></p>
-        </div>
-        <div class="ph-actions">
-          <button class="btn-edit" id="editBtn" onclick="toggleEdit()">✏️ Edit Profile</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- STATS -->
-    <div class="stats-row" id="profileStats">
-      <div class="stat-card"><div class="stat-num">0</div><div class="stat-label">📅 Sessions Taught</div></div>
-      <div class="stat-card"><div class="stat-num">0</div><div class="stat-label">📚 Sessions Attended</div></div>
-      <div class="stat-card"><div class="stat-num">🪙 0</div><div class="stat-label">Coins Earned</div></div>
-      <div class="stat-card"><div class="stat-num">--</div><div class="stat-label">⭐ Avg Rating</div></div>
-    </div>
-
-    <!-- TWO COL: SKILLS + PORTFOLIO -->
-    <div class="two-col">
-      <!-- SKILLS -->
-      <div class="card">
-        <div class="card-title">🎓 My Skills & Verification</div>
-        <div class="skill-block">
-          <div class="sb-header">
-            <span class="sb-label">Teaching (Verified)</span>
-          </div>
-          <div class="skill-tags">
-            <div class="skill-tag teach">... (Pending Verification)</div>
-          </div>
-        </div>
-        <div class="skill-block">
-          <div class="sb-header">
-            <span class="sb-label">Want to Learn</span>
-          </div>
-          <div class="skill-tags" id="learnSkills">
-            <div style="font-size:0.85rem;color:var(--muted);padding:1rem">No learning goals added yet.</div>
-          </div>
-        </div>
-        <div style="margin-top:1.2rem;padding-top:1.2rem;border-top:1px solid var(--surface)">
-          <a href="13_skill_verify.html" class="btn-add-skill">🛡️ Verify a New Skill →</a>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">📂 Teaching Portfolio</div>
-        <div class="portfolio-item">
-          <div class="pi-avatar" style="background:#5B45E0">NS</div>
-          <div class="pi-info">
-            <div class="pi-name">Taught Python to Nisha Singh</div>
-            <div class="pi-detail">1.5h session · Data types & functions</div>
-          </div>
-          <div class="pi-right">
-            <div class="pi-rating">⭐ 5.0</div>
-            <div class="pi-date">Today</div>
-          </div>
-        </div>
-        <div class="portfolio-item">
-          <div class="pi-avatar" style="background:#16A27B">RP</div>
-          <div class="pi-info">
-            <div class="pi-name">Taught Python to Raj Patel</div>
-        <div class="card-title">💼 Teaching Portfolio & Reviews</div>
-        <div id="portfolioList">
-          <div style="font-size:0.85rem;color:var(--muted);padding:1rem">No past sessions to display yet. Teach a session to build your portfolio!</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- SETTINGS SECTION -->
-    <div class="settings-card">
-      <div class="card-title">⚙️ Settings & Preferences</div>
-      <div class="setting-row">
-        <div>
-          <div class="sr-label">Email Notifications</div>
-          <div class="sr-sub">Get notified about new sessions, bounty updates, and messages</div>
-        </div>
-        <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-      </div>
-      <div class="setting-row">
-        <div>
-          <div class="sr-label">Show Online Status</div>
-          <div class="sr-sub">Let other users see when you're available</div>
-        </div>
-        <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-      </div>
-      <div class="setting-row">
-        <div>
-          <div class="sr-label">Public Profile</div>
-          <div class="sr-sub">Allow others to find and view your profile</div>
-        </div>
-        <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-      </div>
-      <div class="setting-row">
-        <div>
-          <div class="sr-label">Session Reminders</div>
-          <div class="sr-sub">Get a reminder 30 minutes before your session</div>
-        </div>
-        <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-      </div>
-      <div class="setting-row">
-        <div>
-          <div class="sr-label">Dark Mode</div>
-          <div class="sr-sub">Switch to dark theme for comfortable viewing</div>
-        </div>
-        <label class="toggle"><input type="checkbox" id="settingsDarkMode" onchange="toggleTheme()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-      </div>
-
-      <div class="setting-row">
-        <div>
-          <div class="sr-label" style="color:var(--indigo)">🎭 Demo Data Mode</div>
-          <div class="sr-sub" id="demoModeDesc">Load sample data across all pages for testing. Writes are blocked while active.</div>
-        </div>
-        <label class="toggle"><input type="checkbox" id="settingsDemoMode" onchange="toggleDemoMode(this.checked)"><div class="toggle-track" style="background:var(--indigo)"></div><div class="toggle-thumb"></div></label>
-      </div>
-
-      <div class="setting-row">
-        <div>
-          <div class="sr-label">Sign Out</div>
-          <div class="sr-sub">Log out of your account on this device</div>
-        </div>
-        <button class="btn-danger" style="background:rgba(91,69,224,.08);color:var(--indigo);border-color:rgba(91,69,224,.3)" onclick="doLogout()">Sign Out</button>
-      </div>
-
-      <div class="setting-row" style="border-bottom:none">
-        <div>
-          <div class="sr-label" style="color:var(--danger)">Delete Account</div>
-          <div class="sr-sub">Permanently delete your account and all data. This cannot be undone.</div>
-        </div>
-        <button class="btn-danger" onclick="doDeleteAccount()">Delete Account</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Add required scripts -->
-<script src="config.js"></script>
-<script src="api.js"></script>
-<script src="demo-data.js"></script>
-
-<script>
-// Profile Logic
-async function initProfile() {
-  const wrap = document.getElementById('profileWrap');
-  if (!wrap) return;
-
-  try {
-    let profile = await VS.profile.get();
-    if (!profile) return;
-    
-    // Fetch stats
-    const { upcoming, completed } = await VS.sessions.list();
-    profile.stats = {
-      taught: completed.filter(b => b.teacher_id === profile.id).length,
-      attended: completed.filter(b => b.learner_id === profile.id).length,
-      rating: profile.rating || '--'
-    };
-
-    // Render Basic Info
-    document.getElementById('editName').textContent = profile.name;
-    document.getElementById('editCollege').textContent = profile.college || 'Verified Expert';
-    document.getElementById('editBio').textContent = profile.bio || 'No bio provided yet.';
-    document.getElementById('profileAvatar').style.background = profile.avatar_color || 'var(--indigo)';
-    const initials = (profile.name || 'User').split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
-    document.getElementById('profileAvatar').innerHTML = `${initials} <div class="ph-avatar-edit" onclick="showToast('📷','Avatar upload coming soon!')">📷</div>`;
-
-    // Render Tags
-    document.getElementById('profileTier').textContent = `🥈 ${profile.tier || 'Bronze'} Tier`;
-    document.getElementById('profileSkillsCount').textContent = `📜 ${profile.skills.filter(s=>s.tier).length} Verified Skills`;
-    document.getElementById('profileJoined').textContent = `🗓️ Joined ${new Date(profile.joined_at || profile.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`;
-
-    // Render Stats
-    const statsCards = document.querySelectorAll('#profileStats .stat-num');
-    if (statsCards.length >= 4) {
-      statsCards[0].textContent = profile.stats.taught;
-      statsCards[1].textContent = profile.stats.attended;
-      statsCards[2].textContent = `🪙 ${profile.coins}`;
-      statsCards[3].textContent = profile.stats.rating;
-    }
-
-    // Render Skills
-    const teachTags = document.getElementById('teachSkills');
-    const learnTags = document.getElementById('learnSkills');
-    
-    if (teachTags) {
-      const teaching = profile.skills.filter(s => s.is_teaching);
-      teachTags.innerHTML = teaching.length ? teaching.map(s => `
-        <div class="skill-tag teach">
-          <span class="tier-icon">${s.tier === 'gold' ? '🥇' : s.tier === 'silver' ? '🥈' : '🥉'}</span> 
-          ${s.name} — ${s.tier ? s.tier.charAt(0).toUpperCase() + s.tier.slice(1) : 'Unverified'}
-        </div>
-      `).join('') : '<div style="font-size:0.8rem;color:var(--muted)">No verified teaching skills yet.</div>';
-      teachTags.innerHTML += '<button class="btn-add-skill" onclick="window.location.href=\'13_skill_verify.html\'"><span>+</span> Add / Verify Skill</button>';
-    }
-
-    if (learnTags) {
-      const learning = profile.skills.filter(s => !s.is_teaching);
-      learnTags.innerHTML = learning.length ? learning.map(s => `
-        <div class="skill-tag">${s.name}</div>
-      `).join('') : '<div style="font-size:0.8rem;color:var(--muted)">No learning goals added yet.</div>';
-      learnTags.innerHTML += '<button class="btn-add-skill"><span>+</span> Add Goal</button>';
-    }
-
-  } catch (err) {
-    console.error('Failed to load profile:', err);
-    showToast('❌ Failed to load profile');
-  }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  initProfile();
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  if (document.getElementById('settingsDarkMode')) {
-    document.getElementById('settingsDarkMode').checked = isDark;
-  }
-  // Sync demo mode toggle
-  setTimeout(() => {
-    const demoToggle = document.getElementById('settingsDemoMode');
-    if (demoToggle && window.VS_DEMO) {
-      demoToggle.checked = window.VS_DEMO.isOn();
-      if (window.VS_DEMO.isOn()) {
-        const desc = document.getElementById('demoModeDesc');
-        if (desc) desc.textContent = '🎭 Demo mode is ON — sample data shown everywhere. Real writes are blocked.';
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="logo-v.png" type="image/png" />
+    <title>Vidyasetu — My Profile</title>
+    <link rel="stylesheet" href="ui-system.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script type="module" src="api.js"></script>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
       }
-    }
-  }, 100);
-});
+      :root {
+        --indigo: #5b45e0;
+        --indigo-dark: #3d2db8;
+        --indigo-light: #f0eef9;
+        --teal: #16a27b;
+        --teal-light: #e7f6f2;
+        --danger: #e84040;
+        --coin: #f5a623;
+        --coin-light: #fff8e6;
+        --ink: #111;
+        --body: #555;
+        --muted: #888;
+        --surface: #fafafb;
+        --border: #e8eaef;
+        --sidebar: 256px;
+      }
+      [data-theme="dark"] {
+        --ink: #e8eeff;
+        --indigo: #818cf8;
+        --indigo-light: rgba(129, 140, 248, 0.14);
+        --indigo-dark: #6366f1;
+        --teal: #34d399;
+        --teal-light: rgba(52, 211, 153, 0.13);
+        --coin: #fbbf24;
+        --coin-light: rgba(251, 191, 36, 0.14);
+        --danger: #f87171;
+        --surface: #060d1a;
+        --card: #0d1829;
+        --border: #1a2d4a;
+        --muted: #4a5568;
+        --body: #94a3b8;
+      }
 
-// Profile Editing Logic
-let isEditing = false;
+      /* Sidebar — Premium Glass */
+      [data-theme="dark"] .sidebar {
+        background: rgba(13, 24, 41, 0.95);
+        border-right-color: rgba(129, 140, 248, 0.12);
+        backdrop-filter: blur(20px);
+      }
+      [data-theme="dark"] .sb-top {
+        border-bottom-color: rgba(129, 140, 248, 0.1);
+      }
+      [data-theme="dark"] .sb-item:hover {
+        background: rgba(129, 140, 248, 0.08);
+        color: var(--ink);
+      }
+      [data-theme="dark"] .sb-item.active {
+        background: rgba(129, 140, 248, 0.15);
+        color: var(--indigo);
+      }
+      [data-theme="dark"] .sb-bottom {
+        border-top-color: rgba(129, 140, 248, 0.1);
+      }
 
-function toggleEdit() {
-  isEditing = !isEditing;
-  const wrap = document.getElementById('profileWrap');
-  const btn = document.getElementById('editBtn');
-  const editables = document.querySelectorAll('.editable');
+      /* Topbar */
+      [data-theme="dark"] .topbar {
+        background: rgba(6, 13, 26, 0.85);
+        border-bottom-color: rgba(129, 140, 248, 0.1);
+        backdrop-filter: blur(20px);
+      }
+      [data-theme="dark"] .icon-btn {
+        background: rgba(13, 24, 41, 0.8);
+        border-color: rgba(129, 140, 248, 0.18);
+        color: var(--body);
+      }
 
-  if (isEditing) {
-    wrap.classList.add('editing');
-    btn.innerHTML = '💾 Save Profile';
-    btn.classList.add('save');
-    btn.classList.remove('active');
-    editables.forEach(el => el.contentEditable = 'true');
-  } else {
-    wrap.classList.remove('editing');
-    btn.innerHTML = '✏️ Edit Profile';
-    btn.classList.remove('save');
-    editables.forEach(el => el.contentEditable = 'false');
-    showToast('✅', 'Profile saved successfully!');
-  }
-}
+      /* Profile Hero */
+      [data-theme="dark"] .profile-hero {
+        background: rgba(13, 24, 41, 0.6);
+        border-color: rgba(129, 140, 248, 0.14);
+      }
+      [data-theme="dark"] .ph-banner {
+        opacity: 0.15;
+      }
+      [data-theme="dark"] .ph-avatar {
+        border-color: var(--card);
+      }
+      [data-theme="dark"] .btn-edit {
+        background: rgba(13, 24, 41, 0.8);
+        border-color: rgba(129, 140, 248, 0.18);
+        color: var(--body);
+      }
+      [data-theme="dark"] .btn-edit:hover {
+        border-color: var(--indigo);
+        color: var(--indigo);
+      }
+      [data-theme="dark"] .editable:focus {
+        background: rgba(6, 13, 26, 0.9);
+      }
 
-function showToast(icon, text) {
-  if (!text) { text = icon; icon = '🔔'; } // Handle 1-arg case
-  const wrap = document.getElementById('toastWrap');
-  if (!wrap) return;
-  const t = document.createElement('div');
-  t.className = 'toast';
-  t.innerHTML = `<span style="font-size:1rem">${icon}</span><span>${text}</span>`;
-  wrap.appendChild(t);
-  setTimeout(() => t.remove(), 3000);
-}
+      /* Stats & Cards */
+      [data-theme="dark"] .stat-card,
+      [data-theme="dark"] .card {
+        background: rgba(13, 24, 41, 0.6);
+        border-color: rgba(129, 140, 248, 0.14);
+      }
+      [data-theme="dark"] .portfolio-item {
+        background: rgba(6, 13, 26, 0.6);
+        border-color: rgba(129, 140, 248, 0.1);
+      }
+      [data-theme="dark"] .portfolio-item:hover {
+        border-color: var(--indigo);
+      }
 
-function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('open')}
-function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('open')}
-if(window.innerWidth<=900){document.getElementById('hamBtn').style.display='flex'}
-window.addEventListener('resize',()=>{if(window.innerWidth<=900)document.getElementById('hamBtn').style.display='flex';else document.getElementById('hamBtn').style.display='none'})
-function toggleTheme() {
-  const html = document.documentElement;
-  const isDark = html.getAttribute('data-theme') === 'dark';
-  const newTheme = isDark ? 'light' : 'dark';
-  html.setAttribute('data-theme', newTheme);
-  
-  if (document.getElementById('globalThemeBtn')) {
-    document.getElementById('globalThemeBtn').textContent = isDark ? '🌙' : '☀️';
-  }
-  if (document.getElementById('settingsDarkMode')) {
-    document.getElementById('settingsDarkMode').checked = !isDark;
-  }
-  localStorage.setItem('vs-theme', newTheme);
-}
+      /* Settings */
+      [data-theme="dark"] .settings-card {
+        background: rgba(13, 24, 41, 0.8);
+        border-color: rgba(129, 140, 248, 0.18);
+      }
+      [data-theme="dark"] .setting-row {
+        border-bottom-color: rgba(255, 255, 255, 0.03);
+      }
+      [data-theme="dark"] .toggle-track {
+        background: rgba(255, 255, 255, 0.1);
+      }
 
-async function doDeleteAccount() {
-  if (window.VS_DEMO && window.VS_DEMO.isOn()) {
-    showToast('🚫', 'Deleting accounts is disabled in Demo Mode.');
-    return;
-  }
-  if (confirm('🚫 WARNING: This will permanently delete your account and all associated data. This cannot be undone.\n\nType OK to confirm.')) {
-    try {
-      showToast('⏳', 'Deleting your account...');
-      await VS.profile.delete();
-      // VS.profile.delete() calls VS.auth.logout() which redirects
-    } catch (err) {
-      console.error('Delete failed:', err);
-      showToast('❌', 'Failed to delete account. Please try again.');
-    }
-  }
-}
+      /* Toast */
+      [data-theme="dark"] .toast {
+        background: rgba(13, 24, 41, 0.95);
+        border-color: rgba(129, 140, 248, 0.2);
+        backdrop-filter: blur(12px);
+      }
 
-function doLogout() {
-  if (confirm('Sign out of Vidyasetu?')) {
-    if (window.VS_DEMO && window.VS_DEMO.isOn()) {
-      window.VS_DEMO.disable();
-    }
-    VS.auth.logout();
-  }
-}
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--surface);
+        color: var(--ink);
+        display: flex;
+        min-height: 100vh;
+      }
+      .sidebar {
+        width: var(--sidebar);
+        background: #fff;
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 50;
+        transition: transform 0.3s;
+      }
+      .sb-top {
+        padding: 1.5rem 1.2rem 1rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .sb-logo {
+        font-family: "DM Serif Display", serif;
+        font-size: 1.35rem;
+        color: var(--ink);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+      }
+      .sb-logo span {
+        color: var(--indigo);
+      }
+      .sb-nav {
+        flex: 1;
+        padding: 1rem 0.8rem;
+        overflow-y: auto;
+      }
+      .sb-section {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding: 0.4rem 0.6rem;
+        margin-top: 1rem;
+        margin-bottom: 0.3rem;
+      }
+      .sb-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.65rem 0.8rem;
+        border-radius: 9px;
+        text-decoration: none;
+        color: var(--body);
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.18s;
+        cursor: pointer;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+      }
+      .sb-item:hover {
+        background: var(--surface);
+        color: var(--ink);
+      }
+      .sb-item.active {
+        background: var(--indigo-light);
+        color: var(--indigo);
+        font-weight: 600;
+      }
+      .sb-item .icon {
+        width: 20px;
+        text-align: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+      }
+      .sb-item .badge {
+        margin-left: auto;
+        background: var(--indigo);
+        color: #fff;
+        font-size: 0.68rem;
+        font-weight: 700;
+        padding: 2px 7px;
+        border-radius: 99px;
+      }
+      .sb-bottom {
+        padding: 1rem 1.2rem;
+        border-top: 1px solid var(--border);
+      }
+      .sb-user {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .sb-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--indigo);
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .sb-name {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .sb-coin {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.78rem;
+        color: var(--coin);
+        font-weight: 600;
+      }
+      .main {
+        margin-left: var(--sidebar);
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+      .topbar {
+        background: #fff;
+        border-bottom: 1px solid var(--border);
+        padding: 0 2rem;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        position: sticky;
+        top: 0;
+        z-index: 40;
+      }
+      .topbar-right {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .icon-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 9px;
+        border: 1.5px solid var(--border);
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.95rem;
+        color: var(--body);
+      }
+      .icon-btn:hover {
+        border-color: var(--indigo);
+        color: var(--indigo);
+      }
+      .content {
+        padding: 2rem;
+        flex: 1;
+        max-width: 1000px;
+      }
 
-function toggleDemoMode(on) {
-  if (on) {
-    window.VS_DEMO.enable();
-    document.getElementById('demoModeDesc').textContent = '🎭 Demo mode is ON — sample data shown everywhere. Real writes are blocked.';
-    showToast('🎭', 'Demo mode enabled! Refresh any page to see sample data.');
-  } else {
-    window.VS_DEMO.disable();
-    document.getElementById('demoModeDesc').textContent = 'Load sample data across all pages for testing. Writes are blocked while active.';
-    showToast('✅', 'Demo mode disabled. Real database data will be shown.');
-  }
-}
-</script>
-<button onclick="toggleTheme()" id="globalThemeBtn" class="floating-theme-btn" title="Toggle Dark/Light Mode">🌙</button>
-<style>
-.floating-theme-btn {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: var(--card);
-  border: 1px solid var(--border);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  font-size: 20px;
-  cursor: pointer;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-  color: var(--ink);
-}
-.floating-theme-btn:hover {
-  transform: scale(1.05);
-}
-</style>
-<script>
-  function toggleTheme() {
-    const html = document.documentElement;
-    const isDark = html.getAttribute('data-theme') === 'dark';
-    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
-    document.getElementById('globalThemeBtn').textContent = isDark ? '🌙' : '☀️';
-    localStorage.setItem('vs-theme', isDark ? 'light' : 'dark');
-  }
-  if (document.documentElement.getAttribute('data-theme') === 'dark') {
-    document.getElementById('globalThemeBtn').textContent = '☀️';
-  }
+      /* PROFILE HERO */
+      .profile-hero {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .ph-banner {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 100px;
+        background: linear-gradient(135deg, var(--indigo), var(--indigo-dark));
+        opacity: 0.08;
+        pointer-events: none;
+      }
+      .ph-body {
+        display: flex;
+        gap: 1.5rem;
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+      .ph-avatar {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: #fff;
+        font-size: 1.8rem;
+        flex-shrink: 0;
+        border: 3px solid #fff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        position: relative;
+      }
+      .ph-avatar-edit {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 28px;
+        height: 28px;
+        background: var(--indigo);
+        border-radius: 50%;
+        border: 2px solid #fff;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        cursor: pointer;
+        color: #fff;
+      }
+      .editing .ph-avatar-edit {
+        display: flex;
+      }
+      .ph-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .ph-name {
+        font-family: "DM Serif Display", serif;
+        font-size: 1.7rem;
+        color: var(--ink);
+        margin-bottom: 0.2rem;
+      }
+      .ph-college {
+        font-size: 0.9rem;
+        color: var(--body);
+        margin-bottom: 0.6rem;
+      }
+      .ph-tags {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.8rem;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        border-radius: 99px;
+        padding: 0.25rem 0.65rem;
+        font-size: 0.76rem;
+        font-weight: 600;
+      }
+      .pill-indigo {
+        background: var(--indigo-light);
+        color: var(--indigo);
+      }
+      .pill-teal {
+        background: var(--teal-light);
+        color: var(--teal);
+      }
+      .pill-gold {
+        background: var(--coin-light);
+        color: var(--vs-warning-text);
+      }
+      .pill-gray {
+        background: var(--surface);
+        color: var(--body);
+        border: 1px solid var(--border);
+      }
+      .ph-bio {
+        font-size: 0.9rem;
+        color: var(--body);
+        line-height: 1.7;
+        max-width: 520px;
+      }
+      .ph-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-shrink: 0;
+      }
+      .btn-edit {
+        padding: 0.6rem 1.2rem;
+        border-radius: 9px;
+        border: 1.5px solid var(--border);
+        background: #fff;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: var(--body);
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .btn-edit:hover {
+        border-color: var(--indigo);
+        color: var(--indigo);
+      }
+      .btn-edit.active {
+        background: var(--indigo);
+        color: #fff;
+        border-color: var(--indigo);
+      }
+      .btn-edit.save {
+        background: var(--teal);
+        color: #fff;
+        border-color: var(--teal);
+      }
+      .btn-edit.save:hover {
+        background: #128b68;
+      }
+      /* Editable inline fields */
+      .editable {
+        border: 1.5px solid transparent;
+        border-radius: 8px;
+        padding: 2px 6px;
+        margin: -2px -6px;
+        transition: all 0.2s;
+      }
+      .editing .editable {
+        border-color: var(--border);
+        background: var(--surface);
+        cursor: text;
+      }
+      .editing .editable:focus {
+        border-color: var(--indigo);
+        background: #fff;
+        outline: none;
+      }
 
-  // PROFILE LIVE DATA
-  setTimeout(async () => {
-    if (typeof VS === 'undefined' || !VS.auth) return;
-    VS.auth.requireLogin();
-    const user = VS.auth.currentUser();
-    if (!user) return;
-    
-    // UI Update logic
-    const inits = (user.name || 'U').split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
-    document.getElementById('profileAvatar').textContent = inits;
-    document.querySelectorAll('.sb-avatar, .avatar').forEach(x => x.textContent = inits);
-    document.querySelectorAll('.sb-name').forEach(x => x.textContent = user.name);
-    document.getElementById('editName').textContent = user.name;
+      /* STATS */
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .stat-card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.2rem 1.5rem;
+        text-align: center;
+        transition: all 0.2s;
+      }
+      .stat-card:hover {
+        border-color: rgba(91, 69, 224, 0.2);
+        box-shadow: 0 4px 16px rgba(91, 69, 224, 0.06);
+      }
+      .stat-num {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .stat-label {
+        font-size: 0.78rem;
+        color: var(--muted);
+        margin-top: 0.2rem;
+      }
 
-    // Populate real data defaults
-    document.getElementById('profileJoined').textContent = `🗓️ Joined Today`;
-    document.getElementById('profileSkillsCount').textContent = '📜 0 Verified Skills';
-  }, 100);
-</script>
-</body>
+      /* TWO COL */
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        align-items: start;
+        margin-bottom: 1.5rem;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.4rem;
+        margin-bottom: 1.2rem;
+      }
+      .card-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      /* SKILLS */
+      .skill-block {
+        margin-bottom: 1.4rem;
+      }
+      .skill-block:last-child {
+        margin-bottom: 0;
+      }
+      .sb-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.7rem;
+      }
+      .sb-label {
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+      }
+      .skill-tags {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+      .skill-tag {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.35rem 0.75rem;
+        font-size: 0.82rem;
+        font-weight: 500;
+        color: var(--body);
+      }
+      .skill-tag.teach {
+        background: var(--teal-light);
+        border-color: rgba(22, 162, 123, 0.2);
+        color: var(--teal);
+      }
+      .skill-tag .tier-icon {
+        font-size: 0.85rem;
+      }
+      .btn-add-skill {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0.4rem 0.85rem;
+        border-radius: 8px;
+        border: 1.5px dashed var(--border);
+        background: transparent;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        color: var(--muted);
+        transition: all 0.2s;
+      }
+      .btn-add-skill:hover {
+        border-color: var(--indigo);
+        color: var(--indigo);
+      }
+
+      /* PORTFOLIO */
+      .portfolio-item {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1rem 1.2rem;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: all 0.2s;
+      }
+      .portfolio-item:last-child {
+        margin-bottom: 0;
+      }
+      .portfolio-item:hover {
+        border-color: rgba(91, 69, 224, 0.2);
+      }
+      .pi-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: #fff;
+        font-size: 0.82rem;
+        flex-shrink: 0;
+      }
+      .pi-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .pi-name {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--ink);
+        margin-bottom: 0.15rem;
+      }
+      .pi-detail {
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+      .pi-right {
+        text-align: right;
+        flex-shrink: 0;
+      }
+      .pi-rating {
+        font-size: 0.82rem;
+        color: var(--coin);
+        font-weight: 600;
+      }
+      .pi-date {
+        font-size: 0.72rem;
+        color: var(--muted);
+      }
+
+      /* SETTINGS */
+      .settings-card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.4rem;
+      }
+      .setting-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.85rem 0;
+        border-bottom: 1px solid var(--surface);
+      }
+      .setting-row:last-child {
+        border-bottom: none;
+      }
+      .sr-label {
+        font-size: 0.88rem;
+        font-weight: 500;
+        color: var(--ink);
+      }
+      .sr-sub {
+        font-size: 0.75rem;
+        color: var(--muted);
+        margin-top: 0.15rem;
+      }
+      .toggle {
+        position: relative;
+        width: 44px;
+        height: 24px;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+      .toggle input {
+        display: none;
+      }
+      .toggle-track {
+        position: absolute;
+        inset: 0;
+        background: var(--border);
+        border-radius: 12px;
+        transition: background 0.2s;
+      }
+      .toggle input:checked + .toggle-track {
+        background: var(--indigo);
+      }
+      .toggle-thumb {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 20px;
+        height: 20px;
+        background: #fff;
+        border-radius: 50%;
+        transition: transform 0.2s;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+      }
+      .toggle input:checked ~ .toggle-thumb {
+        transform: translateX(20px);
+      }
+      .btn-danger {
+        padding: 0.55rem 1rem;
+        border-radius: 8px;
+        border: 1.5px solid rgba(232, 64, 64, 0.3);
+        background: rgba(232, 64, 64, 0.05);
+        color: var(--danger);
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn-danger:hover {
+        background: rgba(232, 64, 64, 0.1);
+        border-color: rgba(232, 64, 64, 0.5);
+      }
+
+      /* Toast */
+      .toast-wrap {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 400;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        pointer-events: none;
+      }
+      .toast {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 0.7rem 1rem;
+        font-size: 0.83rem;
+        font-weight: 500;
+        color: var(--ink);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        animation: toastIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        pointer-events: auto;
+        max-width: 280px;
+      }
+      @keyframes toastIn {
+        from {
+          transform: translateY(20px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      /* MOBILE */
+      @media (max-width: 900px) {
+        .sidebar {
+          transform: translateX(-100%);
+        }
+        .sidebar.open {
+          transform: translateX(0);
+        }
+        .main {
+          margin-left: 0;
+        }
+        .stats-row {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .two-col {
+          grid-template-columns: 1fr;
+        }
+        .ph-actions {
+          width: 100%;
+        }
+        #hamBtn {
+          display: flex !important;
+        }
+      }
+      @media (max-width: 560px) {
+        .stats-row {
+          grid-template-columns: 1fr;
+        }
+        .content {
+          padding: 1rem;
+        }
+      }
+      .overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.3);
+        z-index: 49;
+      }
+      .overlay.open {
+        display: block;
+      }
+      .ham-btn {
+        display: none;
+        width: 38px;
+        height: 38px;
+        border-radius: 9px;
+        border: 1.5px solid var(--border);
+        background: #fff;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        flex-direction: column;
+        gap: 5px;
+        flex-shrink: 0;
+      }
+      .ham-btn span {
+        width: 16px;
+        height: 1.5px;
+        background: var(--ink);
+        border-radius: 2px;
+      }
+    </style>
+    <script src="js/dark-mode.js"></script>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </head>
+  <body>
+    <div class="toast-wrap" id="toastWrap"></div>
+    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+    <aside class="sidebar" id="sidebar">
+      <div class="sb-top">
+        <a href="index.html" class="sb-logo"
+          ><img src="logo-v.png" alt="V" class="logo-img" /><span
+            class="logo-text"
+            >vidyasetu</span
+          ></a
+        >
+      </div>
+      <nav class="sb-nav">
+        <div class="sb-section">Main</div>
+        <a href="03_dashboard.html" class="sb-item"
+          ><span class="icon">🏠</span> Dashboard</a
+        >
+        <a href="04_explore.html" class="sb-item"
+          ><span class="icon">🔍</span> Explore Teachers</a
+        >
+        <a href="09_bounty.html" class="sb-item"
+          ><span class="icon">🎯</span> Bounty Hub
+          <span class="badge" id="sb-bounty-badge">0</span></a
+        >
+        <a href="15_campus_collab.html" class="sb-item"
+          ><span class="icon">☕</span> Campus Collab
+          <span class="badge" id="sb-campus-badge">0</span></a
+        >
+        <a href="14_game_learn.html" class="sb-item"
+          ><span class="icon">🎮</span> Code Quest</a
+        >
+        <div class="sb-section">My Learning</div>
+        <a href="11_my_sessions.html" class="sb-item"
+          ><span class="icon">📅</span> My Sessions</a
+        >
+        <a href="08_wallet.html" class="sb-item"
+          ><span class="icon">🪙</span> Wallet</a
+        >
+        <div class="sb-section">Account</div>
+        <a href="12_my_profile.html" class="sb-item active"
+          ><span class="icon">👤</span> My Profile</a
+        >
+      </nav>
+      <div class="sb-bottom" id="sb-user-area">
+        <div class="sb-user">
+          <div class="sb-avatar">...</div>
+          <div>
+            <div class="sb-name">Loading...</div>
+            <div class="sb-coin">...</div>
+                      <div class="xph-level" style="font-size:0.7rem;color:var(--muted);margin-bottom:0.2rem;font-weight:600">Level 1</div>
+            <div class="xph-bar" style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:0.2rem;width:100%">
+               <div class="xph-fill" style="height:100%;background:var(--coin);width:0%;transition:width 1s"></div>
+            </div>
+            <div class="xph-xp" style="font-size:0.65rem;color:var(--muted);font-family:'JetBrains Mono',monospace">0 / 500 XP</div>
+</div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main">
+      <div class="topbar">
+        <button
+          class="ham-btn"
+          id="hamBtn"
+          style="display: none"
+          onclick="openSidebar()"
+        >
+          <span></span><span></span><span></span>
+        </button>
+        <div
+          style="
+            font-family: &quot;DM Serif Display&quot;, serif;
+            font-size: 1.1rem;
+            color: var(--ink);
+          "
+        >
+          My Profile
+        </div>
+        <div class="topbar-right">
+          <button class="icon-btn" title="Notifications">🔔</button>
+          <button
+            class="icon-btn"
+            title="Share profile"
+            onclick="showToast('📋', 'Profile link copied!')"
+          >
+            🔗
+          </button>
+        </div>
+      </div>
+
+      <div class="content" id="profileWrap">
+        <!-- PROFILE HERO -->
+        <div class="profile-hero" id="profileHero">
+          <div class="ph-banner"></div>
+          <div class="ph-body">
+            <div
+              class="ph-avatar"
+              style="background: var(--indigo)"
+              id="profileAvatar"
+            >
+              ...
+            </div>
+            <div class="ph-info">
+              <h1 class="ph-name">
+                <span class="editable" id="editName" contenteditable="false"
+                  >Loading...</span
+                >
+              </h1>
+              <p class="ph-college">
+                <span class="editable" id="editCollege" contenteditable="false"
+                  >...</span
+                >
+              </p>
+              <div class="ph-tags" id="profileTags">
+                <span class="pill pill-gold" id="profileTier">... Tier</span>
+                <span class="pill pill-teal" id="profileSkillsCount"
+                  >... Verified Skills</span
+                >
+                <span class="pill pill-indigo">⚡ Fast Responder</span>
+                <span class="pill pill-gray" id="profileJoined"
+                  >🗓️ Joined ...</span
+                >
+              </div>
+              <p class="ph-bio">
+                <span class="editable" id="editBio" contenteditable="false"
+                  >...</span
+                >
+              </p>
+            </div>
+            <div class="ph-actions">
+              <button class="btn-edit" id="editBtn" onclick="toggleEdit()">
+                ✏️ Edit Profile
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-row" id="profileStats">
+          <div class="stat-card">
+            <div class="stat-num">0</div>
+            <div class="stat-label">📅 Sessions Taught</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">0</div>
+            <div class="stat-label">📚 Sessions Attended</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">🪙 0</div>
+            <div class="stat-label">Coins Earned</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">--</div>
+            <div class="stat-label">⭐ Avg Rating</div>
+          </div>
+        </div>
+
+        <!-- TWO COL: SKILLS + PORTFOLIO -->
+        <div class="two-col">
+          <!-- SKILLS -->
+          <div class="card">
+            <div class="card-title">🎓 My Skills & Verification</div>
+            <div class="skill-block">
+              <div class="sb-header">
+                <span class="sb-label">Teaching (Verified)</span>
+              </div>
+              <div class="skill-tags" id="teachSkills">
+                <div style="font-size:0.8rem;color:var(--muted)">Loading verified skills...</div>
+              </div>
+            </div>
+            <div class="skill-block">
+              <div class="sb-header">
+                <span class="sb-label">Want to Learn</span>
+              </div>
+              <div class="skill-tags" id="learnSkills">
+                <div
+                  style="font-size: 0.85rem; color: var(--muted); padding: 1rem"
+                >
+                  No learning goals added yet.
+                </div>
+              </div>
+            </div>
+            <div
+              style="
+                margin-top: 1.2rem;
+                padding-top: 1.2rem;
+                border-top: 1px solid var(--surface);
+              "
+            >
+              <a href="13_skill_verify_teacher.html" class="btn-add-skill"
+                >🛡️ Verify a New Skill →</a
+              >
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">💼 Teaching Portfolio & Reviews</div>
+            <div id="portfolioList">
+              <div
+                style="font-size: 0.85rem; color: var(--muted); padding: 1rem"
+              >
+                No past sessions to display yet. Teach a session to build your
+                portfolio!
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SETTINGS SECTION -->
+        <div class="settings-card">
+          <div class="card-title">⚙️ Settings & Preferences</div>
+          <div class="setting-row">
+            <div>
+              <div class="sr-label">Email Notifications</div>
+              <div class="sr-sub">
+                Get notified about new sessions, bounty updates, and messages
+              </div>
+            </div>
+            <label class="toggle"
+              ><input type="checkbox" checked />
+              <div class="toggle-track"></div>
+              <div class="toggle-thumb"></div
+            ></label>
+          </div>
+          <div class="setting-row">
+            <div>
+              <div class="sr-label">Show Online Status</div>
+              <div class="sr-sub">
+                Let other users see when you're available
+              </div>
+            </div>
+            <label class="toggle"
+              ><input type="checkbox" checked />
+              <div class="toggle-track"></div>
+              <div class="toggle-thumb"></div
+            ></label>
+          </div>
+          <div class="setting-row">
+            <div>
+              <div class="sr-label">Public Profile</div>
+              <div class="sr-sub">
+                Allow others to find and view your profile
+              </div>
+            </div>
+            <label class="toggle"
+              ><input type="checkbox" checked />
+              <div class="toggle-track"></div>
+              <div class="toggle-thumb"></div
+            ></label>
+          </div>
+          <div class="setting-row">
+            <div>
+              <div class="sr-label">Session Reminders</div>
+              <div class="sr-sub">
+                Get a reminder 30 minutes before your session
+              </div>
+            </div>
+            <label class="toggle"
+              ><input type="checkbox" checked />
+              <div class="toggle-track"></div>
+              <div class="toggle-thumb"></div
+            ></label>
+          </div>
+          <div class="setting-row">
+            <div>
+              <div class="sr-label">Dark Mode</div>
+              <div class="sr-sub">
+                Switch to dark theme for comfortable viewing
+              </div>
+            </div>
+            <label class="toggle"
+              ><input
+                type="checkbox"
+                id="settingsDarkMode"
+                onchange="toggleTheme()" />
+              <div class="toggle-track"></div>
+              <div class="toggle-thumb"></div
+            ></label>
+          </div>
+
+          <div class="setting-row">
+            <div>
+              <div class="sr-label" style="color: var(--indigo)">
+                🎭 Demo Data Mode
+              </div>
+              <div class="sr-sub" id="demoModeDesc">
+                Load sample data across all pages for testing. Writes are
+                blocked while active.
+              </div>
+            </div>
+            <label class="toggle"
+              ><input
+                type="checkbox"
+                id="settingsDemoMode"
+                onchange="toggleDemoMode(this.checked)" />
+              <div class="toggle-track" style="background: var(--indigo)"></div>
+              <div class="toggle-thumb"></div
+            ></label>
+          </div>
+
+          <div class="setting-row">
+            <div>
+              <div class="sr-label">Sign Out</div>
+              <div class="sr-sub">Log out of your account on this device</div>
+            </div>
+            <button
+              class="btn-danger"
+              style="
+                background: rgba(91, 69, 224, 0.08);
+                color: var(--indigo);
+                border-color: rgba(91, 69, 224, 0.3);
+              "
+              onclick="doLogout()"
+            >
+              Sign Out
+            </button>
+          </div>
+
+          <div class="setting-row" style="border-bottom: none">
+            <div>
+              <div class="sr-label" style="color: var(--danger)">
+                Delete Account
+              </div>
+              <div class="sr-sub">
+                Permanently delete your account and all data. This cannot be
+                undone.
+              </div>
+            </div>
+            <button class="btn-danger" onclick="doDeleteAccount()">
+              Delete Account
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add required scripts -->
+    <script src="config.js"></script>
+    <script type="module" src="api.js"></script>
+
+    <script>
+      // Profile Logic
+      async function initProfile() {
+        const wrap = document.getElementById("profileWrap");
+        if (!wrap) return;
+
+        try {
+          let profile = await VS.profile.get();
+          if (!profile) return;
+
+          // Fetch stats and coins
+          const [{ upcoming, completed }, currentCoins] = await Promise.all([
+            VS.sessions.list(),
+            VS.coins.balance().catch(() => 0),
+          ]);
+          profile.coins = currentCoins;
+          profile.stats = {
+            taught: completed.filter((b) => b.teacher_id === profile.id).length,
+            attended: completed.filter((b) => b.learner_id === profile.id)
+              .length,
+            rating: profile.rating || "--",
+          };
+
+          const taughtSessions = completed.filter(
+            (b) => b.teacher_id === profile.id && b.status === "completed",
+          );
+          const portfolioList = document.getElementById("portfolioList");
+          if (portfolioList && taughtSessions.length) {
+            portfolioList.innerHTML = taughtSessions
+              .map((b) => {
+                const student = b.learner || {};
+                const initials = (student.name || "S")
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")
+                  .substring(0, 2)
+                  .toUpperCase();
+                const rating = b.learner_rating
+                  ? `⭐ ${b.learner_rating.toFixed(1)}`
+                  : "⭐ --";
+                return `
+          <div class="portfolio-item">
+            <div class="pi-avatar" style="background:${student.avatar_color || "var(--indigo)"}">${initials}</div>
+            <div class="pi-info">
+              <div class="pi-name">Taught ${b.skill_name || "Skill"} to ${student.name || "Student"}</div>
+              <div class="pi-detail">${b.duration_mins / 60}h session${b.topic ? " · " + b.topic : ""}</div>
+            </div>
+            <div class="pi-right">
+              <div class="pi-rating">${rating}</div>
+              <div class="pi-date">${new Date(b.scheduled_date).toLocaleDateString()}</div>
+            </div>
+          </div>
+        `;
+              })
+              .join("");
+          }
+
+          // Render Basic Info
+          document.getElementById("editName").textContent = profile.name;
+          document.getElementById("editCollege").textContent =
+            profile.college || "Verified Expert";
+          document.getElementById("editBio").textContent =
+            profile.bio || "No bio provided yet.";
+          document.getElementById("profileAvatar").style.background =
+            profile.avatar_color || "var(--indigo)";
+          const initials = (profile.name || "User")
+            .split(" ")
+            .map((n) => n[0])
+            .join("")
+            .substring(0, 2)
+            .toUpperCase();
+          document.getElementById("profileAvatar").innerHTML =
+            `${initials} <div class="ph-avatar-edit" onclick="showToast('📷','Avatar upload coming soon!')">📷</div>`;
+
+          // Render Tags
+          document.getElementById("profileTier").textContent =
+            `🥈 ${profile.tier || "Bronze"} Tier`;
+          document.getElementById("profileSkillsCount").textContent =
+            `📜 ${profile.skills.filter((s) => s.tier).length} Verified Skills`;
+          document.getElementById("profileJoined").textContent =
+            `🗓️ Joined ${new Date(profile.joined_at || profile.created_at).toLocaleDateString("en-US", { month: "short", year: "numeric" })}`;
+
+          // Render Stats
+          const statsCards = document.querySelectorAll(
+            "#profileStats .stat-num",
+          );
+          if (statsCards.length >= 4) {
+            statsCards[0].textContent = profile.stats.taught;
+            statsCards[1].textContent = profile.stats.attended;
+            statsCards[2].textContent = `🪙 ${profile.coins}`;
+            statsCards[3].textContent = profile.stats.rating;
+          }
+
+          // Render Skills
+          const teachTags = document.getElementById("teachSkills");
+          const learnTags = document.getElementById("learnSkills");
+
+          if (teachTags) {
+            const verifiedSkills = profile.skills.filter(
+              (s) => s.is_teaching && s.tier && s.tier !== "unverified"
+            );
+            const unverifiedTeaching = profile.skills.filter(
+              (s) => s.is_teaching && (!s.tier || s.tier === "unverified")
+            );
+
+            let html = "";
+            if (verifiedSkills.length) {
+              html += verifiedSkills.map((s) => {
+                const tierIcon = s.tier === "gold" ? "🥇" : s.tier === "silver" ? "🥈" : "🥉";
+                const tierLabel = s.tier.charAt(0).toUpperCase() + s.tier.slice(1);
+                const skillLabel = s.name.charAt(0).toUpperCase() + s.name.slice(1);
+                return `<div class="skill-tag teach">
+                  <span class="tier-icon">${tierIcon}</span>
+                  ${skillLabel} <span style="opacity:0.7;font-size:0.75em">· ${tierLabel}</span>
+                </div>`;
+              }).join("");
+            }
+            if (unverifiedTeaching.length) {
+              html += unverifiedTeaching.map((s) => {
+                const skillLabel = s.name.charAt(0).toUpperCase() + s.name.slice(1);
+                return `<div class="skill-tag" style="opacity:0.6;font-style:italic">⏳ ${skillLabel} (Pending)</div>`;
+              }).join("");
+            }
+            if (!html) {
+              html = '<div style="font-size:0.8rem;color:var(--muted);padding:0.4rem 0">No verified teaching skills yet. Pass a skill test to get verified!</div>';
+            }
+            teachTags.innerHTML = html;
+          }
+
+          if (learnTags) {
+            const learning = profile.skills.filter((s) => !s.is_teaching);
+            learnTags.innerHTML = learning.length
+              ? learning
+                  .map(
+                    (s) => `
+        <div class="skill-tag">${s.name}</div>
+      `,
+                  )
+                  .join("")
+              : '<div style="font-size:0.8rem;color:var(--muted)">No learning goals added yet.</div>';
+            learnTags.innerHTML +=
+              '<button class="btn-add-skill"><span>+</span> Add Goal</button>';
+          }
+        } catch (err) {
+          console.error("Failed to load profile:", err);
+          showToast("❌ Failed to load profile");
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        initProfile();
+        if (typeof VS !== "undefined" && VS.ui) VS.ui.updateSidebar();
+        const isDark =
+          document.documentElement.getAttribute("data-theme") === "dark";
+        if (document.getElementById("settingsDarkMode")) {
+          document.getElementById("settingsDarkMode").checked = isDark;
+        }
+        // Sync demo mode toggle
+        setTimeout(() => {
+          const demoToggle = document.getElementById("settingsDemoMode");
+          if (demoToggle && window.VS_DEMO) {
+            demoToggle.checked = window.VS_DEMO.isOn();
+            if (window.VS_DEMO.isOn()) {
+              const desc = document.getElementById("demoModeDesc");
+              if (desc)
+                desc.textContent =
+                  "🎭 Demo mode is ON — sample data shown everywhere. Real writes are blocked.";
+            }
+          }
+        }, 100);
+      });
+
+      // Profile Editing Logic
+      let isEditing = false;
+
+      async function toggleEdit() {
+        const wrap = document.getElementById("profileWrap");
+        const btn = document.getElementById("editBtn");
+        const editables = document.querySelectorAll(".editable");
+
+        if (!isEditing) {
+          isEditing = true;
+          wrap.classList.add("editing");
+          btn.innerHTML = "💾 Save Profile";
+          btn.classList.add("save");
+          btn.classList.remove("active");
+          editables.forEach((el) => (el.contentEditable = "true"));
+          document.getElementById("editName").focus();
+        } else {
+          isEditing = false;
+          wrap.classList.remove("editing");
+          btn.innerHTML = "⏳ Saving...";
+          btn.disabled = true;
+          editables.forEach((el) => (el.contentEditable = "false"));
+
+          const newName = document
+            .getElementById("editName")
+            .textContent.trim();
+          const newCollege = document
+            .getElementById("editCollege")
+            .textContent.trim();
+          const newBio = document.getElementById("editBio").textContent.trim();
+
+          try {
+            if (window.VS_DEMO && window.VS_DEMO.isOn()) {
+              showToast("🎭", "Saved locally (Demo Mode)!");
+            } else {
+              await VS.profile.update({
+                name: newName,
+                college: newCollege,
+                bio: newBio,
+              });
+              showToast("✅", "Profile saved successfully!");
+            }
+          } catch (err) {
+            console.error("Failed to save profile:", err);
+            showToast("❌", "Failed to save profile.");
+          } finally {
+            btn.innerHTML = "✏️ Edit Profile";
+            btn.classList.remove("save");
+            btn.disabled = false;
+            const initials = (newName || "U")
+              .split(" ")
+              .map((n) => n[0])
+              .join("")
+              .substring(0, 2)
+              .toUpperCase();
+            document.getElementById("profileAvatar").innerHTML =
+              `${initials} <div class="ph-avatar-edit" onclick="showToast('📷','Avatar upload coming soon!')">📷</div>`;
+            document
+              .querySelectorAll(".sb-avatar, .avatar")
+              .forEach((x) => (x.textContent = initials));
+            document
+              .querySelectorAll(".sb-name")
+              .forEach((x) => (x.textContent = newName));
+          }
+        }
+      }
+
+      function showToast(icon, text) {
+        if (!text) {
+          text = icon;
+          icon = "🔔";
+        } // Handle 1-arg case
+        const wrap = document.getElementById("toastWrap");
+        if (!wrap) return;
+        const t = document.createElement("div");
+        t.className = "toast";
+        t.innerHTML = `<span style="font-size:1rem">${icon}</span><span>${text}</span>`;
+        wrap.appendChild(t);
+        setTimeout(() => t.remove(), 3000);
+      }
+
+      function openSidebar() {
+        document.getElementById("sidebar").classList.add("open");
+        document.getElementById("overlay").classList.add("open");
+      }
+      function closeSidebar() {
+        document.getElementById("sidebar").classList.remove("open");
+        document.getElementById("overlay").classList.remove("open");
+      }
+      if (window.innerWidth <= 900) {
+        document.getElementById("hamBtn").style.display = "flex";
+      }
+      window.addEventListener("resize", () => {
+        if (window.innerWidth <= 900)
+          document.getElementById("hamBtn").style.display = "flex";
+        else document.getElementById("hamBtn").style.display = "none";
+      });
+      function toggleTheme() {
+        const html = document.documentElement;
+        const isDark = html.getAttribute("data-theme") === "dark";
+        const newTheme = isDark ? "light" : "dark";
+        html.setAttribute("data-theme", newTheme);
+
+        if (document.getElementById("globalThemeBtn")) {
+          document.getElementById("globalThemeBtn").textContent = isDark
+            ? "🌙"
+            : "☀️";
+        }
+        if (document.getElementById("settingsDarkMode")) {
+          document.getElementById("settingsDarkMode").checked = !isDark;
+        }
+        localStorage.setItem("vs-theme", newTheme);
+      }
+
+      async function doDeleteAccount() {
+        if (window.VS_DEMO && window.VS_DEMO.isOn()) {
+          showToast("🚫", "Deleting accounts is disabled in Demo Mode.");
+          return;
+        }
+        if (
+          confirm(
+            "🚫 WARNING: This will permanently delete your account and all associated data. This cannot be undone.\n\nType OK to confirm.",
+          )
+        ) {
+          try {
+            showToast("⏳", "Deleting your account...");
+            await VS.profile.delete();
+            // VS.profile.delete() calls VS.auth.logout() which redirects
+          } catch (err) {
+            console.error("Delete failed:", err);
+            showToast("❌", "Failed to delete account. Please try again.");
+          }
+        }
+      }
+
+      function doLogout() {
+        if (confirm("Sign out of Vidyasetu?")) {
+          if (window.VS_DEMO && window.VS_DEMO.isOn()) {
+            window.VS_DEMO.disable();
+          }
+          VS.auth.logout();
+        }
+      }
+
+      function toggleDemoMode(on) {
+        if (on) {
+          window.VS_DEMO.enable();
+          document.getElementById("demoModeDesc").textContent =
+            "🎭 Demo mode is ON — sample data shown everywhere. Real writes are blocked.";
+          showToast(
+            "🎭",
+            "Demo mode enabled! Refresh any page to see sample data.",
+          );
+        } else {
+          window.VS_DEMO.disable();
+          document.getElementById("demoModeDesc").textContent =
+            "Load sample data across all pages for testing. Writes are blocked while active.";
+          showToast(
+            "✅",
+            "Demo mode disabled. Real database data will be shown.",
+          );
+        }
+      }
+    </script>
+    <!-- Theme handled by dark-mode.js -->
+    <style>
+      .floating-theme-btn {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: var(--card);
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        font-size: 20px;
+        cursor: pointer;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        color: var(--ink);
+      }
+      .floating-theme-btn:hover {
+        transform: scale(1.05);
+      }
+    </style>
+    <script>
+      // Theme handled by dark-mode.js
+
+      // PROFILE LIVE DATA
+      setTimeout(async () => {
+        if (typeof VS === "undefined" || !VS.auth) return;
+        VS.auth.requireLogin();
+        const user = VS.auth.currentUser();
+        if (!user) return;
+
+        // UI Update logic
+        const inits = (user.name || "U")
+          .split(" ")
+          .map((n) => n[0])
+          .join("")
+          .substring(0, 2)
+          .toUpperCase();
+        document.getElementById("profileAvatar").textContent = inits;
+        document
+          .querySelectorAll(".sb-avatar, .avatar")
+          .forEach((x) => (x.textContent = inits));
+        document
+          .querySelectorAll(".sb-name")
+          .forEach((x) => (x.textContent = user.name));
+        document.getElementById("editName").textContent = user.name;
+
+        // Populate real data defaults
+        document.getElementById("profileJoined").textContent =
+          `🗓️ Joined Today`;
+        document.getElementById("profileSkillsCount").textContent =
+          "📜 0 Verified Skills";
+      }, 100);
+    </script>
+
+    <script>
+      if (typeof lucide !== "undefined") {
+        lucide.createIcons();
+      }
+    </script>
+  </body>
 </html>

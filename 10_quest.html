@@ -1,353 +1,1448 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" href="logo-v.png" type="image/png">
-<title>Vidyasetu — QuestMode</title>
-<link rel="stylesheet" href="ui-system.css">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--ink:#0D0D1A;--indigo:#5B45E0;--indigo-light:#F0EEF9;--indigo-dark:#3D2DB8;--teal:#16A27B;--teal-light:#F0FAF6;--coin:#F5A623;--coin-light:#FFF9EF;--danger:#E84040;--surface:#F7F8FA;--card:#FFFFFF;--border:#E5E7EB;--muted:#9CA3AF;--body:#4B5563;--sidebar:256px}
-[data-theme="dark"] {
-  --ink: #EBE5DF;
-  --indigo: #8A78E5;
-  --indigo-light: rgba(138, 120, 229, 0.15);
-  --indigo-dark: #7463D0;
-  --teal: #45B08C;
-  --teal-light: rgba(69, 176, 140, 0.15);
-  --coin: #E8B042;
-  --coin-light: rgba(232, 176, 66, 0.15);
-  --danger: #D96161;
-  --surface: #1C1A19;
-  --card: #252220;
-  --border: #36312E;
-  --muted: #8C8279;
-  --body: #BDB3A8;
-}
-body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--ink);display:flex;min-height:100vh;transition:background .3s,color .3s}
-/* SIDEBAR */
-.sidebar{width:var(--sidebar);background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50;transition:transform .3s,background .3s}
-.sb-top{padding:1.5rem 1.2rem 1rem;border-bottom:1px solid var(--border)}
-.sb-logo{font-family:'DM Serif Display',serif;font-size:1.35rem;color:var(--ink);display:flex;align-items:center;gap:8px;text-decoration:none}
-.sb-logo span{color:var(--indigo)}
-.sb-nav{flex:1;padding:1rem .8rem;overflow-y:auto}
-.sb-section{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:.4rem .6rem;margin-top:1rem;margin-bottom:.3rem}
-.sb-item{display:flex;align-items:center;gap:.75rem;padding:.65rem .8rem;border-radius:9px;text-decoration:none;color:var(--body);font-size:.9rem;font-weight:500;transition:all .18s;cursor:pointer;border:none;background:none;width:100%;text-align:left}
-.sb-item:hover{background:var(--surface);color:var(--ink)}
-.sb-item.active{background:var(--indigo-light);color:var(--indigo);font-weight:600}
-.sb-item .icon{width:20px;text-align:center;font-size:1rem;flex-shrink:0}
-.sb-item .bdg{margin-left:auto;background:var(--indigo);color:#fff;font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:99px}
-.sb-bottom{padding:1rem 1.2rem;border-top:1px solid var(--border)}
-.sb-user{display:flex;align-items:center;gap:.75rem}
-.sb-avatar{width:40px;height:40px;border-radius:50%;background:var(--indigo);color:#fff;font-weight:700;font-size:.9rem;display:flex;align-items:center;justify-content:center}
-.sb-name{font-size:.88rem;font-weight:600;color:var(--ink)}
-.sb-coin{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--coin);font-weight:600}
-.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-width:0}
-.topbar{background:var(--card);border-bottom:1px solid var(--border);padding:0 2rem;height:60px;display:flex;align-items:center;gap:1rem;position:sticky;top:0;z-index:40;transition:background .3s}
-.topbar-right{margin-left:auto;display:flex;align-items:center;gap:.75rem}
-.icon-btn{width:38px;height:38px;border-radius:9px;border:1.5px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:.9rem;color:var(--body)}
-.icon-btn:hover{border-color:var(--indigo);color:var(--indigo)}
-.content{padding:2rem;flex:1}
-/* XP HERO */
-.xp-hero{background:var(--indigo);border-radius:20px;padding:2rem 2.5rem;margin-bottom:1.5rem;position:relative;overflow:hidden;display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:center}
-.xph-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:32px 32px;pointer-events:none}
-.xph-left{position:relative;z-index:1}
-.xph-level{color:rgba(255,255,255,.6);font-size:.82rem;margin-bottom:.3rem}
-.xph-name{font-family:'DM Serif Display',serif;font-size:2rem;color:#fff;margin-bottom:.4rem}
-.xph-xp{color:var(--coin);font-family:'JetBrains Mono',monospace;font-size:.95rem;font-weight:600;margin-bottom:.8rem}
-.xph-bar{height:8px;background:rgba(255,255,255,.15);border-radius:4px;overflow:hidden;max-width:400px;margin-bottom:.4rem}
-.xph-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--coin),#fff);transition:width 1.5s ease;animation:barGrow 1.5s ease both .3s}
-@keyframes barGrow{from{width:0!important}to{}}
-.xph-prog{color:rgba(255,255,255,.5);font-size:.75rem}
-.xph-right{position:relative;z-index:1;text-align:center}
-.xph-avatar{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:1.4rem;margin:0 auto .5rem;border:3px solid rgba(255,255,255,.3)}
-.xph-rank{background:var(--coin);color:#fff;border-radius:99px;padding:.25rem .75rem;font-size:.78rem;font-weight:700;display:inline-block;margin-bottom:.25rem}
-.xph-streak{color:rgba(255,255,255,.6);font-size:.75rem}
-/* TAB NAV */
-.tab-nav{display:flex;gap:.4rem;background:var(--surface);border-radius:12px;padding:4px;margin-bottom:1.5rem;width:fit-content}
-.tn-btn{padding:.5rem 1.2rem;border-radius:9px;font-size:.88rem;font-weight:600;cursor:pointer;border:none;background:none;color:var(--muted);transition:all .15s;white-space:nowrap}
-.tn-btn.active{background:var(--card);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.08)}
-/* QUESTS */
-.quests-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem}
-.quest-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.2rem;transition:all .25s;position:relative;overflow:hidden}
-.quest-card:hover{border-color:rgba(91,69,224,.2);box-shadow:0 8px 24px rgba(91,69,224,.06)}
-.quest-card.done{opacity:.7}
-.quest-card.done::after{content:'✓ Completed';position:absolute;top:12px;right:12px;background:var(--teal-light);color:var(--teal);font-size:.68rem;font-weight:700;border-radius:6px;padding:.2rem .6rem}
-.qc-top{display:flex;align-items:flex-start;gap:.8rem;margin-bottom:.8rem}
-.qc-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
-.qc-info{flex:1}
-.qc-type{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.2rem}
-.qc-title{font-size:.9rem;font-weight:700;color:var(--ink);line-height:1.3}
-.qc-desc{font-size:.8rem;color:var(--body);line-height:1.6;margin-bottom:.8rem}
-.qc-rewards{display:flex;gap:.5rem;margin-bottom:.85rem;flex-wrap:wrap}
-.qc-reward{display:flex;align-items:center;gap:.25rem;background:var(--surface);border-radius:6px;padding:.25rem .6rem;font-size:.74rem;font-weight:600;color:var(--body)}
-.qc-progress{margin-bottom:.7rem}
-.qc-prog-label{display:flex;justify-content:space-between;font-size:.74rem;color:var(--muted);margin-bottom:.3rem}
-.qc-bar{height:5px;background:var(--surface);border-radius:3px;overflow:hidden}
-.qc-fill{height:100%;border-radius:3px;background:var(--indigo);transition:width .8s ease}
-.qc-btn{width:100%;padding:.5rem;border:1.5px solid var(--indigo);border-radius:8px;color:var(--indigo);background:transparent;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s}
-.qc-btn:hover{background:var(--indigo);color:#fff}
-.qc-btn.done-btn{border-color:var(--teal);color:var(--teal);pointer-events:none}
-/* TYPE COLORS */
-.qt-daily{background:var(--coin-light);color:var(--vs-warning-text)}
-.qt-weekly{background:var(--indigo-light);color:var(--indigo)}
-.qt-milestone{background:var(--teal-light);color:var(--teal)}
-/* LEADERBOARD */
-.lb-wrap{display:grid;grid-template-columns:1fr 300px;gap:1.5rem;align-items:start}
-.lb-card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden}
-.lb-header{padding:1.2rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem}
-.lb-title{font-size:1rem;font-weight:700;color:var(--ink)}
-.lb-period{display:flex;gap:.3rem;background:var(--surface);border-radius:8px;padding:3px}
-.lp-btn{padding:.3rem .65rem;border-radius:6px;font-size:.74rem;font-weight:600;cursor:pointer;border:none;background:none;color:var(--muted);transition:all .15s}
-.lp-btn.active{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
-.lb-table{width:100%}
-.lb-row{display:flex;align-items:center;gap:.85rem;padding:.85rem 1.4rem;transition:background .15s;border-bottom:1px solid var(--surface)}
-.lb-row:last-child{border-bottom:none}
-.lb-row:hover{background:var(--surface)}
-.lb-row.me{background:var(--indigo-light)!important;}
-[data-theme="dark"] .lb-row.me{background:rgba(91,69,224,.12)!important}
-.lb-rank{width:28px;font-size:.88rem;font-weight:700;text-align:center;flex-shrink:0;color:var(--muted)}
-.lb-rank.gold{color:var(--coin)}
-.lb-rank.silver{color:var(--muted)}
-.lb-rank.bronze{color:#CD7F32}
-.lb-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:.78rem;flex-shrink:0}
-.lb-info{flex:1;min-width:0}
-.lb-name{font-size:.88rem;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lb-sub{font-size:.72rem;color:var(--muted)}
-.lb-xp-wrap{text-align:right;flex-shrink:0}
-.lb-xp{font-family:'JetBrains Mono',monospace;font-size:.88rem;font-weight:700;color:var(--ink)}
-.lb-xp-bar{width:60px;height:4px;background:var(--surface);border-radius:2px;margin-top:.25rem;overflow:hidden}
-.lb-xp-fill{height:100%;border-radius:2px;background:var(--indigo)}
-.lb-row.me .lb-name{color:var(--indigo);font-weight:700}
-.lb-row.me .lb-xp{color:var(--indigo)}
-/* RIGHT COL */
-.right-col .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.2rem;margin-bottom:1rem}
-.card-title{font-size:.95rem;font-weight:700;color:var(--ink);margin-bottom:.9rem}
-/* BADGES */
-.badges-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem}
-.badge-item{text-align:center;padding:.7rem .4rem;border-radius:10px;background:var(--surface);border:1px solid var(--border);transition:all .2s}
-.badge-item:hover{border-color:rgba(91,69,224,.2);transform:translateY(-2px)}
-.badge-item.locked{opacity:.4;filter:grayscale(1)}
-.bi-icon{font-size:1.6rem;margin-bottom:.25rem}
-.bi-name{font-size:.68rem;font-weight:600;color:var(--body);line-height:1.3}
-/* TOAST */
-.toast-wrap{position:fixed;bottom:24px;right:24px;z-index:400;display:flex;flex-direction:column;gap:.5rem;pointer-events:none}
-.toast{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:.8rem 1.1rem;font-size:.85rem;font-weight:500;color:var(--ink);box-shadow:0 8px 28px rgba(0,0,0,.12);display:flex;align-items:center;gap:.7rem;animation:toastIn .4s cubic-bezier(.34,1.56,.64,1) both;pointer-events:auto;max-width:300px}
-.toast.xp-toast{border-color:rgba(91,69,224,.3);background:var(--indigo-light)}
-.toast.coin-toast{border-color:rgba(245,166,35,.3);background:var(--coin-light)}
-@keyframes toastIn{from{transform:translateY(24px) scale(.9);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
-/* CONFETTI */
-.confetti-piece{position:fixed;width:8px;height:8px;border-radius:2px;pointer-events:none;z-index:500;animation:confettiFall 2s ease both}
-@keyframes confettiFall{from{transform:translateY(-20px) rotate(0deg);opacity:1}to{transform:translateY(120vh) rotate(720deg);opacity:0}}
-/* RESPONSIVE */
-@media(max-width:1100px){.lb-wrap{grid-template-columns:1fr}}
-@media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.quests-grid{grid-template-columns:1fr}.xp-hero{grid-template-columns:1fr}#hamBtn{display:flex!important}.xph-right{display:none}}
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:49}.overlay.open{display:block}
-.ham-btn{display:none;width:38px;height:38px;border-radius:9px;border:1.5px solid var(--border);background:var(--card);align-items:center;justify-content:center;cursor:pointer;flex-direction:column;gap:5px;flex-shrink:0}
-.ham-btn span{width:16px;height:1.5px;background:var(--ink);border-radius:2px}
-</style>
-<script>
-  (() => {
-    const t = localStorage.getItem('vs-theme');
-    if (t === 'dark') {
-      document.documentElement.setAttribute('data-theme', 'dark');
-    }
-  })();
-</script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js"></script>
-<script src="api.js"></script>
-<script src="demo-data.js"></script>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="logo-v.png" type="image/png" />
+    <title>Vidyasetu — QuestMode</title>
+    <link rel="stylesheet" href="ui-system.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --ink: #0d0d1a;
+        --indigo: #5b45e0;
+        --indigo-light: #f0eef9;
+        --indigo-dark: #3d2db8;
+        --teal: #16a27b;
+        --teal-light: #f0faf6;
+        --coin: #f5a623;
+        --coin-light: #fff9ef;
+        --danger: #e84040;
+        --surface: #f7f8fa;
+        --card: #ffffff;
+        --border: #e5e7eb;
+        --muted: #9ca3af;
+        --body: #4b5563;
+        --sidebar: 256px;
+      }
+      [data-theme="dark"] {
+        --ink: #e8eeff;
+        --indigo: #818cf8;
+        --indigo-light: rgba(129, 140, 248, 0.14);
+        --indigo-dark: #6366f1;
+        --teal: #34d399;
+        --teal-light: rgba(52, 211, 153, 0.13);
+        --coin: #fbbf24;
+        --coin-light: rgba(251, 191, 36, 0.14);
+        --danger: #f87171;
+        --surface: #060d1a;
+        --card: #0d1829;
+        --border: #1a2d4a;
+        --muted: #4a5568;
+        --body: #94a3b8;
+      }
 
-<div class="toast-wrap" id="toastWrap"></div>
-<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+      /* Sidebar — Premium Glass */
+      [data-theme="dark"] .sidebar {
+        background: rgba(13, 24, 41, 0.95);
+        border-right-color: rgba(129, 140, 248, 0.12);
+        backdrop-filter: blur(20px);
+      }
+      [data-theme="dark"] .sb-top {
+        border-bottom-color: rgba(129, 140, 248, 0.1);
+      }
+      [data-theme="dark"] .sb-item:hover {
+        background: rgba(129, 140, 248, 0.08);
+        color: var(--ink);
+      }
+      [data-theme="dark"] .sb-item.active {
+        background: rgba(129, 140, 248, 0.15);
+        color: var(--indigo);
+      }
+      [data-theme="dark"] .sb-bottom {
+        border-top-color: rgba(129, 140, 248, 0.1);
+      }
 
-<aside class="sidebar" id="sidebar">
-  <div class="sb-top"><a href="index.html" class="sb-logo"><img src="logo-v.png" alt="V" class="logo-img"><span class="logo-text">vidyasetu</span></a></div>
-  <nav class="sb-nav">
-    <div class="sb-section">Main</div>
-    <a href="03_dashboard.html" class="sb-item"><span class="icon">🏠</span> Dashboard</a>
-    <a href="04_explore.html" class="sb-item"><span class="icon">🔍</span> Explore Teachers</a>
-    <a href="09_bounty.html" class="sb-item"><span class="icon">🎯</span> Bounty Hub <span class="bdg" id="sb-bounty-badge">0</span></a>
-    <a href="10_quest.html" class="sb-item active"><span class="icon">⚔️</span> QuestMode</a>
-    <div class="sb-section">My Learning</div>
-    <a href="11_my_sessions.html" class="sb-item"><span class="icon">📅</span> My Sessions</a>
-    <a href="13_skill_verify.html" class="sb-item"><span class="icon">🎓</span> Verify Skills</a>
-    <a href="08_wallet.html" class="sb-item"><span class="icon">🪙</span> Wallet</a>
-    <div class="sb-section">Account</div>
-    <a href="12_my_profile.html" class="sb-item"><span class="icon">👤</span> My Profile</a>
-    <a href="12_my_profile.html" class="sb-item"><span class="icon">⚙️</span> Settings</a>
-  </nav>
-  <div class="sb-bottom" id="sb-user-area">
-    <div class="sb-user">
-      <div class="sb-avatar">...</div>
-      <div>
-        <div class="sb-name">Loading...</div>
-        <div class="sb-coin">...</div>
+      /* XP Hero — Glowing Indigo Grid */
+      [data-theme="dark"] .xp-hero {
+        background: linear-gradient(135deg, var(--indigo-dark), #4f46e5);
+        box-shadow: 0 20px 40px rgba(79, 70, 229, 0.25);
+      }
+      [data-theme="dark"] .xph-bar {
+        background: rgba(255, 255, 255, 0.15);
+      }
+      [data-theme="dark"] .xph-fill {
+        background: linear-gradient(90deg, var(--coin), #fff);
+      }
+
+      /* Tab Nav */
+      [data-theme="dark"] .tab-nav {
+        background: rgba(13, 24, 41, 0.8);
+      }
+      [data-theme="dark"] .tn-btn.active {
+        background: var(--card);
+        color: var(--ink);
+        border: 1px solid rgba(129, 140, 248, 0.2);
+      }
+
+      /* Quest Cards */
+      [data-theme="dark"] .quest-card {
+        background: rgba(13, 24, 41, 0.6);
+        border-color: rgba(129, 140, 248, 0.14);
+      }
+      [data-theme="dark"] .quest-card:hover {
+        border-color: var(--indigo);
+        box-shadow: 0 12px 32px rgba(129, 140, 248, 0.1);
+      }
+      [data-theme="dark"] .qc-reward {
+        background: rgba(6, 13, 26, 0.8);
+        border: 1px solid rgba(129, 140, 248, 0.1);
+      }
+      [data-theme="dark"] .qc-bar {
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      /* Leaderboard */
+      [data-theme="dark"] .lb-card {
+        background: rgba(13, 24, 41, 0.8);
+        border-color: rgba(129, 140, 248, 0.18);
+      }
+      [data-theme="dark"] .lb-header {
+        border-bottom-color: rgba(129, 140, 248, 0.1);
+      }
+      [data-theme="dark"] .lb-period {
+        background: rgba(6, 13, 26, 0.8);
+      }
+      [data-theme="dark"] .lb-row:hover {
+        background: rgba(129, 140, 248, 0.06);
+      }
+      [data-theme="dark"] .lb-xp-bar {
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      /* Right Column Cards */
+      [data-theme="dark"] .right-col .card {
+        background: rgba(13, 24, 41, 0.8);
+        border-color: rgba(129, 140, 248, 0.18);
+      }
+      [data-theme="dark"] .badge-item {
+        background: rgba(6, 13, 26, 0.8);
+        border-color: rgba(129, 140, 248, 0.12);
+      }
+
+      /* Toast & Spinner */
+      [data-theme="dark"] .toast {
+        background: rgba(13, 24, 41, 0.95);
+        border-color: rgba(129, 140, 248, 0.2);
+        backdrop-filter: blur(12px);
+      }
+      [data-theme="dark"] .toast.xp-toast {
+        background: rgba(129, 140, 248, 0.15);
+        border-color: rgba(129, 140, 248, 0.3);
+      }
+      [data-theme="dark"] .toast.coin-toast {
+        background: rgba(251, 191, 36, 0.15);
+        border-color: rgba(251, 191, 36, 0.3);
+      }
+
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--surface);
+        color: var(--ink);
+        display: flex;
+        min-height: 100vh;
+        transition:
+          background 0.3s,
+          color 0.3s;
+      }
+      /* SIDEBAR */
+      .sidebar {
+        width: var(--sidebar);
+        background: var(--card);
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 50;
+        transition:
+          transform 0.3s,
+          background 0.3s;
+      }
+      .sb-top {
+        padding: 1.5rem 1.2rem 1rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .sb-logo {
+        font-family: "DM Serif Display", serif;
+        font-size: 1.35rem;
+        color: var(--ink);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+      }
+      .sb-logo span {
+        color: var(--indigo);
+      }
+      .sb-nav {
+        flex: 1;
+        padding: 1rem 0.8rem;
+        overflow-y: auto;
+      }
+      .sb-section {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding: 0.4rem 0.6rem;
+        margin-top: 1rem;
+        margin-bottom: 0.3rem;
+      }
+      .sb-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.65rem 0.8rem;
+        border-radius: 9px;
+        text-decoration: none;
+        color: var(--body);
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.18s;
+        cursor: pointer;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+      }
+      .sb-item:hover {
+        background: var(--surface);
+        color: var(--ink);
+      }
+      .sb-item.active {
+        background: var(--indigo-light);
+        color: var(--indigo);
+        font-weight: 600;
+      }
+      .sb-item .icon {
+        width: 20px;
+        text-align: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+      }
+      .sb-item .bdg {
+        margin-left: auto;
+        background: var(--indigo);
+        color: #fff;
+        font-size: 0.68rem;
+        font-weight: 700;
+        padding: 2px 7px;
+        border-radius: 99px;
+      }
+      .sb-bottom {
+        padding: 1rem 1.2rem;
+        border-top: 1px solid var(--border);
+      }
+      .sb-user {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .sb-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--indigo);
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .sb-name {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .sb-coin {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.78rem;
+        color: var(--coin);
+        font-weight: 600;
+      }
+      .main {
+        margin-left: var(--sidebar);
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+      .topbar {
+        background: var(--card);
+        border-bottom: 1px solid var(--border);
+        padding: 0 2rem;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        transition: background 0.3s;
+      }
+      .topbar-right {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .icon-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 9px;
+        border: 1.5px solid var(--border);
+        background: var(--card);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.9rem;
+        color: var(--body);
+      }
+      .icon-btn:hover {
+        border-color: var(--indigo);
+        color: var(--indigo);
+      }
+      .content {
+        padding: 2rem;
+        flex: 1;
+      }
+      /* XP HERO */
+      .xp-hero {
+        background: var(--indigo);
+        border-radius: 20px;
+        padding: 2rem 2.5rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 2rem;
+        align-items: center;
+      }
+      .xph-grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+        background-size: 32px 32px;
+        pointer-events: none;
+      }
+      .xph-left {
+        position: relative;
+        z-index: 1;
+      }
+      .xph-level {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.82rem;
+        margin-bottom: 0.3rem;
+      }
+      .xph-name {
+        font-family: "DM Serif Display", serif;
+        font-size: 2rem;
+        color: #fff;
+        margin-bottom: 0.4rem;
+      }
+      .xph-xp {
+        color: var(--coin);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-bottom: 0.8rem;
+      }
+      .xph-bar {
+        height: 8px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 4px;
+        overflow: hidden;
+        max-width: 400px;
+        margin-bottom: 0.4rem;
+      }
+      .xph-fill {
+        height: 100%;
+        border-radius: 4px;
+        background: linear-gradient(90deg, var(--coin), #fff);
+        transition: width 1.5s ease;
+        animation: barGrow 1.5s ease both 0.3s;
+      }
+      @keyframes barGrow {
+        from {
+          width: 0 !important;
+        }
+        to {
+        }
+      }
+      .xph-prog {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.75rem;
+      }
+      .xph-right {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+      }
+      .xph-avatar {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: #fff;
+        font-size: 1.4rem;
+        margin: 0 auto 0.5rem;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+      }
+      .xph-rank {
+        background: var(--coin);
+        color: #fff;
+        border-radius: 99px;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.78rem;
+        font-weight: 700;
+        display: inline-block;
+        margin-bottom: 0.25rem;
+      }
+      .xph-streak {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.75rem;
+      }
+      /* TAB NAV */
+      .tab-nav {
+        display: flex;
+        gap: 0.4rem;
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 4px;
+        margin-bottom: 1.5rem;
+        width: fit-content;
+      }
+      .tn-btn {
+        padding: 0.5rem 1.2rem;
+        border-radius: 9px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        background: none;
+        color: var(--muted);
+        transition: all 0.15s;
+        white-space: nowrap;
+      }
+      .tn-btn.active {
+        background: var(--card);
+        color: var(--ink);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+      }
+      /* QUESTS */
+      .quests-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 1rem;
+      }
+      .quest-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.2rem;
+        transition: all 0.25s;
+        position: relative;
+        overflow: hidden;
+      }
+      .quest-card:hover {
+        border-color: rgba(91, 69, 224, 0.2);
+        box-shadow: 0 8px 24px rgba(91, 69, 224, 0.06);
+      }
+      .quest-card.done {
+        opacity: 0.7;
+      }
+      .quest-card.done::after {
+        content: "✓ Completed";
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: var(--teal-light);
+        color: var(--teal);
+        font-size: 0.68rem;
+        font-weight: 700;
+        border-radius: 6px;
+        padding: 0.2rem 0.6rem;
+      }
+      .qc-top {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.8rem;
+        margin-bottom: 0.8rem;
+      }
+      .qc-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+      }
+      .qc-info {
+        flex: 1;
+      }
+      .qc-type {
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        margin-bottom: 0.2rem;
+      }
+      .qc-title {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--ink);
+        line-height: 1.3;
+      }
+      .qc-desc {
+        font-size: 0.8rem;
+        color: var(--body);
+        line-height: 1.6;
+        margin-bottom: 0.8rem;
+      }
+      .qc-rewards {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 0.85rem;
+        flex-wrap: wrap;
+      }
+      .qc-reward {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        background: var(--surface);
+        border-radius: 6px;
+        padding: 0.25rem 0.6rem;
+        font-size: 0.74rem;
+        font-weight: 600;
+        color: var(--body);
+      }
+      .qc-progress {
+        margin-bottom: 0.7rem;
+      }
+      .qc-prog-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.74rem;
+        color: var(--muted);
+        margin-bottom: 0.3rem;
+      }
+      .qc-bar {
+        height: 5px;
+        background: var(--surface);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      .qc-fill {
+        height: 100%;
+        border-radius: 3px;
+        background: var(--indigo);
+        transition: width 0.8s ease;
+      }
+      .qc-btn {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1.5px solid var(--indigo);
+        border-radius: 8px;
+        color: var(--indigo);
+        background: transparent;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .qc-btn:hover {
+        background: var(--indigo);
+        color: #fff;
+      }
+      .qc-btn.done-btn {
+        border-color: var(--teal);
+        color: var(--teal);
+        pointer-events: none;
+      }
+      /* TYPE COLORS */
+      .qt-daily {
+        background: var(--coin-light);
+        color: var(--vs-warning-text);
+      }
+      .qt-weekly {
+        background: var(--indigo-light);
+        color: var(--indigo);
+      }
+      .qt-milestone {
+        background: var(--teal-light);
+        color: var(--teal);
+      }
+      /* LEADERBOARD */
+      .lb-wrap {
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        gap: 1.5rem;
+        align-items: start;
+      }
+      .lb-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+      }
+      .lb-header {
+        padding: 1.2rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      .lb-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--ink);
+      }
+      .lb-period {
+        display: flex;
+        gap: 0.3rem;
+        background: var(--surface);
+        border-radius: 8px;
+        padding: 3px;
+      }
+      .lp-btn {
+        padding: 0.3rem 0.65rem;
+        border-radius: 6px;
+        font-size: 0.74rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        background: none;
+        color: var(--muted);
+        transition: all 0.15s;
+      }
+      .lp-btn.active {
+        background: var(--card);
+        color: var(--ink);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      }
+      .lb-table {
+        width: 100%;
+      }
+      .lb-row {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 0.85rem 1.4rem;
+        transition: background 0.15s;
+        border-bottom: 1px solid var(--surface);
+      }
+      .lb-row:last-child {
+        border-bottom: none;
+      }
+      .lb-row:hover {
+        background: var(--surface);
+      }
+      .lb-row.me {
+        background: var(--indigo-light) !important;
+      }
+      [data-theme="dark"] .lb-row.me {
+        background: rgba(91, 69, 224, 0.12) !important;
+      }
+      .lb-rank {
+        width: 28px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        text-align: center;
+        flex-shrink: 0;
+        color: var(--muted);
+      }
+      .lb-rank.gold {
+        color: var(--coin);
+      }
+      .lb-rank.silver {
+        color: var(--muted);
+      }
+      .lb-rank.bronze {
+        color: #cd7f32;
+      }
+      .lb-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: #fff;
+        font-size: 0.78rem;
+        flex-shrink: 0;
+      }
+      .lb-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .lb-name {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--ink);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .lb-sub {
+        font-size: 0.72rem;
+        color: var(--muted);
+      }
+      .lb-xp-wrap {
+        text-align: right;
+        flex-shrink: 0;
+      }
+      .lb-xp {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: var(--ink);
+      }
+      .lb-xp-bar {
+        width: 60px;
+        height: 4px;
+        background: var(--surface);
+        border-radius: 2px;
+        margin-top: 0.25rem;
+        overflow: hidden;
+      }
+      .lb-xp-fill {
+        height: 100%;
+        border-radius: 2px;
+        background: var(--indigo);
+      }
+      .lb-row.me .lb-name {
+        color: var(--indigo);
+        font-weight: 700;
+      }
+      .lb-row.me .lb-xp {
+        color: var(--indigo);
+      }
+      /* RIGHT COL */
+      .right-col .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.2rem;
+        margin-bottom: 1rem;
+      }
+      .card-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 0.9rem;
+      }
+      /* BADGES */
+      .badges-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.6rem;
+      }
+      .badge-item {
+        text-align: center;
+        padding: 0.7rem 0.4rem;
+        border-radius: 10px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        transition: all 0.2s;
+      }
+      .badge-item:hover {
+        border-color: rgba(91, 69, 224, 0.2);
+        transform: translateY(-2px);
+      }
+      .badge-item.locked {
+        opacity: 0.4;
+        filter: grayscale(1);
+      }
+      .bi-icon {
+        font-size: 1.6rem;
+        margin-bottom: 0.25rem;
+      }
+      .bi-name {
+        font-size: 0.68rem;
+        font-weight: 600;
+        color: var(--body);
+        line-height: 1.3;
+      }
+      /* TOAST */
+      .toast-wrap {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 400;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        pointer-events: none;
+      }
+      .toast {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 0.8rem 1.1rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--ink);
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        animation: toastIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        pointer-events: auto;
+        max-width: 300px;
+      }
+      .toast.xp-toast {
+        border-color: rgba(91, 69, 224, 0.3);
+        background: var(--indigo-light);
+      }
+      .toast.coin-toast {
+        border-color: rgba(245, 166, 35, 0.3);
+        background: var(--coin-light);
+      }
+      @keyframes toastIn {
+        from {
+          transform: translateY(24px) scale(0.9);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0) scale(1);
+          opacity: 1;
+        }
+      }
+      /* CONFETTI */
+      .confetti-piece {
+        position: fixed;
+        width: 8px;
+        height: 8px;
+        border-radius: 2px;
+        pointer-events: none;
+        z-index: 500;
+        animation: confettiFall 2s ease both;
+      }
+      @keyframes confettiFall {
+        from {
+          transform: translateY(-20px) rotate(0deg);
+          opacity: 1;
+        }
+        to {
+          transform: translateY(120vh) rotate(720deg);
+          opacity: 0;
+        }
+      }
+      /* RESPONSIVE */
+      @media (max-width: 1100px) {
+        .lb-wrap {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 900px) {
+        .sidebar {
+          transform: translateX(-100%);
+        }
+        .sidebar.open {
+          transform: translateX(0);
+        }
+        .main {
+          margin-left: 0;
+        }
+        .quests-grid {
+          grid-template-columns: 1fr;
+        }
+        .xp-hero {
+          grid-template-columns: 1fr;
+        }
+        #hamBtn {
+          display: flex !important;
+        }
+        .xph-right {
+          display: none;
+        }
+      }
+      .overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.3);
+        z-index: 49;
+      }
+      .overlay.open {
+        display: block;
+      }
+      .ham-btn {
+        display: none;
+        width: 38px;
+        height: 38px;
+        border-radius: 9px;
+        border: 1.5px solid var(--border);
+        background: var(--card);
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        flex-direction: column;
+        gap: 5px;
+        flex-shrink: 0;
+      }
+      .ham-btn span {
+        width: 16px;
+        height: 1.5px;
+        background: var(--ink);
+        border-radius: 2px;
+      }
+    </style>
+    <script src="js/dark-mode.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script type="module" src="api.js"></script>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </head>
+  <body>
+    <div class="toast-wrap" id="toastWrap"></div>
+    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+    <aside class="sidebar" id="sidebar">
+      <div class="sb-top">
+        <a href="index.html" class="sb-logo"
+          ><img src="logo-v.png" alt="V" class="logo-img" /><span
+            class="logo-text"
+            >vidyasetu</span
+          ></a
+        >
       </div>
-    </div>
-  </div>
-</aside>
-
-<div class="main">
-  <div class="topbar">
-    <button class="ham-btn" id="hamBtn" style="display:none" onclick="openSidebar()"><span></span><span></span><span></span></button>
-    <div style="font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--ink)">QuestMode</div>
-    <div class="topbar-right">
-<!-- theme btn removed -->
-      <button class="icon-btn">🔔</button>
-    </div>
-  </div>
-
-  <div class="content">
-    <!-- XP HERO -->
-    <div class="xp-hero">
-      <div class="xph-grid"></div>
-      <div class="xph-left">
-        <div class="xph-level" id="xphLevel">Level 1 · Beginner</div>
-        <div class="xph-name" id="xphName">...</div>
-        <div class="xph-xp" id="xphXP">0 / 100 XP to next level</div>
-        <div class="xph-bar"><div class="xph-fill" id="xphBar" style="width:0%"></div></div>
-        <div class="xph-prog" id="xphProg">Loading progress...</div>
-      </div>
-      <div class="xph-right">
-        <div class="xph-avatar" id="xphAvatar">??</div>
-        <div class="xph-rank" id="xphRank">...</div>
-        <div class="xph-streak" id="xphStreak">...</div>
-      </div>
-    </div>
-
-    <!-- TAB NAV -->
-    <div class="tab-nav">
-      <button class="tn-btn active" id="tabQuests" onclick="switchTab('quests')">⚔️ Quests</button>
-      <button class="tn-btn" id="tabLeaderboard" onclick="switchTab('leaderboard')">🏆 Leaderboard</button>
-      <button class="tn-btn" id="tabBadges" onclick="switchTab('badges')">🎖️ Badges</button>
-    </div>
-
-    <!-- QUESTS PANEL -->
-    <div id="questsPanel">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
-        <div style="font-size:.95rem;font-weight:700;color:var(--ink)">Daily Quests <span style="font-size:.75rem;font-weight:400;color:var(--muted)">· Resets in <span id="resetTimer">06:42:15</span></span></div>
-        <div style="display:flex;gap:.4rem">
-          <button style="padding:.35rem .8rem;border-radius:99px;border:1.5px solid var(--border);font-size:.78rem;font-weight:600;cursor:pointer;background:var(--coin-light);border-color:rgba(245,166,35,.3);color:var(--vs-warning-text);font-family:'DM Sans',sans-serif" class="active-filter">🌅 Daily</button>
-          <button style="padding:.35rem .8rem;border-radius:99px;border:1.5px solid var(--border);font-size:.78rem;font-weight:600;cursor:pointer;background:var(--card);color:var(--muted);font-family:'DM Sans',sans-serif">📅 Weekly</button>
-          <button style="padding:.35rem .8rem;border-radius:99px;border:1.5px solid var(--border);font-size:.78rem;font-weight:600;cursor:pointer;background:var(--card);color:var(--muted);font-family:'DM Sans',sans-serif">🎯 Milestones</button>
+      <nav class="sb-nav">
+        <div class="sb-section">Main</div>
+        <a href="03_dashboard.html" class="sb-item"
+          ><span class="icon">🏠</span> Dashboard</a
+        >
+        <a href="04_explore.html" class="sb-item"
+          ><span class="icon">🔍</span> Explore Teachers</a
+        >
+        <a href="09_bounty.html" class="sb-item"
+          ><span class="icon">🎯</span> Bounty Hub
+          <span class="bdg" id="sb-bounty-badge">0</span></a
+        >
+        <a href="10_quest.html" class="sb-item active"
+          ><span class="icon">⚔️</span> QuestMode</a
+        >
+        <div class="sb-section">My Learning</div>
+        <a href="11_my_sessions.html" class="sb-item"
+          ><span class="icon">📅</span> My Sessions</a
+        >
+        <a href="08_wallet.html" class="sb-item"
+          ><span class="icon">🪙</span> Wallet</a
+        >
+        <div class="sb-section">Account</div>
+        <a href="12_my_profile.html" class="sb-item"
+          ><span class="icon">👤</span> My Profile</a
+        >
+        <a href="12_my_profile.html" class="sb-item"
+          ><span class="icon">⚙️</span> Settings</a
+        >
+      </nav>
+      <div class="sb-bottom" id="sb-user-area">
+        <div class="sb-user">
+          <div class="sb-avatar">...</div>
+          <div>
+            <div class="sb-name">Loading...</div>
+            <div class="sb-coin">...</div>
+                      <div class="xph-level" style="font-size:0.7rem;color:var(--muted);margin-bottom:0.2rem;font-weight:600">Level 1</div>
+            <div class="xph-bar" style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:0.2rem;width:100%">
+               <div class="xph-fill" style="height:100%;background:var(--coin);width:0%;transition:width 1s"></div>
+            </div>
+            <div class="xph-xp" style="font-size:0.65rem;color:var(--muted);font-family:'JetBrains Mono',monospace">0 / 500 XP</div>
+</div>
         </div>
       </div>
-      <div class="quests-grid" id="questsGrid"></div>
-    </div>
+    </aside>
 
-    <!-- LEADERBOARD PANEL -->
-    <div id="leaderboardPanel" style="display:none">
-      <div class="lb-wrap">
-        <div>
-          <div class="lb-card">
-            <div class="lb-header">
-              <span class="lb-title">🏆 Leaderboard</span>
-              <div class="lb-period">
-                <button class="lp-btn active" onclick="setLbPeriod(this,'weekly')">This week</button>
-                <button class="lp-btn" onclick="setLbPeriod(this,'monthly')">Monthly</button>
-                <button class="lp-btn" onclick="setLbPeriod(this,'all')">All time</button>
+    <div class="main">
+      <div class="topbar">
+        <button
+          class="ham-btn"
+          id="hamBtn"
+          style="display: none"
+          onclick="openSidebar()"
+        >
+          <span></span><span></span><span></span>
+        </button>
+        <div
+          style="
+            font-family: &quot;DM Serif Display&quot;, serif;
+            font-size: 1.1rem;
+            color: var(--ink);
+          "
+        >
+          QuestMode
+        </div>
+        <div class="topbar-right">
+          <!-- theme btn removed -->
+          <button class="icon-btn">🔔</button>
+        </div>
+      </div>
+
+      <div class="content">
+        <!-- XP HERO -->
+        <div class="xp-hero">
+          <div class="xph-grid"></div>
+          <div class="xph-left">
+            <div class="xph-level" id="xphLevel">Level 1 · Beginner</div>
+            <div class="xph-name" id="xphName">...</div>
+            <div class="xph-xp" id="xphXP">0 / 100 XP to next level</div>
+            <div class="xph-bar">
+              <div class="xph-fill" id="xphBar" style="width: 0%"></div>
+            </div>
+            <div class="xph-prog" id="xphProg">Loading progress...</div>
+          </div>
+          <div class="xph-right">
+            <div class="xph-avatar" id="xphAvatar">??</div>
+            <div class="xph-rank" id="xphRank">...</div>
+            <div class="xph-streak" id="xphStreak">...</div>
+          </div>
+        </div>
+
+        <!-- TAB NAV -->
+        <div class="tab-nav">
+          <button
+            class="tn-btn active"
+            id="tabQuests"
+            onclick="switchTab('quests')"
+          >
+            ⚔️ Quests
+          </button>
+          <button
+            class="tn-btn"
+            id="tabLeaderboard"
+            onclick="switchTab('leaderboard')"
+          >
+            🏆 Leaderboard
+          </button>
+          <button class="tn-btn" id="tabBadges" onclick="switchTab('badges')">
+            🎖️ Badges
+          </button>
+        </div>
+
+        <!-- QUESTS PANEL -->
+        <div id="questsPanel">
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-bottom: 1rem;
+              flex-wrap: wrap;
+              gap: 0.5rem;
+            "
+          >
+            <div
+              style="font-size: 0.95rem; font-weight: 700; color: var(--ink)"
+            >
+              Daily Quests
+              <span
+                style="
+                  font-size: 0.75rem;
+                  font-weight: 400;
+                  color: var(--muted);
+                "
+                >· Resets in <span id="resetTimer">06:42:15</span></span
+              >
+            </div>
+            <div style="display: flex; gap: 0.4rem">
+              <button
+                style="
+                  padding: 0.35rem 0.8rem;
+                  border-radius: 99px;
+                  border: 1.5px solid var(--border);
+                  font-size: 0.78rem;
+                  font-weight: 600;
+                  cursor: pointer;
+                  background: var(--coin-light);
+                  border-color: rgba(245, 166, 35, 0.3);
+                  color: var(--vs-warning-text);
+                  font-family: &quot;DM Sans&quot;, sans-serif;
+                "
+                class="active-filter"
+              >
+                🌅 Daily
+              </button>
+              <button
+                style="
+                  padding: 0.35rem 0.8rem;
+                  border-radius: 99px;
+                  border: 1.5px solid var(--border);
+                  font-size: 0.78rem;
+                  font-weight: 600;
+                  cursor: pointer;
+                  background: var(--card);
+                  color: var(--muted);
+                  font-family: &quot;DM Sans&quot;, sans-serif;
+                "
+              >
+                📅 Weekly
+              </button>
+              <button
+                style="
+                  padding: 0.35rem 0.8rem;
+                  border-radius: 99px;
+                  border: 1.5px solid var(--border);
+                  font-size: 0.78rem;
+                  font-weight: 600;
+                  cursor: pointer;
+                  background: var(--card);
+                  color: var(--muted);
+                  font-family: &quot;DM Sans&quot;, sans-serif;
+                "
+              >
+                🎯 Milestones
+              </button>
+            </div>
+          </div>
+          <div class="quests-grid" id="questsGrid"></div>
+        </div>
+
+        <!-- LEADERBOARD PANEL -->
+        <div id="leaderboardPanel" style="display: none">
+          <div class="lb-wrap">
+            <div>
+              <div class="lb-card">
+                <div class="lb-header">
+                  <span class="lb-title">🏆 Leaderboard</span>
+                  <div class="lb-period">
+                    <button
+                      class="lp-btn active"
+                      onclick="setLbPeriod(this, 'weekly')"
+                    >
+                      This week
+                    </button>
+                    <button
+                      class="lp-btn"
+                      onclick="setLbPeriod(this, 'monthly')"
+                    >
+                      Monthly
+                    </button>
+                    <button class="lp-btn" onclick="setLbPeriod(this, 'all')">
+                      All time
+                    </button>
+                  </div>
+                </div>
+                <div class="lb-table" id="lbTable"></div>
               </div>
             </div>
-            <div class="lb-table" id="lbTable"></div>
-          </div>
-        </div>
-        <div class="right-col">
-          <div class="card">
-            <div class="card-title">📊 Your Stats</div>
-            <div style="display:flex;flex-direction:column;gap:.6rem">
-              <div style="display:flex;justify-content:space-between;font-size:.85rem;padding:.4rem 0;border-bottom:1px solid var(--surface)"><span style="color:var(--body)">Weekly XP</span><strong style="font-family:'JetBrains Mono',monospace;color:var(--ink)">540</strong></div>
-              <div style="display:flex;justify-content:space-between;font-size:.85rem;padding:.4rem 0;border-bottom:1px solid var(--surface)"><span style="color:var(--body)">Rank this week</span><strong style="color:var(--indigo)">#5</strong></div>
-              <div style="display:flex;justify-content:space-between;font-size:.85rem;padding:.4rem 0;border-bottom:1px solid var(--surface)"><span style="color:var(--body)">Sessions taught</span><strong style="font-family:'JetBrains Mono',monospace;color:var(--ink)">8</strong></div>
-              <div style="display:flex;justify-content:space-between;font-size:.85rem;padding:.4rem 0;border-bottom:1px solid var(--surface)"><span style="color:var(--body)">Quests completed</span><strong style="font-family:'JetBrains Mono',monospace;color:var(--ink)">12</strong></div>
-              <div style="display:flex;justify-content:space-between;font-size:.85rem;padding:.4rem 0"><span style="color:var(--body)">Day streak 🔥</span><strong style="color:var(--danger)">7 days</strong></div>
+            <div class="right-col">
+              <div class="card">
+                <div class="card-title">📊 Your Stats</div>
+                <div style="display: flex; flex-direction: column; gap: 0.6rem">
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      font-size: 0.85rem;
+                      padding: 0.4rem 0;
+                      border-bottom: 1px solid var(--surface);
+                    "
+                  >
+                    <span style="color: var(--body)">Weekly XP</span
+                    ><strong
+                      style="
+                        font-family: &quot;JetBrains Mono&quot;, monospace;
+                        color: var(--ink);
+                      "
+                      >540</strong
+                    >
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      font-size: 0.85rem;
+                      padding: 0.4rem 0;
+                      border-bottom: 1px solid var(--surface);
+                    "
+                  >
+                    <span style="color: var(--body)">Rank this week</span
+                    ><strong style="color: var(--indigo)">#5</strong>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      font-size: 0.85rem;
+                      padding: 0.4rem 0;
+                      border-bottom: 1px solid var(--surface);
+                    "
+                  >
+                    <span style="color: var(--body)">Sessions taught</span
+                    ><strong
+                      style="
+                        font-family: &quot;JetBrains Mono&quot;, monospace;
+                        color: var(--ink);
+                      "
+                      >8</strong
+                    >
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      font-size: 0.85rem;
+                      padding: 0.4rem 0;
+                      border-bottom: 1px solid var(--surface);
+                    "
+                  >
+                    <span style="color: var(--body)">Quests completed</span
+                    ><strong
+                      style="
+                        font-family: &quot;JetBrains Mono&quot;, monospace;
+                        color: var(--ink);
+                      "
+                      >12</strong
+                    >
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      font-size: 0.85rem;
+                      padding: 0.4rem 0;
+                    "
+                  >
+                    <span style="color: var(--body)">Day streak 🔥</span
+                    ><strong style="color: var(--danger)">7 days</strong>
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-title">🎯 To reach Top 3</div>
+                <div
+                  style="
+                    font-size: 0.82rem;
+                    color: var(--body);
+                    line-height: 1.7;
+                  "
+                >
+                  You need
+                  <strong style="color: var(--indigo)">280 more XP</strong> to
+                  reach Rohan Sharma (#1).<br /><br />
+                  Quick wins:<br />
+                  · Teach 1 session
+                  <strong style="color: var(--teal)">+100 XP</strong><br />
+                  · Complete 3 daily quests
+                  <strong style="color: var(--teal)">+150 XP</strong><br />
+                  · Win a bounty
+                  <strong style="color: var(--teal)">+200 XP</strong>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="card">
-            <div class="card-title">🎯 To reach Top 3</div>
-            <div style="font-size:.82rem;color:var(--body);line-height:1.7">
-              You need <strong style="color:var(--indigo)">280 more XP</strong> to reach Rohan Sharma (#1).<br><br>
-              Quick wins:<br>
-              · Teach 1 session <strong style="color:var(--teal)">+100 XP</strong><br>
-              · Complete 3 daily quests <strong style="color:var(--teal)">+150 XP</strong><br>
-              · Win a bounty <strong style="color:var(--teal)">+200 XP</strong>
+        </div>
+
+        <!-- BADGES PANEL -->
+        <div id="badgesPanel" style="display: none">
+          <div
+            style="
+              display: grid;
+              grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+              gap: 1.2rem;
+            "
+          >
+            <div
+              style="
+                background: var(--card);
+                border: 1px solid var(--border);
+                border-radius: 16px;
+                padding: 1.3rem;
+              "
+            >
+              <div
+                style="
+                  font-size: 0.82rem;
+                  font-weight: 700;
+                  text-transform: uppercase;
+                  letter-spacing: 0.08em;
+                  color: var(--muted);
+                  margin-bottom: 1rem;
+                "
+              >
+                🎓 Teaching Badges
+              </div>
+              <div class="badges-grid" id="teachBadges"></div>
+            </div>
+            <div
+              style="
+                background: var(--card);
+                border: 1px solid var(--border);
+                border-radius: 16px;
+                padding: 1.3rem;
+              "
+            >
+              <div
+                style="
+                  font-size: 0.82rem;
+                  font-weight: 700;
+                  text-transform: uppercase;
+                  letter-spacing: 0.08em;
+                  color: var(--muted);
+                  margin-bottom: 1rem;
+                "
+              >
+                📚 Learning Badges
+              </div>
+              <div class="badges-grid" id="learnBadges"></div>
+            </div>
+            <div
+              style="
+                background: var(--card);
+                border: 1px solid var(--border);
+                border-radius: 16px;
+                padding: 1.3rem;
+              "
+            >
+              <div
+                style="
+                  font-size: 0.82rem;
+                  font-weight: 700;
+                  text-transform: uppercase;
+                  letter-spacing: 0.08em;
+                  color: var(--muted);
+                  margin-bottom: 1rem;
+                "
+              >
+                🎯 Bounty Badges
+              </div>
+              <div class="badges-grid" id="bountyBadges"></div>
+            </div>
+            <div
+              style="
+                background: var(--card);
+                border: 1px solid var(--border);
+                border-radius: 16px;
+                padding: 1.3rem;
+              "
+            >
+              <div
+                style="
+                  font-size: 0.82rem;
+                  font-weight: 700;
+                  text-transform: uppercase;
+                  letter-spacing: 0.08em;
+                  color: var(--muted);
+                  margin-bottom: 1rem;
+                "
+              >
+                ⚡ Special Badges
+              </div>
+              <div class="badges-grid" id="specialBadges"></div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- BADGES PANEL -->
-    <div id="badgesPanel" style="display:none">
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem">
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.3rem">
-          <div style="font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:1rem">🎓 Teaching Badges</div>
-          <div class="badges-grid" id="teachBadges"></div>
-        </div>
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.3rem">
-          <div style="font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:1rem">📚 Learning Badges</div>
-          <div class="badges-grid" id="learnBadges"></div>
-        </div>
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.3rem">
-          <div style="font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:1rem">🎯 Bounty Badges</div>
-          <div class="badges-grid" id="bountyBadges"></div>
-        </div>
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.3rem">
-          <div style="font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:1rem">⚡ Special Badges</div>
-          <div class="badges-grid" id="specialBadges"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+    <!-- SCRIPTS -->
+    <script src="config.js"></script>
+    <script type="module" src="api.js"></script>
 
-<!-- SCRIPTS -->
-<script src="config.js"></script>
-<script src="api.js"></script>
+    <script>
+      let ALL_QUESTS = [];
+      let ALL_BADGES = { learning: [], teaching: [], bounty: [], special: [] };
+      let ALL_LB = [];
 
-<script>
-let ALL_QUESTS = [];
-let ALL_BADGES = { learning: [], teaching: [], bounty: [], special: [] };
-let ALL_LB = [];
+      async function initQuests() {
+        if (typeof VS !== "undefined" && VS.ui) VS.ui.updateSidebar();
+        try {
+          ALL_QUESTS = await VS.quests.getAll();
+          // Fetch user stats for hero area
+          const user =
+            typeof VS !== "undefined" && VS.auth ? VS.auth.currentUser() : null;
+          if (user) {
+            document.getElementById("xphName").textContent =
+              user.name || "Explorer";
+            document.getElementById("xphAvatar").textContent = (
+              user.name || "U"
+            )
+              .split(" ")
+              .map((n) => n[0])
+              .join("")
+              .substring(0, 2)
+              .toUpperCase();
+            const xp =
+              user.xp || parseInt(localStorage.getItem("vs_user_xp") || "0");
+            const level =
+              user.level ||
+              parseInt(localStorage.getItem("vs_user_level") || "1");
+            const xpInLevel = xp % 500;
+            const xpToNext = 500 - xpInLevel;
+            document.getElementById("xphLevel").textContent =
+              `Level ${level} · Skill Seeker`;
+            document.getElementById("xphXP").textContent =
+              `${xpInLevel} / 500 XP to Level ${level + 1}`;
+            document.getElementById("xphBar").style.width = xpInLevel / 5 + "%";
+            document.getElementById("xphProg").textContent =
+              `${xpToNext} XP needed to level up`;
+          }
+          renderQuests();
+          renderLeaderboard();
+          renderBadges();
+        } catch (err) {
+          console.error("Failed to load quests:", err);
+        }
+      }
 
-async function initQuests() {
-  VS.ui.updateSidebar();
-  try {
-    ALL_QUESTS = await VS.quests.getAll();
-    // Fetch user stats for hero area
-    const user = await VS.api.getCurrentUser();
-    if (user) {
-      document.getElementById('xphName').textContent = user.name || 'Explorer';
-      document.getElementById('xphAvatar').textContent = (user.name||'U').split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
-      const xp = user.xp || parseInt(localStorage.getItem('vs_user_xp')||'0');
-      const level = user.level || parseInt(localStorage.getItem('vs_user_level')||'1');
-      const xpInLevel = xp % 500;
-      const xpToNext = 500 - xpInLevel;
-      document.getElementById('xphLevel').textContent = `Level ${level} · Skill Seeker`;
-      document.getElementById('xphXP').textContent = `${xpInLevel} / 500 XP to Level ${level + 1}`;
-      document.getElementById('xphBar').style.width = (xpInLevel / 5) + '%';
-      document.getElementById('xphProg').textContent = `${xpToNext} XP needed to level up`;
-    }
-    renderQuests();
-    renderLeaderboard();
-    renderBadges();
-  } catch (err) {
-    console.error('Failed to load quests:', err);
-  }
-}
+      function renderQuests() {
+        const grid = document.getElementById("questsGrid");
+        const typeLabel = {
+          daily: "Daily Quest",
+          weekly: "Weekly Quest",
+          milestone: "Milestone",
+        };
+        const typeIconCls = {
+          daily: "qt-daily",
+          weekly: "qt-weekly",
+          milestone: "qt-milestone",
+        };
 
-function renderQuests() {
-  const grid = document.getElementById('questsGrid');
-  const typeLabel = {daily:'Daily Quest',weekly:'Weekly Quest',milestone:'Milestone'};
-  const typeIconCls = {daily:'qt-daily',weekly:'qt-weekly',milestone:'qt-milestone'};
-
-  grid.innerHTML = ALL_QUESTS.map(q => `
-    <div class="quest-card ${q.done?'done':''}">
+        grid.innerHTML = ALL_QUESTS.map(
+          (q) => `
+    <div class="quest-card ${q.done ? "done" : ""}">
       <div class="qc-top">
         <div class="qc-icon" style="background:${q.iconBg}">${q.icon}</div>
         <div class="qc-info">
@@ -358,163 +1453,210 @@ function renderQuests() {
       <div class="qc-desc">${q.desc}</div>
       <div class="qc-rewards">
         <div class="qc-reward">⚡ ${q.xp} XP</div>
-        ${q.coins ? `<div class="qc-reward" style="background:var(--coin-light);color:var(--vs-warning-text)">🪙 +${q.coins}</div>` : ''}
+        ${q.coins ? `<div class="qc-reward" style="background:var(--coin-light);color:var(--vs-warning-text)">🪙 +${q.coins}</div>` : ""}
       </div>
       <div class="qc-progress">
-        <div class="qc-prog-label"><span>${q.progress} / ${q.target}</span><span>${Math.round(q.progress/q.target*100)}%</span></div>
-        <div class="qc-bar"><div class="qc-fill" style="width:${(q.progress/q.target)*100}%;background:${q.done?'var(--teal)':'var(--indigo)'}"></div></div>
+        <div class="qc-prog-label"><span>${q.progress} / ${q.target}</span><span>${Math.round((q.progress / q.target) * 100)}%</span></div>
+        <div class="qc-bar"><div class="qc-fill" style="width:${(q.progress / q.target) * 100}%;background:${q.done ? "var(--teal)" : "var(--indigo)"}"></div></div>
       </div>
-      <button class="qc-btn ${q.done?'done-btn':''}" onclick="${q.done?'':` claimQuest(this,${q.id},${q.xp},${q.coins})`}">${q.done?'✓ Completed':'Claim Reward →'}</button>
+      <button class="qc-btn ${q.done ? "done-btn" : ""}" onclick="${q.done ? "" : ` claimQuest(this,${q.id},${q.xp},${q.coins})`}">${q.done ? "✓ Completed" : "Claim Reward →"}</button>
     </div>
-  `).join('');
-}
+  `,
+        ).join("");
+      }
 
-function claimQuest(btn, id, xp, coins) {
-  const q = ALL_QUESTS.find(x=>x.id===id);
-  if (!q || q.progress < q.target) { showToast('⚠️','Quest not yet complete!'); return; }
-  q.done = true;
-  renderQuests();
-  showToast('⚡',`+${xp} XP earned!`,'xp-toast');
-  if (coins) setTimeout(()=>showToast('🪙',`+${coins} coin awarded!`,'coin-toast'),600);
-  launchConfetti();
-}
+      function claimQuest(btn, id, xp, coins) {
+        const q = ALL_QUESTS.find((x) => x.id === id);
+        if (!q || q.progress < q.target) {
+          showToast("⚠️", "Quest not yet complete!");
+          return;
+        }
+        q.done = true;
+        renderQuests();
+        showToast("⚡", `+${xp} XP earned!`, "xp-toast");
+        if (coins)
+          setTimeout(
+            () => showToast("🪙", `+${coins} coin awarded!`, "coin-toast"),
+            600,
+          );
+        launchConfetti();
+      }
 
-// ─── LEADERBOARD ───
-// All data managed via initQuests
+      // ─── LEADERBOARD ───
+      // All data managed via initQuests
 
-function renderLb(period) {
-  const data = (ALL_LB && ALL_LB[period]) ? ALL_LB[period] : (ALL_LB ? ALL_LB.weekly : []);
-  if (!data || !data.length) {
-    document.getElementById('lbTable').innerHTML = '<div class="empty-state">No leaderboard data.</div>';
-    return;
-  }
-  const maxXp = data[0].xp;
-  const rankCls = [,'gold','silver','bronze'];
-  document.getElementById('lbTable').innerHTML = data.map(p=>`
-    <div class="lb-row ${p.me?'me':''}">
-      <div class="lb-rank ${rankCls[p.rank]||''}">${p.rank<=3?['🥇','🥈','🥉'][p.rank-1]:p.rank}</div>
+      function renderLb(period) {
+        const data =
+          ALL_LB && ALL_LB[period]
+            ? ALL_LB[period]
+            : ALL_LB
+              ? ALL_LB.weekly
+              : [];
+        if (!data || !data.length) {
+          document.getElementById("lbTable").innerHTML =
+            '<div class="empty-state">No leaderboard data.</div>';
+          return;
+        }
+        const maxXp = data[0].xp;
+        const rankCls = [, "gold", "silver", "bronze"];
+        document.getElementById("lbTable").innerHTML = data
+          .map(
+            (p) => `
+    <div class="lb-row ${p.me ? "me" : ""}">
+      <div class="lb-rank ${rankCls[p.rank] || ""}">${p.rank <= 3 ? ["🥇", "🥈", "🥉"][p.rank - 1] : p.rank}</div>
       <div class="lb-avatar" style="background:${p.bg}">${p.av}</div>
       <div class="lb-info"><div class="lb-name">${p.name}</div><div class="lb-sub">${p.sub}</div></div>
       <div class="lb-xp-wrap">
         <div class="lb-xp">${p.xp} XP</div>
-        <div class="lb-xp-bar"><div class="lb-xp-fill" style="width:${(p.xp/maxXp)*100}%"></div></div>
+        <div class="lb-xp-bar"><div class="lb-xp-fill" style="width:${(p.xp / maxXp) * 100}%"></div></div>
       </div>
     </div>
-  `).join('');
-}
+  `,
+          )
+          .join("");
+      }
 
-function setLbPeriod(btn, period) {
-  document.querySelectorAll('.lp-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  renderLb(period);
-}
+      function setLbPeriod(btn, period) {
+        document
+          .querySelectorAll(".lp-btn")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        renderLb(period);
+      }
 
-function renderBadges() {
-  const badgeData = ALL_BADGES || { teach: [], learn: [], bounty: [], special: [] };
-  Object.entries(badgeData).forEach(([key, bgs]) => {
-    const container = document.getElementById(key === 'teach' ? 'teachBadges' : key === 'learn' ? 'learnBadges' : key === 'bounty' ? 'bountyBadges' : 'specialBadges');
-    if (!container) return;
-    container.innerHTML = bgs.map(b=>`
-      <div class="badge-item ${b.earned?'':'locked'}" title="${b.name}">
+      function renderBadges() {
+        const badgeData = ALL_BADGES || {
+          teach: [],
+          learn: [],
+          bounty: [],
+          special: [],
+        };
+        Object.entries(badgeData).forEach(([key, bgs]) => {
+          const container = document.getElementById(
+            key === "teach"
+              ? "teachBadges"
+              : key === "learn"
+                ? "learnBadges"
+                : key === "bounty"
+                  ? "bountyBadges"
+                  : "specialBadges",
+          );
+          if (!container) return;
+          container.innerHTML = bgs
+            .map(
+              (b) => `
+      <div class="badge-item ${b.earned ? "" : "locked"}" title="${b.name}">
         <div class="bi-icon">${b.icon}</div>
         <div class="bi-name">${b.name}</div>
       </div>
-    `).join('');
-  });
-}
+    `,
+            )
+            .join("");
+        });
+      }
 
-// ─── TABS ───
-function switchTab(tab) {
-  ['quests','leaderboard','badges'].forEach(t => {
-    document.getElementById(t+'Panel').style.display = t === tab ? '' : 'none';
-    document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle('active', t === tab);
-  });
-  if (tab === 'leaderboard') renderLb('weekly');
-  if (tab === 'badges') renderBadges();
-}
+      // ─── TABS ───
+      function switchTab(tab) {
+        ["quests", "leaderboard", "badges"].forEach((t) => {
+          document.getElementById(t + "Panel").style.display =
+            t === tab ? "" : "none";
+          document
+            .getElementById("tab" + t.charAt(0).toUpperCase() + t.slice(1))
+            .classList.toggle("active", t === tab);
+        });
+        if (tab === "leaderboard") renderLb("weekly");
+        if (tab === "badges") renderBadges();
+      }
 
-// ─── COUNTDOWN ───
-function updateResetTimer() {
-  const now = new Date();
-  const midnight = new Date(now); midnight.setDate(midnight.getDate()+1); midnight.setHours(0,0,0,0);
-  const diff = Math.floor((midnight - now) / 1000);
-  const h = String(Math.floor(diff/3600)).padStart(2,'0');
-  const m = String(Math.floor((diff%3600)/60)).padStart(2,'0');
-  const s = String(diff%60).padStart(2,'0');
-  const el = document.getElementById('resetTimer');
-  if (el) el.textContent = `${h}:${m}:${s}`;
-}
-setInterval(updateResetTimer, 1000); updateResetTimer();
+      // ─── COUNTDOWN ───
+      function updateResetTimer() {
+        const now = new Date();
+        const midnight = new Date(now);
+        midnight.setDate(midnight.getDate() + 1);
+        midnight.setHours(0, 0, 0, 0);
+        const diff = Math.floor((midnight - now) / 1000);
+        const h = String(Math.floor(diff / 3600)).padStart(2, "0");
+        const m = String(Math.floor((diff % 3600) / 60)).padStart(2, "0");
+        const s = String(diff % 60).padStart(2, "0");
+        const el = document.getElementById("resetTimer");
+        if (el) el.textContent = `${h}:${m}:${s}`;
+      }
+      setInterval(updateResetTimer, 1000);
+      updateResetTimer();
 
-// ─── CONFETTI ───
-function launchConfetti() {
-  const colors = ['#5B45E0','#F5A623','#16A27B','#E84040','#EC4899'];
-  for (let i = 0; i < 30; i++) {
-    const el = document.createElement('div');
-    el.className = 'confetti-piece';
-    el.style.cssText = `left:${Math.random()*100}vw;top:0;background:${colors[Math.floor(Math.random()*colors.length)]};animation-duration:${1.5+Math.random()}s;animation-delay:${Math.random()*.5}s;width:${6+Math.random()*6}px;height:${6+Math.random()*6}px`;
-    document.body.appendChild(el);
-    setTimeout(()=>el.remove(), 3000);
-  }
-}
+      // ─── CONFETTI ───
+      function launchConfetti() {
+        const colors = ["#5B45E0", "#F5A623", "#16A27B", "#E84040", "#EC4899"];
+        for (let i = 0; i < 30; i++) {
+          const el = document.createElement("div");
+          el.className = "confetti-piece";
+          el.style.cssText = `left:${Math.random() * 100}vw;top:0;background:${colors[Math.floor(Math.random() * colors.length)]};animation-duration:${1.5 + Math.random()}s;animation-delay:${Math.random() * 0.5}s;width:${6 + Math.random() * 6}px;height:${6 + Math.random() * 6}px`;
+          document.body.appendChild(el);
+          setTimeout(() => el.remove(), 3000);
+        }
+      }
 
-// ─── THEME ───
+      // ─── THEME ───
 
+      function showToast(icon, text, cls = "") {
+        const wrap = document.getElementById("toastWrap");
+        const t = document.createElement("div");
+        t.className = "toast " + cls;
+        t.innerHTML = `<span style="font-size:1.2rem">${icon}</span><span>${text}</span>`;
+        wrap.appendChild(t);
+        setTimeout(() => t.remove(), 3500);
+      }
 
-function showToast(icon, text, cls='') {
-  const wrap = document.getElementById('toastWrap');
-  const t = document.createElement('div');
-  t.className = 'toast ' + cls;
-  t.innerHTML = `<span style="font-size:1.2rem">${icon}</span><span>${text}</span>`;
-  wrap.appendChild(t);
-  setTimeout(()=>t.remove(), 3500);
-}
+      function openSidebar() {
+        document.getElementById("sidebar").classList.add("open");
+        document.getElementById("overlay").classList.add("open");
+      }
+      function closeSidebar() {
+        document.getElementById("sidebar").classList.remove("open");
+        document.getElementById("overlay").classList.remove("open");
+      }
+      if (window.innerWidth <= 900) {
+        document.getElementById("hamBtn").style.display = "flex";
+      }
+      window.addEventListener("resize", () => {
+        if (window.innerWidth <= 900)
+          document.getElementById("hamBtn").style.display = "flex";
+        else document.getElementById("hamBtn").style.display = "none";
+      });
 
-function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('open')}
-function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('open')}
-if(window.innerWidth<=900){document.getElementById('hamBtn').style.display='flex'}
-window.addEventListener('resize',()=>{if(window.innerWidth<=900)document.getElementById('hamBtn').style.display='flex';else document.getElementById('hamBtn').style.display='none'})
+      document.addEventListener("DOMContentLoaded", initQuests);
+    </script>
+    <!-- Theme logic handled by js/dark-mode.js -->
+    <style>
+      .floating-theme-btn {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: var(--card);
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        font-size: 20px;
+        cursor: pointer;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        color: var(--ink);
+      }
+      .floating-theme-btn:hover {
+        transform: scale(1.05);
+      }
+    </style>
+    <!-- Theme logic handled by js/dark-mode.js -->
 
-
-
-document.addEventListener('DOMContentLoaded', initQuests);
-</script>
-<button onclick="toggleTheme()" id="globalThemeBtn" class="floating-theme-btn" title="Toggle Dark/Light Mode">🌙</button>
-<style>
-.floating-theme-btn {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: var(--card);
-  border: 1px solid var(--border);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  font-size: 20px;
-  cursor: pointer;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-  color: var(--ink);
-}
-.floating-theme-btn:hover {
-  transform: scale(1.05);
-}
-</style>
-<script>
-  function toggleTheme() {
-    const html = document.documentElement;
-    const isDark = html.getAttribute('data-theme') === 'dark';
-    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
-    document.getElementById('globalThemeBtn').textContent = isDark ? '🌙' : '☀️';
-    localStorage.setItem('vs-theme', isDark ? 'light' : 'dark');
-  }
-  if (document.documentElement.getAttribute('data-theme') === 'dark') {
-    document.getElementById('globalThemeBtn').textContent = '☀️';
-  }
-</script>
-</body>
+    <script>
+      if (typeof lucide !== "undefined") {
+        lucide.createIcons();
+      }
+    </script>
+  </body>
 </html>

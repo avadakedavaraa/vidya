@@ -1,14 +1,13 @@
-// supabase/functions/complete-session/index.ts
+// api/complete-session.ts
 // Called when a session ends (user clicks "End Session" in 07_session.html).
 // Handles: full release, pro-rata release (disconnect), or refund (15-min trial).
 // Awards XP to both participants. Updates streak. Triggers quest progress.
 
-import {
-  handleOptions, ok, err,
-  adminClient, requireAuth,
-  creditCoins, awardXP,
-  validateUUID, AuthError
-} from './_shared/utils';
+import { handleOptions, ok, err } from './_shared/responses';
+import { adminClient } from './_shared/supabase';
+import { requireAuth, AuthError } from './_shared/auth';
+import { creditCoins, awardXP } from './_shared/ledger';
+import { validateUUID } from './_shared/validation';
 
 export const config = { runtime: 'edge' };
 
@@ -70,7 +69,6 @@ export default async function (req: Request) {
 
   // ─── Calculate release amount ─────────────────────────
   if (reason === 'trial_refund') {
-    // Full refund to learner if they cancel in first 15 minutes
     if (elapsedSecs > 900) {
       return err('15-minute trial window has passed. Cannot issue full refund.', req, 400);
     }
@@ -79,7 +77,6 @@ export default async function (req: Request) {
     newStatus     = 'refunded';
 
   } else if (reason === 'disconnect') {
-    // Pro-rata: release proportional to time elapsed
     const { data: prorata } = await db
       .rpc('calc_prorata_release', {
         p_booking_id:      bookingId,
@@ -90,7 +87,6 @@ export default async function (req: Request) {
     newStatus     = 'partial_refund';
 
   } else {
-    // Full session completed
     releaseAmount = escrow;
     refundAmount  = 0;
     newStatus     = 'completed';
@@ -148,8 +144,8 @@ export default async function (req: Request) {
 
   // ─── Award XP (only for full/partial completions) ────
   if (newStatus !== 'refunded') {
-    const teacherXP  = 100; // base XP for teaching
-    const learnerXP  = 50;  // base XP for attending
+    const teacherXP  = 100;
+    const learnerXP  = 50;
     await Promise.all([
       awardXP(booking.teacher_id, teacherXP),
       awardXP(booking.learner_id, learnerXP),
@@ -188,11 +184,9 @@ async function incrementQuestProgress(
   criteria:  string
 ): Promise<void> {
   try {
-    // Get today's date (UTC) for daily quests
     const today = new Date();
     today.setUTCHours(0, 0, 0, 0);
 
-    // Find quests that match this criteria
     const { data: quests } = await db
       .from('quests')
       .select('id, target, type, xp_reward, coin_reward')
@@ -206,7 +200,6 @@ async function incrementQuestProgress(
         ? getWeekStart().toISOString()
         : today.toISOString();
 
-      // Upsert progress row
       const { data: existing } = await db
         .from('user_quest_progress')
         .select('id, progress, completed, claimed')
@@ -215,7 +208,7 @@ async function incrementQuestProgress(
         .eq('period_start', periodStart)
         .maybeSingle();
 
-      if (existing?.completed) continue; // already done
+      if (existing?.completed) continue;
 
       const newProgress = (existing?.progress ?? 0) + 1;
       const isNowDone   = newProgress >= quest.target;
@@ -239,14 +232,13 @@ async function incrementQuestProgress(
     }
   } catch (e) {
     console.error('Quest progress update failed:', e);
-    // Non-fatal — don't fail the main request
   }
 }
 
 function getWeekStart(): Date {
   const d = new Date();
   const day = d.getUTCDay();
-  const diff = d.getUTCDate() - day + (day === 0 ? -6 : 1); // Monday
+  const diff = d.getUTCDate() - day + (day === 0 ? -6 : 1);
   d.setUTCDate(diff);
   d.setUTCHours(0, 0, 0, 0);
   return d;
