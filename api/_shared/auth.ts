@@ -1,7 +1,8 @@
 // api/_shared/auth.ts
 // Authentication guard — extracts and verifies JWT from the Authorization header.
 
-import { adminClient } from './supabase';
+import { adminClient } from './supabase.ts';
+
 
 export class AuthError extends Error {
   constructor(message: string) {
