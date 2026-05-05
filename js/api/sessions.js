@@ -4,7 +4,8 @@
 import { getSupabase, edgeFn, APIError } from './client.js';
 
 export const sessions = {
-  async book(payload) { return edgeFn('book-session-fixed', payload); },
+  async book(payload) { return edgeFn('book-session-v4', payload); },
+
 
 
   async heartbeat(bookingId) {
