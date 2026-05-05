@@ -2,11 +2,12 @@
 // Creates a booking and atomically locks coins in escrow.
 // Validates: slot availability, learner balance, no double-booking, no self-booking.
 
-import { handleOptions, ok, err } from './_shared/responses.ts';
-import { adminClient } from './_shared/supabase.ts';
-import { requireAuth, AuthError } from './_shared/auth.ts';
-import { rateLimit, debitCoins } from './_shared/ledger.ts';
-import { sanitizeText, validateUUID } from './_shared/validation.ts';
+import { handleOptions, ok, err } from './_shared/responses';
+import { adminClient } from './_shared/supabase';
+import { requireAuth, AuthError } from './_shared/auth';
+import { rateLimit, debitCoins } from './_shared/ledger';
+import { sanitizeText, validateUUID } from './_shared/validation';
+
 
 
 export const config = { runtime: 'edge' };

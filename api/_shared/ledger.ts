@@ -2,7 +2,8 @@
 // Coin (credit/debit) and XP helpers.
 // All operations use SERVICE_ROLE — call only from Edge Functions.
 
-import { adminClient } from './supabase.ts';
+import { adminClient } from './supabase';
+
 
 
 /**
