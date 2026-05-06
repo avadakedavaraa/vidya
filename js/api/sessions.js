@@ -4,7 +4,7 @@
 import { getSupabase, edgeFn, APIError } from './client.js';
 
 export const sessions = {
-  async book(payload) { return edgeFn('book-session-v4', payload); },
+  async book(payload) { return edgeFn('book-session', payload); },
 
 
 
@@ -20,7 +20,7 @@ export const sessions = {
   async list(status = null) {
     const supabase = getSupabase();
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return { upcoming: [], completed: [] };
+    if (!user) return { upcoming: [], completed: [], cancelled: [] };
     let query = supabase.from('bookings').select(`id, skill_name, topic, scheduled_date, start_time, duration_mins, coin_rate, escrow_amount, status, actual_start_at, actual_end_at, learner_rating, reviewed_at, learner:learner_id(id, name, avatar_color), teacher:teacher_id(id, name, avatar_color)`).or(`learner_id.eq.${user.id},teacher_id.eq.${user.id}`).order('scheduled_date', { ascending: false });
     if (status) query = query.eq('status', status);
     const { data, error } = await query;
