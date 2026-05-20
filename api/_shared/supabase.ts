@@ -11,7 +11,10 @@ import { createClient } from '@supabase/supabase-js';
  * Environment-agnostic helper to get configuration values.
  * Supports Deno (Supabase Edge Functions) and Node.js (Vercel).
  */
-function getEnv(key: string): string | undefined {
+export function getEnv(key: string): string | undefined {
+
+
+
   // Access global context safely across Deno and Node.js
   const g = globalThis as any;
   

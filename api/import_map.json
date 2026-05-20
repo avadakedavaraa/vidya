@@ -1,0 +1,11 @@
+{
+  "imports": {
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2",
+    "./_shared/responses": "./_shared/responses.ts",
+    "./_shared/supabase": "./_shared/supabase.ts",
+    "./_shared/auth": "./_shared/auth.ts",
+    "./_shared/ledger": "./_shared/ledger.ts",
+    "./_shared/validation": "./_shared/validation.ts",
+    "./supabase": "./supabase.ts"
+  }
+}

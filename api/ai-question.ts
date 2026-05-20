@@ -4,6 +4,8 @@
 
 import { handleOptions, ok, err } from './_shared/responses';
 import { requireAuth, AuthError } from './_shared/auth';
+import { getEnv } from './_shared/supabase';
+
 
 export const config = { runtime: 'edge' };
 
@@ -39,7 +41,8 @@ export default async function (req: Request) {
     return err('prompt too long (max 4000 chars)', req, 400);
   }
 
-  const apiKey = process.env['NVIDIA_API_KEY'];
+  const apiKey = getEnv('NVIDIA_API_KEY');
+
   if (!apiKey) {
     return err('AI service not configured', req, 503);
   }

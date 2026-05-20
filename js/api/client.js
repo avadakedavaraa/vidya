@@ -48,13 +48,24 @@ export async function edgeFn(endpoint, payload = {}, requireAuth = true) {
   }
 
   try {
-    const url = `${window.APP_CONFIG.SUPABASE_URL}/functions/v1/${endpoint}`;
+    const url = `/api/${endpoint}`;
     const res = await fetch(
       url,
       { method: 'POST', headers, body: JSON.stringify(payload) }
     );
-    const data = await res.json();
-    if (!res.ok) throw new APIError(data.error || 'Request failed', res.status);
+    const contentType = res.headers.get('content-type') || '';
+    const data = contentType.includes('application/json')
+      ? await res.json()
+      : null;
+
+    if (!res.ok) {
+      const message = data?.error || (
+        res.status === 404
+          ? 'API route not found. Start the app with `npx vercel dev` so /api functions are available.'
+          : 'Request failed'
+      );
+      throw new APIError(message, res.status);
+    }
     return data;
   } catch (err) {
     if (err instanceof APIError) throw err;

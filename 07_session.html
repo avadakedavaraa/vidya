@@ -10,6 +10,9 @@
       href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap"
       rel="stylesheet"
     />
+    <script src="https://meet.jit.si/external_api.js"></script>
+    <link rel="stylesheet" href="vs-code-editor.css" />
+    <script src="vs-code-editor.js"></script>
     <style>
       *,
       *::before,
@@ -1275,64 +1278,8 @@
         </div>
 
         <!-- VIDEOS -->
-        <div class="videos-container">
-          <!-- Teacher (main) -->
-          <div class="video-cell main" style="min-height: 220px">
-            <div class="video-placeholder" style="height: 100%">
-              <div
-                class="vp-avatar"
-                id="teacherAvatar"
-                style="background: var(--indigo)"
-              >
-                ?
-              </div>
-              <div class="vp-name" id="teacherName">...</div>
-              <div class="vp-role" id="teacherCollege">...</div>
-              <div
-                style="
-                  font-size: 0.75rem;
-                  color: rgba(255, 255, 255, 0.3);
-                  margin-top: 0.3rem;
-                "
-              >
-                📺 Jitsi video stream here
-              </div>
-            </div>
-            <div class="name-tag" id="teacherNameTag">... · Teacher</div>
-            <div class="mic-indicator">
-              <div class="mic-bars">
-                <div class="mic-bar" style="height: 6px"></div>
-                <div class="mic-bar" style="height: 10px"></div>
-                <div class="mic-bar" style="height: 14px"></div>
-                <div class="mic-bar" style="height: 8px"></div>
-              </div>
-              Speaking
-            </div>
-          </div>
-          <!-- Self (you) -->
-          <div class="video-cell" style="min-height: 140px">
-            <div class="video-placeholder" style="height: 100%">
-              <div
-                class="vp-avatar"
-                id="myAvatar"
-                style="
-                  background: var(--indigo);
-                  width: 52px;
-                  height: 52px;
-                  font-size: 1rem;
-                "
-              >
-                ?
-              </div>
-              <div class="vp-name" id="myName" style="font-size: 0.85rem">
-                You
-              </div>
-            </div>
-            <div class="name-tag" id="myNameTag">... · You</div>
-            <div class="mic-indicator" id="myMic">
-              <span class="mic-muted">🎤 Muted</span>
-            </div>
-          </div>
+        <div class="videos-container" id="jitsi-container" style="display: block; padding: 0;">
+          <!-- Jitsi iframe will be injected here -->
         </div>
 
         <!-- ESCROW BAR -->
@@ -1388,19 +1335,32 @@
           <div style="position: relative">
             <button
               class="ctrl-btn normal"
-              onclick="
-                showToast(
-                  '✋',
-                  'Hand raised — ' +
-                    (window._teacherFirstName || 'Teacher') +
-                    ' will see it!',
-                )
-              "
+              onclick="toggleRaiseHand()"
               title="Raise hand"
             >
               ✋
             </button>
             <span class="ctrl-label">Raise Hand</span>
+          </div>
+          <div style="position: relative">
+            <button
+              class="ctrl-btn normal"
+              onclick="toggleBlur()"
+              title="Blur Background"
+            >
+              🌫️
+            </button>
+            <span class="ctrl-label">Blur</span>
+          </div>
+          <div style="position: relative">
+            <button
+              class="ctrl-btn normal"
+              onclick="toggleTileView()"
+              title="Grid View"
+            >
+              🔲
+            </button>
+            <span class="ctrl-label">Grid View</span>
           </div>
           <div style="position: relative">
             <button
@@ -1436,6 +1396,9 @@
             </button>
             <button class="cp-tab" id="tabStats" onclick="switchCpTab('stats')">
               Stats
+            </button>
+            <button class="cp-tab" id="tabCode" onclick="switchCpTab('code')">
+              Code
             </button>
           </div>
           <button
@@ -1530,10 +1493,15 @@
           </div>
           <div class="stat-row">
             <span class="stat-row-label">Connection quality</span
-            ><span class="stat-row-val" style="color: var(--teal)"
+            ><span class="stat-row-val" id="statConnection" style="color: var(--teal)"
               >Excellent</span
             >
           </div>
+        </div>
+
+        <!-- CODE EDITOR -->
+        <div class="code-panel" id="codePanel" style="display: none; flex: 1; flex-direction: column; overflow: hidden; padding-top: 1rem;">
+          <div id="vs-editor-container" style="flex: 1; min-height: 300px; width: 100%;"></div>
         </div>
       </div>
     </div>
@@ -1614,6 +1582,46 @@
           appendMessage("sys", "Session ID missing — using preview mode.");
         }
 
+        // Initialize Jitsi
+        const domain = 'meet.jit.si';
+        const options = {
+            roomName: 'Vidyasetu-Session-' + (sessionId || 'Preview' + Math.floor(Math.random()*1000)),
+            width: '100%',
+            height: '100%',
+            parentNode: document.querySelector('#jitsi-container'),
+            userInfo: {
+                displayName: (typeof me !== "undefined" && me && me.name) ? me.name : "You"
+            },
+            configOverwrite: { 
+                startWithAudioMuted: false, 
+                startWithVideoMuted: false,
+                prejoinPageEnabled: false
+            },
+            interfaceConfigOverwrite: {
+                TOOLBAR_BUTTONS: [] // Hide Jitsi's default toolbar since we have our own
+            }
+        };
+        window.jitsiApi = new JitsiMeetExternalAPI(domain, options);
+
+        // Listen for Jitsi events to sync with our UI if needed
+        window.jitsiApi.addEventListener('audioMuteStatusChanged', (payload) => {
+            // Internal mic toggle synced
+        });
+
+        window.jitsiApi.addEventListener('participantLeft', (payload) => {
+            showAttentionAlert(true); // Escrow paused
+            document.getElementById('statAttention').textContent = "50%";
+        });
+        
+        window.jitsiApi.addEventListener('participantJoined', (payload) => {
+            dismissAlert();
+            document.getElementById('statAttention').textContent = "98%";
+        });
+        
+        window.jitsiApi.addEventListener('endpointTextMessageReceived', () => {
+            document.getElementById('statAttention').textContent = "100%";
+        });
+
         appendMessage("sys", "Secure connection established.");
         appendMessage("sys", "Coins locked in escrow.");
         startTimer();
@@ -1642,7 +1650,7 @@
         const sessionId = urlParams.get("id");
 
         timerInterval = setInterval(() => {
-          elapsedSeconds++;
+          if (!isPaused) elapsedSeconds++;
           updateTimer();
           updateEscrow();
 
@@ -1658,12 +1666,10 @@
       // ─── CONTROLS ───
       function toggleMic() {
         micOn = !micOn;
+        if (window.jitsiApi) window.jitsiApi.executeCommand('toggleAudio');
         const btn = document.getElementById("micBtn");
         btn.textContent = micOn ? "🎤" : "🔇";
         btn.className = "ctrl-btn " + (micOn ? "normal" : "active");
-        document.getElementById("myMic").innerHTML = micOn
-          ? `<div class="mic-bars"><div class="mic-bar"></div><div class="mic-bar"></div><div class="mic-bar"></div><div class="mic-bar"></div></div> Speaking`
-          : `<span class="mic-muted">🎤 Muted</span>`;
         showToast(
           micOn ? "🎤" : "🔇",
           micOn ? "Microphone on" : "Microphone muted",
@@ -1672,6 +1678,7 @@
 
       function toggleCam() {
         camOn = !camOn;
+        if (window.jitsiApi) window.jitsiApi.executeCommand('toggleVideo');
         const btn = document.getElementById("camBtn");
         btn.textContent = camOn ? "📹" : "📷";
         btn.className = "ctrl-btn " + (camOn ? "normal" : "active");
@@ -1680,6 +1687,7 @@
 
       function toggleScreen() {
         screenOn = !screenOn;
+        if (window.jitsiApi) window.jitsiApi.executeCommand('toggleShareScreen');
         const btn = document.getElementById("screenBtn");
         btn.className = "ctrl-btn " + (screenOn ? "active" : "normal");
         showToast(
@@ -1688,13 +1696,39 @@
         );
       }
 
+      function toggleRaiseHand() {
+        if (window.jitsiApi) window.jitsiApi.executeCommand('toggleRaiseHand');
+        showToast('✋', 'Hand raised — ' + (window._teacherFirstName || 'Teacher') + ' will see it!');
+      }
+
+      function toggleBlur() {
+        if (window.jitsiApi) window.jitsiApi.executeCommand('toggleBackgroundBlur');
+        showToast('🌫️', 'Toggled background blur');
+      }
+
+      function toggleTileView() {
+        if (window.jitsiApi) window.jitsiApi.executeCommand('toggleTileView');
+        showToast('🔲', 'Toggled grid view');
+      }
+
       // ─── ATTENTION ───
-      function showAttentionAlert() {
-        document.getElementById("attentionAlert").classList.add("show");
-        showToast("👁️", "Attention alert sent — coins paused");
+      let isPaused = false;
+      function showAttentionAlert(isDisconnect = false) {
+        isPaused = true;
+        const aa = document.getElementById("attentionAlert");
+        aa.classList.add("show");
+        if (isDisconnect) {
+            aa.querySelector('.aa-text').textContent = "Participant disconnected. Escrow paused.";
+        } else {
+            aa.querySelector('.aa-text').textContent = "Eye contact lost — are you still there? Coins are paused.";
+        }
+        document.getElementById("escrowFill").style.background = "linear-gradient(90deg, #f5a623, #e84040)";
+        showToast(isDisconnect ? "🔌" : "👁️", isDisconnect ? "Participant left" : "Attention alert sent — coins paused");
       }
       function dismissAlert() {
+        isPaused = false;
         document.getElementById("attentionAlert").classList.remove("show");
+        document.getElementById("escrowFill").style.background = "linear-gradient(90deg, var(--teal), var(--coin))";
       }
 
       // ─── CHAT ───
@@ -1787,8 +1821,9 @@
       }
 
       // ─── PANEL TABS ───
+      let codeEditorInit = false;
       function switchCpTab(tab) {
-        ["chat", "notes", "stats"].forEach((t) => {
+        ["chat", "notes", "stats", "code"].forEach((t) => {
           document
             .getElementById("tab" + t.charAt(0).toUpperCase() + t.slice(1))
             .classList.toggle("active", t === tab);
@@ -1796,6 +1831,7 @@
             chat: "chatMessages",
             notes: "notesPanel",
             stats: "statsPanel",
+            code: "codePanel"
           };
           if (panels[t]) {
             const el = document.getElementById(panels[t]);
@@ -1806,15 +1842,23 @@
         });
         document.getElementById("chatInputArea").style.display =
           tab === "chat" ? "" : "none";
-        if (tab === "notes") {
-          document.getElementById("notesPanel").style.display = "flex";
-        }
-        if (tab === "stats") {
-          document.getElementById("statsPanel").style.display = "flex";
-        }
+        
+        if (tab === "notes") document.getElementById("notesPanel").style.display = "flex";
+        if (tab === "stats") document.getElementById("statsPanel").style.display = "flex";
         if (tab === "chat") {
           document.getElementById("chatMessages").style.display = "flex";
           document.getElementById("chatBadge").style.display = "none";
+        }
+        if (tab === "code") {
+          document.getElementById("codePanel").style.display = "flex";
+          if (!codeEditorInit && typeof VSCodeEditor !== "undefined") {
+              codeEditorInit = true;
+              window.sessionEditor = new VSCodeEditor("vs-editor-container", {
+                  language: "javascript",
+                  theme: document.body.parentElement.getAttribute("data-theme") === "dark" ? "vs-dark" : "vs",
+                  value: "// Start writing code here...\nfunction hello() {\n  console.log('Hello from Vidyasetu Code Share');\n}\n"
+              });
+          }
         }
       }
 
@@ -1920,6 +1964,7 @@
         // Fix panel initial states
         document.getElementById("notesPanel").style.display = "none";
         document.getElementById("statsPanel").style.display = "none";
+        if (document.getElementById("codePanel")) document.getElementById("codePanel").style.display = "none";
         document.getElementById("chatMessages").style.display = "flex";
         document.getElementById("chatMessages").style.flexDirection = "column";
         document.getElementById("chatMessages").style.gap = ".75rem";

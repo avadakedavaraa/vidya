@@ -5,6 +5,13 @@
 
 echo "⚡ Generating config.js from environment variables..."
 
+if [ -f ".env.local" ] && [ "$VERCEL_ENV" != "production" ]; then
+  echo "ℹ️  Loading local environment overrides from .env.local..."
+  set -a
+  . ./.env.local
+  set +a
+fi
+
 if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ] || [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
   echo "❌ ERROR: Missing required environment variables!"
   echo "   Set SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY in Vercel dashboard."
