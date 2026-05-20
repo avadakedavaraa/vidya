@@ -172,6 +172,15 @@ export const chat = {
         },
         (payload) => onMessage(payload.new),
       )
+      .on(
+        "broadcast",
+        { event: "chat_event" },
+        (payload) => {
+          if (payload && payload.payload) {
+            onMessage(payload.payload);
+          }
+        }
+      )
       .subscribe();
   },
 

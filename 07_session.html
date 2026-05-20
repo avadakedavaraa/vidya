@@ -690,7 +690,68 @@
         overflow: hidden;
       }
       .code-pane.visible { display: flex; }
-      #vs-editor-container { flex: 1; min-height: 0; width: 100%; }
+      #vs-editor-container {
+        flex: 1;
+        min-height: 0;
+        width: 100%;
+        overflow: hidden;
+      }
+
+      /* Output Console styling */
+      .code-terminal-container {
+        border-top: 1px solid var(--border);
+        background: #0a0a0c;
+        display: flex;
+        flex-direction: column;
+        height: 180px;
+        min-height: 140px;
+      }
+      .terminal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.5rem 0.9rem;
+        background: #141416;
+        border-bottom: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .run-code-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        background: #10b981;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 0.35rem 0.75rem;
+        font-family: inherit;
+        font-size: 0.72rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .run-code-btn:hover {
+        background: #059669;
+        transform: translateY(-1px);
+      }
+      .terminal-body {
+        flex: 1;
+        margin: 0;
+        padding: 0.65rem 0.8rem;
+        font-family: var(--mono);
+        font-size: 0.78rem;
+        color: #10b981;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        background: #09090b;
+      }
+      .terminal-body.error {
+        color: var(--danger);
+      }
 
       /* ── END SESSION MODAL ── */
       .modal-overlay {
@@ -1040,6 +1101,15 @@
           <!-- Code pane -->
           <div class="code-pane" id="codePane" role="tabpanel">
             <div id="vs-editor-container"></div>
+            <div class="code-terminal-container">
+              <div class="terminal-header">
+                <span>Output Console</span>
+                <button class="run-code-btn" onclick="runSessionCode()">
+                  <span>▶</span> Run Code
+                </button>
+              </div>
+              <pre class="terminal-body" id="codeTerminal">Console idle. Click "Run Code" to execute JavaScript code.</pre>
+            </div>
           </div>
 
         </div>
@@ -1063,49 +1133,142 @@
       let rating           = 0;
       let codeEditorInit   = false;
 
+      // Supabase & Session globals
+      let sessionId        = null;
+      let teacherId        = null;
+      let me               = null;
+      let chatChannel      = null;  // raw Supabase channel for send()
+      let chatSubReady     = false; // true once subscription is SUBSCRIBED
+
+      // Realtime & de-duplication cache
+      const processedMessages = new Set();
+
+      // Debounce utility
+      function debounce(func, delay) {
+        let timeout;
+        return function(...args) {
+          clearTimeout(timeout);
+          timeout = setTimeout(() => func.apply(this, args), delay);
+        };
+      }
+
+      // Safely broadcast on channel only when it's subscribed
+      function channelSend(payload) {
+        if (chatChannel && chatSubReady) {
+          chatChannel.send({
+            type: 'broadcast',
+            event: 'chat_event',
+            payload
+          }).catch(e => console.warn('Broadcast send failed:', e));
+        }
+      }
+
       /* ─────────────────────────────────────
          INIT SESSION
       ───────────────────────────────────── */
       async function initSession() {
-        const params    = new URLSearchParams(window.location.search);
-        const sessionId = params.get('id');
-        const teacherId = params.get('teacher');
+        const params = new URLSearchParams(window.location.search);
+        sessionId    = params.get('id');
+        teacherId    = params.get('teacher');
 
-        // ── Load current user ──
-        let me = null;
+        // ── Load current user (prefer async Supabase user, fallback to localStorage snapshot) ──
         try {
-          me = (typeof VS !== 'undefined' && VS.auth) ? VS.auth.currentUser() : null;
+          if (typeof VS !== 'undefined' && VS.auth) {
+            const supaUser = await VS.auth.getUser().catch(() => null);
+            if (supaUser) {
+              // Build a minimal me object from Supabase user
+              const snap = VS.auth.currentUser();
+              me = { id: supaUser.id, name: snap ? snap.name : (supaUser.email || 'You') };
+            } else {
+              me = VS.auth.currentUser();
+            }
+          }
         } catch(e) { console.warn('Could not load user:', e); }
 
-        // ── Load teacher ──
-        if (teacherId) {
+        // ── Load booking details & determine peer ──
+        let peerName = 'Partner';
+        let peerColor = 'var(--indigo)';
+        let peerCollege = 'Verified';
+        let sessionTopic = 'Vidyasetu Live Session';
+        let isTeacher = false;
+
+        if (sessionId && window.VS && window.VS.sessions) {
+          try {
+            const booking = await VS.sessions.get(sessionId);
+            if (booking) {
+              sessionTopic = booking.topic || booking.skill_name || 'Live Session';
+              isTeacher = me && booking.teacher_id === me.id;
+
+              // The peer is the other party
+              const peer = isTeacher ? booking.learner : booking.teacher;
+              if (peer) {
+                peerName    = peer.name || (isTeacher ? 'Student' : 'Teacher');
+                peerColor   = peer.avatar_color || (isTeacher ? '#14b8a6' : 'var(--indigo)');
+                peerCollege = peer.college || (isTeacher ? 'Enrolled Student' : 'Verified Teacher');
+              }
+
+              // For backwards compat: teacherId from URL OR from booking
+              if (!teacherId) teacherId = booking.teacher_id;
+            }
+          } catch(e) { console.warn('Could not load booking details:', e); }
+        }
+
+        // Fallback: try loading teacher from URL param
+        if (teacherId && peerName === 'Partner') {
           try {
             const t = await VS.teachers.get(teacherId);
             if (t) {
-              window._teacherName      = t.name;
-              window._teacherFirstName = (t.name || '').split(' ')[0];
-
-              document.getElementById('teacherAvatar').textContent =
-                (t.name || '??').split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
-              document.getElementById('teacherAvatar').style.background =
-                t.avatar_color || 'var(--indigo)';
-
-              document.getElementById('teacherName').textContent    = t.name || 'Teacher';
-              document.getElementById('teacherCollege').textContent  = t.college || 'Verified Teacher';
-              document.getElementById('typingName').textContent      = window._teacherFirstName + ' is typing…';
-              document.getElementById('statTeacherName').textContent = window._teacherFirstName;
-              document.getElementById('rateTeacherName').textContent = t.name;
-
-              document.getElementById('stTitle').textContent  = 'Session with ' + window._teacherFirstName;
-              document.getElementById('stTopic').textContent  = t.college || 'Vidyasetu Live Session';
+              peerName    = t.name || 'Teacher';
+              peerColor   = t.avatar_color || 'var(--indigo)';
+              peerCollege = t.college || 'Verified Teacher';
             }
           } catch(e) { console.warn('Could not load teacher:', e); }
         }
+
+        // Update peer info in UI
+        const peerInitials = peerName.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+        window._teacherName      = peerName;
+        window._teacherFirstName = peerName.split(' ')[0];
+        document.getElementById('teacherAvatar').textContent  = peerInitials;
+        document.getElementById('teacherAvatar').style.background = peerColor;
+        document.getElementById('teacherName').textContent    = peerName;
+        document.getElementById('teacherCollege').textContent  = peerCollege;
+        document.getElementById('typingName').textContent     = window._teacherFirstName + ' is typing…';
+        document.getElementById('statTeacherName').textContent = window._teacherFirstName;
+        document.getElementById('rateTeacherName').textContent = peerName;
+        document.getElementById('stTitle').textContent  = (isTeacher ? 'Teaching ' : 'Session with ') + window._teacherFirstName;
+        document.getElementById('stTopic').textContent  = sessionTopic;
 
         if (!sessionId && !teacherId) {
           appendMessage('sys', 'Preview mode — session ID not set.');
           document.getElementById('stTitle').textContent = 'Preview Session';
           document.getElementById('stTopic').textContent  = 'Test your setup';
+        }
+
+        // ── Initialize Collaborative Code Editor ──
+        if (typeof VSCodeEditor !== 'undefined') {
+          codeEditorInit = true;
+          window.sessionEditor = new VSCodeEditor('vs-editor-container', {
+            language: 'javascript',
+            theme: 'vs-dark',
+            placeholder: '// Collaborative code editor\n// Write and share JavaScript code live!\n\nfunction greet(name) {\n  return `Hello, ${name}!`;\n}\n\nconsole.log(greet("Vidyasetu"));\n',
+            onChange: debounce(async (val) => {
+              if (sessionId && window.VS && window.VS.chat) {
+                try {
+                  channelSend({
+                    sender_id: me ? me.id : 'anonymous',
+                    content: val,
+                    msg_type: 'code',
+                    created_at: new Date().toISOString()
+                  });
+                  // Save in DB asynchronously (fire-and-forget, best-effort)
+                  VS.chat.send(sessionId, val, 'code').catch(() => {});
+                } catch(e) {
+                  console.warn('Failed to sync code:', e);
+                }
+              }
+            }, 800)
+          });
         }
 
         // ── Initialize Jitsi ──
@@ -1134,9 +1297,115 @@
           console.warn('VS.jitsi service not loaded — check api.js import');
         }
 
+        // ── Subscribe to Realtime Channel FIRST, then load history ──
+        const notesKey = sessionId ? ('vs_session_notes_' + sessionId) : 'vs_session_notes_preview';
+        let latestCode = null;
+        let latestNotes = null;
+
+        if (sessionId && window.VS && window.VS.chat) {
+          // Create the Supabase channel and subscribe — keep reference for send()
+          const supabase = window.getSupabase ? window.getSupabase() : null;
+          if (supabase) {
+            chatChannel = supabase
+              .channel(`chat:${sessionId}`)
+              .on(
+                'postgres_changes',
+                { event: 'INSERT', schema: 'public', table: 'chat_messages', filter: `booking_id=eq.${sessionId}` },
+                (payload) => handleIncomingMsg(payload.new)
+              )
+              .on(
+                'broadcast',
+                { event: 'chat_event' },
+                (payload) => {
+                  if (payload && payload.payload) handleIncomingMsg(payload.payload);
+                }
+              )
+              .subscribe((status) => {
+                if (status === 'SUBSCRIBED') {
+                  chatSubReady = true;
+                  console.log('[chat] Realtime channel SUBSCRIBED ✓');
+                } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+                  chatSubReady = false;
+                  console.warn('[chat] Channel status:', status);
+                }
+              });
+          }
+
+          // Load history AFTER starting subscription (messages arriving during load get de-duped)
+          try {
+            const history = await VS.chat.history(sessionId);
+            document.getElementById('chatMessages').innerHTML = '';
+            history.forEach(msg => {
+              const isMine = me && msg.sender_id === me.id;
+              const msgKey = msg.id || (msg.sender_id + '_' + msg.created_at);
+              processedMessages.add(msgKey);
+
+              if (msg.msg_type === 'text') {
+                appendMessage(isMine ? 'mine' : 'theirs', msg.content, isMine ? 'You' : window._teacherFirstName, msgKey);
+              } else if (msg.msg_type === 'code') {
+                latestCode = msg.content;
+              } else if (msg.msg_type === 'notes' && isMine) {
+                latestNotes = msg.content;
+              }
+            });
+          } catch(e) { console.warn('Could not load history:', e); }
+
+          // Restore code editor state
+          if (latestCode !== null && window.sessionEditor) {
+            window.sessionEditor.setValue(latestCode);
+          }
+
+          // Restore notes: DB > localStorage > empty
+          const localNotes = localStorage.getItem(notesKey);
+          const finalNotes = (latestNotes !== null) ? latestNotes : (localNotes || '');
+          document.getElementById('sessionNotes').value = finalNotes;
+          if (finalNotes) localStorage.setItem(notesKey, finalNotes);
+
+        } else {
+          // Preview mode — localStorage-only notes
+          const storedNotes = localStorage.getItem(notesKey);
+          if (storedNotes) document.getElementById('sessionNotes').value = storedNotes;
+        }
+
+        // Auto-save notes (both localStorage + DB)
+        document.getElementById('sessionNotes').addEventListener('input', debounce(async (e) => {
+          const val = e.target.value;
+          localStorage.setItem(notesKey, val);
+          if (sessionId && window.VS && window.VS.chat && me) {
+            VS.chat.send(sessionId, val, 'notes').catch(err =>
+              console.warn('Failed to auto-save notes to database:', err)
+            );
+          }
+        }, 1200));
+
         appendMessage('sys', '🔒 Secure channel established');
         appendMessage('sys', '🪙 Coins locked in escrow');
         startTimer(sessionId);
+      }
+
+      // Centralised incoming-message handler (called by both broadcast and postgres_changes)
+      function handleIncomingMsg(msg) {
+        if (!msg) return;
+        const isMine = me && msg.sender_id === me.id;
+        if (isMine) return; // Skip messages we sent ourselves
+
+        const msgKey = msg.id || msg.client_msg_id || (msg.sender_id + '_' + (msg.content || '').slice(0,20) + '_' + msg.created_at);
+        if (processedMessages.has(msgKey)) return;
+        processedMessages.add(msgKey);
+
+        if (msg.msg_type === 'text' || !msg.msg_type) {
+          appendMessage('theirs', msg.content, window._teacherFirstName || 'Partner', msgKey);
+          // Flash chat badge if not on chat tab
+          if (!document.getElementById('tabChat').classList.contains('active')) {
+            document.getElementById('chatBadge').classList.add('show');
+          }
+        } else if (msg.msg_type === 'code') {
+          if (window.sessionEditor) {
+            const current = window.sessionEditor.getValue();
+            if (current !== msg.content) window.sessionEditor.setValue(msg.content);
+          }
+        }
+        // msg_type === 'notes' from peer is ignored (notes are private)
       }
 
       /* ─────────────────────────────────────
@@ -1254,46 +1523,51 @@
         el.style.height = Math.min(el.scrollHeight, 90) + 'px';
       }
 
-      function sendMessage() {
+      async function sendMessage() {
         const inp  = document.getElementById('chatInput');
         const text = inp.value.trim();
         if (!text) return;
-        appendMessage('mine', text);
+
+        const clientMsgId = 'msg_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now();
+        // Mark this message as processed so we don't show it again when the broadcast or CDC bounces back
+        processedMessages.add(clientMsgId);
+
+        appendMessage('mine', text, 'You', clientMsgId);
         inp.value = '';
         inp.style.height = 'auto';
         msgCount++;
         document.getElementById('statMsgs').textContent = msgCount;
-        setTimeout(() => simulateReply(text), 1600 + Math.random() * 1200);
+
+        if (sessionId && window.VS && window.VS.chat) {
+          try {
+            // Broadcast instantly to the peer via Supabase Realtime Broadcast
+            channelSend({
+              client_msg_id: clientMsgId,
+              sender_id: me ? me.id : 'anonymous',
+              content: text,
+              msg_type: 'text',
+              created_at: new Date().toISOString()
+            });
+            // Also persist to database (for history on refresh)
+            await VS.chat.send(sessionId, text, 'text');
+          } catch(e) {
+            console.error('Failed to send chat:', e);
+            showToast('⚠️', 'Failed to send: ' + e.message);
+          }
+        }
       }
 
-      const REPLIES = [
-        "Great question! Let me demonstrate that live.",
-        "Exactly right — you're getting it! 🎉",
-        "Let me draw a quick diagram for that.",
-        "Yes! That's the key insight. Try coding it yourself now.",
-        "I made the same mistake learning. Here's the fix:",
-        "Want me to slow down, or should we move on?",
-      ];
-      let replyIdx = 0;
-
-      function simulateReply() {
-        showTyping();
-        setTimeout(() => {
-          hideTyping();
-          appendMessage('theirs', REPLIES[replyIdx % REPLIES.length], window._teacherName || 'Teacher');
-          replyIdx++;
-        }, 1500);
-      }
 
       function showTyping() { document.getElementById('typingIndicator').style.display = 'flex'; scrollChat(); }
       function hideTyping() { document.getElementById('typingIndicator').style.display = 'none'; }
 
-      function appendMessage(type, text, sender) {
+      function appendMessage(type, text, sender, msgKey = '') {
         const msgs = document.getElementById('chatMessages');
         const now  = new Date();
         const time = now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
         const el   = document.createElement('div');
         el.className = 'msg ' + type;
+        if (msgKey) el.setAttribute('data-msg-key', msgKey);
         el.innerHTML =
           (sender ? `<div class="msg-sender">${sender}</div>` : '') +
           `<div class="msg-bubble">${text}</div>` +
@@ -1302,6 +1576,7 @@
           const sysel = document.createElement('div');
           sysel.className = 'sys-msg';
           sysel.textContent = text;
+          if (msgKey) sysel.setAttribute('data-msg-key', msgKey);
           msgs.appendChild(sysel);
         } else {
           msgs.appendChild(el);
@@ -1340,18 +1615,66 @@
             pane.classList.toggle('visible', isActive);
           } else if (t === 'code') {
             pane.classList.toggle('visible', isActive);
-            if (isActive && !codeEditorInit && typeof VSCodeEditor !== 'undefined') {
-              codeEditorInit = true;
-              window.sessionEditor = new VSCodeEditor('vs-editor-container', {
-                language: 'javascript',
-                theme: 'vs-dark',
-                value: '// Collaborative code editor\n// Write and share code live with your teacher!\n\nfunction greet(name) {\n  return `Hello, ${name}!`;\n}\n\nconsole.log(greet("Vidyasetu"));\n'
-              });
-            }
           }
         });
 
         if (tab === 'chat') document.getElementById('chatBadge').classList.remove('show');
+      }
+
+      /* ─────────────────────────────────────
+         CODE EXECUTION (RUN CODE)
+      ───────────────────────────────────── */
+      function runSessionCode() {
+        const terminal = document.getElementById('codeTerminal');
+        if (!window.sessionEditor) return;
+        const code = window.sessionEditor.getValue();
+        
+        terminal.textContent = 'Running code...';
+        terminal.classList.remove('error');
+        
+        const logs = [];
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        const originalInfo = console.info;
+
+        const formatArg = (a) => typeof a === 'object' ? JSON.stringify(a) : String(a);
+        
+        console.log = (...args) => {
+          logs.push(args.map(formatArg).join(' '));
+        };
+        console.error = (...args) => {
+          logs.push('[ERROR] ' + args.map(formatArg).join(' '));
+        };
+        console.warn = (...args) => {
+          logs.push('[WARN] ' + args.map(formatArg).join(' '));
+        };
+        console.info = (...args) => {
+          logs.push('[INFO] ' + args.map(formatArg).join(' '));
+        };
+        
+        try {
+          const result = new Function(code)();
+          
+          console.log = originalLog;
+          console.error = originalError;
+          console.warn = originalWarn;
+          console.info = originalInfo;
+
+          let output = logs.join('\n');
+          if (result !== undefined) {
+            output += (output ? '\n' : '') + `=> ${typeof result === 'object' ? JSON.stringify(result) : result}`;
+          }
+          terminal.textContent = output || 'Code executed successfully (no console output).';
+        } catch (err) {
+          console.log = originalLog;
+          console.error = originalError;
+          console.warn = originalWarn;
+          console.info = originalInfo;
+
+          terminal.textContent = `Runtime Error: ${err.message}`;
+          terminal.classList.add('error');
+        }
       }
 
       /* ─────────────────────────────────────
@@ -1392,11 +1715,11 @@
         if (window.VS && window.VS.jitsi) window.VS.jitsi.dispose();
         closeEndModal();
 
-        const sessionId = new URLSearchParams(window.location.search).get('id');
-        if (sessionId) {
+        const endSessionId = new URLSearchParams(window.location.search).get('id') || sessionId;
+        if (endSessionId) {
           showToast('🔄', 'Finalizing session securely…');
           try {
-            await VS.sessions.complete(sessionId, elapsedSeconds, { rating: rating > 0 ? rating : null });
+            await VS.sessions.complete(endSessionId, elapsedSeconds, { rating: rating > 0 ? rating : null });
             showToast('🎉', 'Session complete! Coins released to ' + (window._teacherFirstName || 'Teacher') + '.');
           } catch(err) {
             console.error(err);
@@ -1445,7 +1768,7 @@
        * Retries every 100ms for up to 8 seconds before giving up.
        */
       function waitForVS(callback, attempts = 0) {
-        if (window.VS && window.VS.jitsi && window.VS.sessions) {
+        if (window.VS && window.VS.jitsi && window.VS.sessions && window.VS.chat && window.VS.auth) {
           callback();
         } else if (attempts > 80) {
           console.error('[session] api.js never exposed window.VS after 8s. Check api.js loads correctly.');

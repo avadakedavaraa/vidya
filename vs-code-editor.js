@@ -7,6 +7,7 @@ class VSCodeEditor {
     this.container = document.getElementById(containerId);
     if (!this.container) throw new Error("Container not found");
 
+    this.options = options;
     this.language = options.language || "javascript";
     this.placeholder = options.placeholder || "// Write your code here...";
 
@@ -341,7 +342,12 @@ class VSCodeEditor {
     });
 
     // Update line numbers and syntax preview on input
-    this.textarea.addEventListener("input", () => this._update());
+    this.textarea.addEventListener("input", () => {
+      this._update();
+      if (this.options && this.options.onChange) {
+        this.options.onChange(this.textarea.value);
+      }
+    });
     this.textarea.addEventListener("scroll", () => {
       this.linesEl.scrollTop = this.textarea.scrollTop;
       this.previewEl.scrollTop = this.textarea.scrollTop;

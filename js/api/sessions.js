@@ -8,6 +8,21 @@ export const sessions = {
     return edgeFn("book-session", payload);
   },
 
+  async get(bookingId) {
+    const supabase = getSupabase();
+    const { data, error } = await supabase
+      .from("bookings")
+      .select(
+        `id, learner_id, teacher_id, skill_name, topic, duration_mins, coin_rate, escrow_amount, status,
+        learner:learner_id(id, name, avatar_color, college),
+        teacher:teacher_id(id, name, avatar_color, college)`
+      )
+      .eq("id", bookingId)
+      .single();
+    if (error) throw new APIError(error.message, 500);
+    return data;
+  },
+
   async heartbeat(bookingId) {
     const sb = getSupabase();
     await sb

@@ -6,7 +6,8 @@
   border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
-  margin-bottom: 1.1rem;
+  height: 100%;
+  margin-bottom: 0;
   transition:
     border-color 0.2s,
     box-shadow 0.2s;
@@ -34,16 +35,19 @@
 .vce-body {
   display: flex;
   position: relative;
+  flex: 1;
+  min-height: 0;
 }
 
 .vce-lines {
   padding: 1rem 0;
   background: rgba(10, 3, 24, 0.6);
   border-right: 1px solid var(--border);
-  overflow: hidden;
+  overflow-y: hidden;
   user-select: none;
   min-width: 38px;
   text-align: right;
+  height: 100%;
 }
 [data-theme="light"] .vce-lines {
   background: rgba(240, 236, 255, 0.6);
@@ -60,7 +64,8 @@
 
 .vce-textarea {
   flex: 1;
-  min-height: 140px;
+  height: 100%;
+  min-height: 0;
   padding: 1rem;
   background: rgba(10, 3, 24, 0.4);
   border: none;
@@ -68,7 +73,7 @@
   font-size: 0.85rem;
   color: #c4b5fd;
   line-height: 1.6;
-  resize: vertical;
+  resize: none;
   outline: none;
   min-width: 0;
   tab-size: 2;
