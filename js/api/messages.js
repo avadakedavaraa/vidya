@@ -134,15 +134,18 @@ export const chat = {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) throw new APIError("Not authenticated", 401);
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("chat_messages")
       .insert({
         booking_id: bookingId,
         sender_id: user.id,
         content,
         msg_type: msgType,
-      });
+      })
+      .select("id")
+      .single();
     if (error) throw new APIError(error.message, 500);
+    return data?.id ?? null;  // Return DB id so callers can de-dupe CDC events
   },
 
   async history(bookingId, limit = 50) {

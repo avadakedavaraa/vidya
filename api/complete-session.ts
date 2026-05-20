@@ -62,12 +62,22 @@ export default async function (req: Request) {
   }
 
   // ─── State check ──────────────────────────────────────
-  if (!["confirmed", "active"].includes(booking.status)) {
+  const joinableStatuses = ["pending", "confirmed", "active", "scheduled", "soon", "tomorrow"];
+  if (!joinableStatuses.includes(booking.status)) {
     return err(
       `Cannot complete session with status: ${booking.status}`,
       req,
       400,
     );
+  }
+
+  // ─── Auto-activate if still pending/confirmed ──────────
+  // Mark as active so heartbeat and other logic works correctly
+  if (["pending", "confirmed", "scheduled", "soon", "tomorrow"].includes(booking.status)) {
+    await db
+      .from("bookings")
+      .update({ status: "active", actual_start_at: new Date(Date.now() - elapsedSecs * 1000).toISOString() })
+      .eq("id", bookingId);
   }
 
   const escrow = Number(booking.escrow_amount);

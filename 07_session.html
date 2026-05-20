@@ -1386,9 +1386,13 @@
       // Centralised incoming-message handler (called by both broadcast and postgres_changes)
       function handleIncomingMsg(msg) {
         if (!msg) return;
-        const isMine = me && msg.sender_id === me.id;
-        if (isMine) return; // Skip messages we sent ourselves
 
+        // Determine our own user ID — prefer me.id, fall back to localStorage snapshot
+        const myId = (me && me.id) || localStorage.getItem('vs_user_id');
+        const isMine = myId && msg.sender_id === myId;
+        if (isMine) return; // Skip echoes of our own messages
+
+        // De-duplicate: check all possible keys (DB id, client_msg_id, or composite)
         const msgKey = msg.id || msg.client_msg_id || (msg.sender_id + '_' + (msg.content || '').slice(0,20) + '_' + msg.created_at);
         if (processedMessages.has(msgKey)) return;
         processedMessages.add(msgKey);
@@ -1529,7 +1533,7 @@
         if (!text) return;
 
         const clientMsgId = 'msg_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now();
-        // Mark this message as processed so we don't show it again when the broadcast or CDC bounces back
+        // Pre-register clientMsgId so broadcast echo is de-duped
         processedMessages.add(clientMsgId);
 
         appendMessage('mine', text, 'You', clientMsgId);
@@ -1548,8 +1552,10 @@
               msg_type: 'text',
               created_at: new Date().toISOString()
             });
-            // Also persist to database (for history on refresh)
-            await VS.chat.send(sessionId, text, 'text');
+            // Persist to database — returns the DB-generated UUID
+            const dbId = await VS.chat.send(sessionId, text, 'text');
+            // Pre-register the DB id so the CDC postgres_changes echo is also de-duped
+            if (dbId) processedMessages.add(dbId);
           } catch(e) {
             console.error('Failed to send chat:', e);
             showToast('⚠️', 'Failed to send: ' + e.message);

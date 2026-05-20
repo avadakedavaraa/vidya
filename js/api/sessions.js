@@ -23,12 +23,30 @@ export const sessions = {
     return data;
   },
 
+  async activate(bookingId) {
+    const sb = getSupabase();
+    // Mark the booking as active (from pending/confirmed) when session starts
+    await sb
+      .from("bookings")
+      .update({
+        status: "active",
+        actual_start_at: new Date().toISOString(),
+        heartbeat_at: new Date().toISOString(),
+      })
+      .eq("id", bookingId)
+      .in("status", ["pending", "confirmed", "scheduled", "soon", "tomorrow"]);
+  },
+
   async heartbeat(bookingId) {
     const sb = getSupabase();
     await sb
       .from("bookings")
-      .update({ heartbeat_at: new Date().toISOString() })
-      .eq("id", bookingId);
+      .update({
+        heartbeat_at: new Date().toISOString(),
+        status: "active",
+      })
+      .eq("id", bookingId)
+      .in("status", ["pending", "confirmed", "scheduled", "soon", "tomorrow"]);
   },
 
   async complete(
