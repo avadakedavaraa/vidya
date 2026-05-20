@@ -831,12 +831,49 @@
           <div>
             <div class="sb-name">Loading...</div>
             <div class="sb-coin">...</div>
-                      <div class="xph-level" style="font-size:0.7rem;color:var(--muted);margin-bottom:0.2rem;font-weight:600">Level 1</div>
-            <div class="xph-bar" style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:0.2rem;width:100%">
-               <div class="xph-fill" style="height:100%;background:var(--coin);width:0%;transition:width 1s"></div>
+            <div
+              class="xph-level"
+              style="
+                font-size: 0.7rem;
+                color: var(--muted);
+                margin-bottom: 0.2rem;
+                font-weight: 600;
+              "
+            >
+              Level 1
             </div>
-            <div class="xph-xp" style="font-size:0.65rem;color:var(--muted);font-family:'JetBrains Mono',monospace">0 / 500 XP</div>
-</div>
+            <div
+              class="xph-bar"
+              style="
+                height: 4px;
+                background: var(--border);
+                border-radius: 2px;
+                overflow: hidden;
+                margin-bottom: 0.2rem;
+                width: 100%;
+              "
+            >
+              <div
+                class="xph-fill"
+                style="
+                  height: 100%;
+                  background: var(--coin);
+                  width: 0%;
+                  transition: width 1s;
+                "
+              ></div>
+            </div>
+            <div
+              class="xph-xp"
+              style="
+                font-size: 0.65rem;
+                color: var(--muted);
+                font-family: &quot;JetBrains Mono&quot;, monospace;
+              "
+            >
+              0 / 500 XP
+            </div>
+          </div>
         </div>
       </div>
     </aside>
@@ -1016,10 +1053,7 @@
         try {
           if (action === "confirm") await VS.sessions.confirm(id);
           else await VS.sessions.cancel(id);
-          showToast(
-            action === "confirm" ? "✅" : "❌",
-            `Session ${action}ed!`,
-          );
+          showToast(action === "confirm" ? "✅" : "❌", `Session ${action}ed!`);
           initTeacherSessions(); // Refresh
         } catch (err) {
           showToast("❌", err.message);
@@ -1096,10 +1130,14 @@
       <div class="sc-bottom">
         <span class="sc-coin">🪙 ${s.coinRate || 0}/hr ${s.status === "completed" ? "earned" : "expected"}</span>
         <div style="display:flex; gap: 8px;">
-          ${s.status === "pending" ? `
+          ${
+            s.status === "pending"
+              ? `
             <button class="sc-btn primary" onclick="handleBookingAction('${s.id}', 'confirm')">Approve ✔</button>
             <button class="sc-btn outline" onclick="handleBookingAction('${s.id}', 'cancel')">Decline ✖</button>
-          ` : ""}
+          `
+              : ""
+          }
           ${["confirmed", "active"].includes(s.status) ? `<button class="sc-btn primary" onclick="window.location.href='07_session.html?id=${s.id}'">Join Room →</button>` : ""}
           <button class="sc-btn outline" onclick="window.location.href='03_dashboard_teacher.html'">Teacher Hub</button>
         </div>

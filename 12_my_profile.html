@@ -898,12 +898,49 @@
           <div>
             <div class="sb-name">Loading...</div>
             <div class="sb-coin">...</div>
-                      <div class="xph-level" style="font-size:0.7rem;color:var(--muted);margin-bottom:0.2rem;font-weight:600">Level 1</div>
-            <div class="xph-bar" style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:0.2rem;width:100%">
-               <div class="xph-fill" style="height:100%;background:var(--coin);width:0%;transition:width 1s"></div>
+            <div
+              class="xph-level"
+              style="
+                font-size: 0.7rem;
+                color: var(--muted);
+                margin-bottom: 0.2rem;
+                font-weight: 600;
+              "
+            >
+              Level 1
             </div>
-            <div class="xph-xp" style="font-size:0.65rem;color:var(--muted);font-family:'JetBrains Mono',monospace">0 / 500 XP</div>
-</div>
+            <div
+              class="xph-bar"
+              style="
+                height: 4px;
+                background: var(--border);
+                border-radius: 2px;
+                overflow: hidden;
+                margin-bottom: 0.2rem;
+                width: 100%;
+              "
+            >
+              <div
+                class="xph-fill"
+                style="
+                  height: 100%;
+                  background: var(--coin);
+                  width: 0%;
+                  transition: width 1s;
+                "
+              ></div>
+            </div>
+            <div
+              class="xph-xp"
+              style="
+                font-size: 0.65rem;
+                color: var(--muted);
+                font-family: &quot;JetBrains Mono&quot;, monospace;
+              "
+            >
+              0 / 500 XP
+            </div>
+          </div>
         </div>
       </div>
     </aside>
@@ -1016,7 +1053,9 @@
                 <span class="sb-label">Teaching (Verified)</span>
               </div>
               <div class="skill-tags" id="teachSkills">
-                <div style="font-size:0.8rem;color:var(--muted)">Loading verified skills...</div>
+                <div style="font-size: 0.8rem; color: var(--muted)">
+                  Loading verified skills...
+                </div>
               </div>
             </div>
             <div class="skill-block">
@@ -1186,9 +1225,6 @@
     </div>
 
     <!-- Add required scripts -->
-    <script src="config.js"></script>
-    <script type="module" src="api.js"></script>
-
     <script>
       // Profile Logic
       async function initProfile() {
@@ -1288,32 +1324,45 @@
 
           if (teachTags) {
             const verifiedSkills = profile.skills.filter(
-              (s) => s.is_teaching && s.tier && s.tier !== "unverified"
+              (s) => s.is_teaching && s.tier && s.tier !== "unverified",
             );
             const unverifiedTeaching = profile.skills.filter(
-              (s) => s.is_teaching && (!s.tier || s.tier === "unverified")
+              (s) => s.is_teaching && (!s.tier || s.tier === "unverified"),
             );
 
             let html = "";
             if (verifiedSkills.length) {
-              html += verifiedSkills.map((s) => {
-                const tierIcon = s.tier === "gold" ? "🥇" : s.tier === "silver" ? "🥈" : "🥉";
-                const tierLabel = s.tier.charAt(0).toUpperCase() + s.tier.slice(1);
-                const skillLabel = s.name.charAt(0).toUpperCase() + s.name.slice(1);
-                return `<div class="skill-tag teach">
+              html += verifiedSkills
+                .map((s) => {
+                  const tierIcon =
+                    s.tier === "gold"
+                      ? "🥇"
+                      : s.tier === "silver"
+                        ? "🥈"
+                        : "🥉";
+                  const tierLabel =
+                    s.tier.charAt(0).toUpperCase() + s.tier.slice(1);
+                  const skillLabel =
+                    s.name.charAt(0).toUpperCase() + s.name.slice(1);
+                  return `<div class="skill-tag teach">
                   <span class="tier-icon">${tierIcon}</span>
                   ${skillLabel} <span style="opacity:0.7;font-size:0.75em">· ${tierLabel}</span>
                 </div>`;
-              }).join("");
+                })
+                .join("");
             }
             if (unverifiedTeaching.length) {
-              html += unverifiedTeaching.map((s) => {
-                const skillLabel = s.name.charAt(0).toUpperCase() + s.name.slice(1);
-                return `<div class="skill-tag" style="opacity:0.6;font-style:italic">⏳ ${skillLabel} (Pending)</div>`;
-              }).join("");
+              html += unverifiedTeaching
+                .map((s) => {
+                  const skillLabel =
+                    s.name.charAt(0).toUpperCase() + s.name.slice(1);
+                  return `<div class="skill-tag" style="opacity:0.6;font-style:italic">⏳ ${skillLabel} (Pending)</div>`;
+                })
+                .join("");
             }
             if (!html) {
-              html = '<div style="font-size:0.8rem;color:var(--muted);padding:0.4rem 0">No verified teaching skills yet. Pass a skill test to get verified!</div>';
+              html =
+                '<div style="font-size:0.8rem;color:var(--muted);padding:0.4rem 0">No verified teaching skills yet. Pass a skill test to get verified!</div>';
             }
             teachTags.innerHTML = html;
           }

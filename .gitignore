@@ -1,4 +1,4 @@
-# Node / build artefacts
+# Node and build output
 node_modules/
 dist/
 build/
@@ -6,13 +6,13 @@ out/
 .next/
 .cache/
 
-# AI Agent folders
+# Agent work folders
 .agent/
 .agents/
 graphify-out/
 session.md
 
-# API keys — NEVER commit these
+# Local secrets
 .env.local
 .env
 config.js
@@ -43,7 +43,7 @@ Thumbs.db
 *.swp
 *.swo
 
-# Project specific ignores
+# Local utility scripts
 add_xp.py
 fix_links.py
 fix_links2.py
@@ -52,6 +52,6 @@ test_db.js
 seed-mcqs*.js
 generate-config.sh
 
-# AI Agent metadata
+# Agent metadata
 AGENTS.md
 SKILL.md

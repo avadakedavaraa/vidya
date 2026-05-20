@@ -614,7 +614,7 @@
         }
         .sidebar.open {
           transform: translateX(0);
-          box-shadow: 4px 0 24px rgba(0,0,0,0.1);
+          box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
         }
         .main {
           margin-left: 0;
@@ -1402,7 +1402,6 @@
         border-color: var(--indigo);
         color: var(--indigo);
       }
-
     </style>
     <script src="js/dark-mode.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1471,12 +1470,49 @@
           <div>
             <div class="sb-name">Loading...</div>
             <div class="sb-coin">🪙 0 coins</div>
-                      <div class="xph-level" style="font-size:0.7rem;color:var(--muted);margin-bottom:0.2rem;font-weight:600">Level 1</div>
-            <div class="xph-bar" style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:0.2rem;width:100%">
-               <div class="xph-fill" style="height:100%;background:var(--coin);width:0%;transition:width 1s"></div>
+            <div
+              class="xph-level"
+              style="
+                font-size: 0.7rem;
+                color: var(--muted);
+                margin-bottom: 0.2rem;
+                font-weight: 600;
+              "
+            >
+              Level 1
             </div>
-            <div class="xph-xp" style="font-size:0.65rem;color:var(--muted);font-family:'JetBrains Mono',monospace">0 / 500 XP</div>
-</div>
+            <div
+              class="xph-bar"
+              style="
+                height: 4px;
+                background: var(--border);
+                border-radius: 2px;
+                overflow: hidden;
+                margin-bottom: 0.2rem;
+                width: 100%;
+              "
+            >
+              <div
+                class="xph-fill"
+                style="
+                  height: 100%;
+                  background: var(--coin);
+                  width: 0%;
+                  transition: width 1s;
+                "
+              ></div>
+            </div>
+            <div
+              class="xph-xp"
+              style="
+                font-size: 0.65rem;
+                color: var(--muted);
+                font-family: &quot;JetBrains Mono&quot;, monospace;
+              "
+            >
+              0 / 500 XP
+            </div>
+          </div>
         </div>
       </div>
     </aside>
@@ -1695,9 +1731,6 @@
     </div>
 
     <!-- SCRIPTS -->
-    <script src="config.js"></script>
-    <script type="module" src="api.js"></script>
-
     <script>
       let ALL_TEACHERS = [];
       let currentCategory = "all";
@@ -1792,7 +1825,7 @@
           .map(
             (t) => `
     <div class="tc" onclick="localStorage.setItem('vidya_selected_user_id', '${t.id}'); window.location.href='05_teacher_profile?id=${t.id}'">
-      <div class="tc-verified">${tierBadge[t.tier || 'unverified']}</div>
+      <div class="tc-verified">${tierBadge[t.tier || "unverified"]}</div>
       <div class="tc-top">
         <div class="tc-avatar" style="background:${t.color}">
           ${t.initials}
