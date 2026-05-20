@@ -1428,8 +1428,6 @@
          DOM READY
       ───────────────────────────────────── */
       document.addEventListener('DOMContentLoaded', () => {
-        // Small delay lets api.js module finish loading
-        setTimeout(() => initSession(), 200);
         showToast('🔒', 'Session starting — coins protecting both parties.', 4500);
 
         // Initial panel state
@@ -1437,7 +1435,25 @@
         document.getElementById('notesPane').classList.remove('visible');
         document.getElementById('statsPane').classList.remove('visible');
         document.getElementById('codePane').classList.remove('visible');
+
+        // api.js is an ES module — it loads async. Poll until window.VS is ready.
+        waitForVS(initSession);
       });
+
+      /**
+       * Poll for window.VS (exported by api.js module) then call callback.
+       * Retries every 100ms for up to 8 seconds before giving up.
+       */
+      function waitForVS(callback, attempts = 0) {
+        if (window.VS && window.VS.jitsi && window.VS.sessions) {
+          callback();
+        } else if (attempts > 80) {
+          console.error('[session] api.js never exposed window.VS after 8s. Check api.js loads correctly.');
+          appendMessage('sys', '⚠️ Could not connect to services. Please refresh the page.');
+        } else {
+          setTimeout(() => waitForVS(callback, attempts + 1), 100);
+        }
+      }
     </script>
   </body>
 </html>

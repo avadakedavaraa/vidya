@@ -930,7 +930,7 @@
         }
         .sidebar.open {
           transform: translateX(0);
-          box-shadow: 4px 0 24px rgba(0,0,0,0.1);
+          box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
         }
         .main {
           margin-left: 0;
@@ -1001,13 +1001,15 @@
           flex-direction: column;
           align-items: stretch;
         }
-        .add-skill-bar > div, .add-skill-bar > button {
+        .add-skill-bar > div,
+        .add-skill-bar > button {
           width: 100% !important;
         }
         .mode-txt {
           display: none;
         }
-        .user-menu .uname, .user-menu span:nth-child(3) {
+        .user-menu .uname,
+        .user-menu span:nth-child(3) {
           display: none;
         }
       }
@@ -1446,8 +1448,6 @@
         color: var(--muted);
         border: 1px solid var(--border);
       }
-
-
     </style>
     <style>
       /* ═══════════════════════════════════════════════
@@ -1986,12 +1986,49 @@
             <div class="sb-coin">
               🪙 <span id="sb-coin-count">0</span> coins
             </div>
-                      <div class="xph-level" style="font-size:0.7rem;color:var(--muted);margin-bottom:0.2rem;font-weight:600">Level 1</div>
-            <div class="xph-bar" style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:0.2rem;width:100%">
-               <div class="xph-fill" style="height:100%;background:var(--coin);width:0%;transition:width 1s"></div>
+            <div
+              class="xph-level"
+              style="
+                font-size: 0.7rem;
+                color: var(--muted);
+                margin-bottom: 0.2rem;
+                font-weight: 600;
+              "
+            >
+              Level 1
             </div>
-            <div class="xph-xp" style="font-size:0.65rem;color:var(--muted);font-family:'JetBrains Mono',monospace">0 / 500 XP</div>
-</div>
+            <div
+              class="xph-bar"
+              style="
+                height: 4px;
+                background: var(--border);
+                border-radius: 2px;
+                overflow: hidden;
+                margin-bottom: 0.2rem;
+                width: 100%;
+              "
+            >
+              <div
+                class="xph-fill"
+                style="
+                  height: 100%;
+                  background: var(--coin);
+                  width: 0%;
+                  transition: width 1s;
+                "
+              ></div>
+            </div>
+            <div
+              class="xph-xp"
+              style="
+                font-size: 0.65rem;
+                color: var(--muted);
+                font-family: &quot;JetBrains Mono&quot;, monospace;
+              "
+            >
+              0 / 500 XP
+            </div>
+          </div>
         </div>
       </div>
     </aside>
@@ -2266,21 +2303,90 @@
         <div class="sec-header">
           <div class="sec-title">🎯 Broadcast a Learning Need</div>
         </div>
-        <div class="add-skill-bar" style="display: flex; gap: 1rem; background: var(--card); padding: 1.25rem; border-radius: 14px; border: 1.5px solid var(--border); margin-bottom: 2rem;">
-          <div style="flex: 1;">
-            <label style="display: block; font-size: 0.72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 0.4rem;">What do you want to learn?</label>
-            <input type="text" id="learnSkillName" placeholder="e.g. Figma, Advanced Python, Guitar..." style="width: 100%; padding: 0.65rem 0.8rem; border-radius: 8px; border: 1.5px solid var(--border); background: var(--surface); outline: none; font-size: 0.9rem;">
+        <div
+          class="add-skill-bar"
+          style="
+            display: flex;
+            gap: 1rem;
+            background: var(--card);
+            padding: 1.25rem;
+            border-radius: 14px;
+            border: 1.5px solid var(--border);
+            margin-bottom: 2rem;
+          "
+        >
+          <div style="flex: 1">
+            <label
+              style="
+                display: block;
+                font-size: 0.72rem;
+                font-weight: 700;
+                color: var(--muted);
+                text-transform: uppercase;
+                margin-bottom: 0.4rem;
+              "
+              >What do you want to learn?</label
+            >
+            <input
+              type="text"
+              id="learnSkillName"
+              placeholder="e.g. Figma, Advanced Python, Guitar..."
+              style="
+                width: 100%;
+                padding: 0.65rem 0.8rem;
+                border-radius: 8px;
+                border: 1.5px solid var(--border);
+                background: var(--surface);
+                outline: none;
+                font-size: 0.9rem;
+              "
+            />
           </div>
-          <div style="width: 180px;">
-            <label style="display: block; font-size: 0.72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 0.4rem;">Category</label>
-            <select id="learnSkillCat" style="width: 100%; padding: 0.65rem 0.8rem; border-radius: 8px; border: 1.5px solid var(--border); background: var(--surface); outline: none; font-size: 0.9rem;">
+          <div style="width: 180px">
+            <label
+              style="
+                display: block;
+                font-size: 0.72rem;
+                font-weight: 700;
+                color: var(--muted);
+                text-transform: uppercase;
+                margin-bottom: 0.4rem;
+              "
+              >Category</label
+            >
+            <select
+              id="learnSkillCat"
+              style="
+                width: 100%;
+                padding: 0.65rem 0.8rem;
+                border-radius: 8px;
+                border: 1.5px solid var(--border);
+                background: var(--surface);
+                outline: none;
+                font-size: 0.9rem;
+              "
+            >
               <option value="programming">💻 Programming</option>
               <option value="design">🎨 Design</option>
               <option value="language">🌐 Languages</option>
               <option value="other">✨ Other</option>
             </select>
           </div>
-          <button onclick="broadcastLearningNeed()" style="align-self: flex-end; padding: 0.65rem 1.5rem; background: var(--indigo); color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">🚀 Broadcast</button>
+          <button
+            onclick="broadcastLearningNeed()"
+            style="
+              align-self: flex-end;
+              padding: 0.65rem 1.5rem;
+              background: var(--indigo);
+              color: #fff;
+              border: none;
+              border-radius: 8px;
+              font-weight: 600;
+              cursor: pointer;
+            "
+          >
+            🚀 Broadcast
+          </button>
         </div>
 
         <div class="sec-header">
@@ -2392,28 +2498,29 @@
     </div>
 
     <!-- SCRIPTS -->
-    <script src="config.js"></script>
-    <script type="module" src="api.js"></script>
-
     <script>
       async function broadcastLearningNeed() {
-        const name = document.getElementById('learnSkillName').value.trim();
-        const cat = document.getElementById('learnSkillCat').value;
+        const name = document.getElementById("learnSkillName").value.trim();
+        const cat = document.getElementById("learnSkillCat").value;
         if (!name) return alert("Please enter a skill name.");
-        
+
         try {
           const sb = getSupabase();
           const user = VS.auth.currentUser();
-          const { error } = await sb.from('skills').insert({
+          const { error } = await sb.from("skills").insert({
             user_id: user.id,
             skill_name: name,
             category: cat,
-            is_learning: true
+            is_learning: true,
           });
           if (error) throw error;
-          alert("🚀 Your learning need has been broadcasted! Teachers with this skill will be notified when they check their student discovery hub.");
-          document.getElementById('learnSkillName').value = "";
-        } catch (e) { alert(e.message); }
+          alert(
+            "🚀 Your learning need has been broadcasted! Teachers with this skill will be notified when they check their student discovery hub.",
+          );
+          document.getElementById("learnSkillName").value = "";
+        } catch (e) {
+          alert(e.message);
+        }
       }
 
       async function initDashboard() {
@@ -2474,8 +2581,18 @@
         <div><div class="sc-name">${t.name}</div><div class="sc-college">${t.college}</div></div>
       </div>
       <div class="sc-skill">
-        ${(t.teaches && t.teaches.length) ? t.teaches.slice(0, 2).map(skill => `<span class="pill pill-indigo">${skill.charAt(0).toUpperCase() + skill.slice(1)}</span>`).join("") : `<span class="pill pill-indigo">${t.category ? t.category.charAt(0).toUpperCase() + t.category.slice(1) : ''}</span>`}
-        ${t.tier && t.tier !== 'unverified' ? `<span class="pill pill-gold">${t.tier.charAt(0).toUpperCase() + t.tier.slice(1)}</span>` : `<span class="pill pill-gray">Unverified</span>`}
+        ${
+          t.teaches && t.teaches.length
+            ? t.teaches
+                .slice(0, 2)
+                .map(
+                  (skill) =>
+                    `<span class="pill pill-indigo">${skill.charAt(0).toUpperCase() + skill.slice(1)}</span>`,
+                )
+                .join("")
+            : `<span class="pill pill-indigo">${t.category ? t.category.charAt(0).toUpperCase() + t.category.slice(1) : ""}</span>`
+        }
+        ${t.tier && t.tier !== "unverified" ? `<span class="pill pill-gold">${t.tier.charAt(0).toUpperCase() + t.tier.slice(1)}</span>` : `<span class="pill pill-gray">Unverified</span>`}
       </div>
       <div class="sc-meta">
         <span class="sc-rating">⭐ ${t.rating.toFixed(1)}</span>
@@ -2503,7 +2620,7 @@
         <div class="sr-name">${s.role === "learning" ? s.name + " teaches you" : "You teach " + s.name} ${s.skill ? "— " + s.skill : ""}</div>
         <div class="sr-time">⏰ ${s.date}</div>
       </div>
-      <button class="join-btn ${s.canJoin ? "" : "disabled"}" ${s.canJoin ? "onclick=\"window.location.href='07_session.html'\"" : ""}>Join Room →</button>
+      <button class="join-btn ${s.canJoin ? '' : 'disabled'}" ${s.canJoin ? `onclick="window.location.href='07_session.html?id=${s.sessionId || s.id}&teacher=${s.teacherId || ''}'"` : ''}>Join Room →</button>
     </div>
   `,
                 )
@@ -2531,7 +2648,13 @@
             : '<div style="padding:1rem;color:var(--muted)">No recent activity.</div>';
       }
 
-      function renderDashboardStats(quests, sessions, realCoins = null, profile = null, txs = []) {
+      function renderDashboardStats(
+        quests,
+        sessions,
+        realCoins = null,
+        profile = null,
+        txs = [],
+      ) {
         const nums = document.querySelectorAll(".stat-num");
         const changes = document.querySelectorAll(".stat-change");
         // Hide feature card (formerly demo-only)
@@ -2541,35 +2664,57 @@
         if (nums.length >= 4) {
           // 1. Sessions
           const now = new Date();
-          const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-          const sessionThisMonth = (sessions.completed || []).filter(s => s.created_at >= firstDayOfMonth || s.scheduled_for >= firstDayOfMonth).length;
+          const firstDayOfMonth = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            1,
+          ).toISOString();
+          const sessionThisMonth = (sessions.completed || []).filter(
+            (s) =>
+              s.created_at >= firstDayOfMonth ||
+              s.scheduled_for >= firstDayOfMonth,
+          ).length;
           nums[0].textContent = sessionThisMonth;
-          if (changes[0]) changes[0].innerHTML = `<span style="color:var(--teal)">↑ ${sessionThisMonth}</span> this month`;
+          if (changes[0])
+            changes[0].innerHTML = `<span style="color:var(--teal)">↑ ${sessionThisMonth}</span> this month`;
 
           // 2. Coins
-          const coins = realCoins !== null ? realCoins : parseInt(localStorage.getItem("vs_coins") || "0");
+          const coins =
+            realCoins !== null
+              ? realCoins
+              : parseInt(localStorage.getItem("vs_coins") || "0");
           nums[1].textContent = coins;
-          
-          const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
-          const coinsThisWeek = (txs || []).filter(t => t.raw_date >= oneWeekAgo && t.amount > 0).reduce((sum, t) => sum + t.amount, 0);
-          
-          if (changes[1]) changes[1].innerHTML = `<span style="color:var(--teal)">↑ ${coinsThisWeek}</span> this week`;
+
+          const oneWeekAgo = new Date(
+            now.getTime() - 7 * 24 * 60 * 60 * 1000,
+          ).toISOString();
+          const coinsThisWeek = (txs || [])
+            .filter((t) => t.raw_date >= oneWeekAgo && t.amount > 0)
+            .reduce((sum, t) => sum + t.amount, 0);
+
+          if (changes[1])
+            changes[1].innerHTML = `<span style="color:var(--teal)">↑ ${coinsThisWeek}</span> this week`;
 
           // 3. Verified Skills
           let verifiedCount = 0;
           if (profile && profile.skills) {
-             verifiedCount = profile.skills.filter(s => s.tier && s.tier !== 'unverified').length;
+            verifiedCount = profile.skills.filter(
+              (s) => s.tier && s.tier !== "unverified",
+            ).length;
           }
           nums[2].textContent = verifiedCount;
-          if (changes[2]) changes[2].innerHTML = `<a href="13_skill_verify_teacher.html" style="color:var(--indigo);text-decoration:none">+ Add new skill</a>`;
+          if (changes[2])
+            changes[2].innerHTML = `<a href="13_skill_verify_teacher.html" style="color:var(--indigo);text-decoration:none">+ Add new skill</a>`;
 
           // 4. Tier & Welcome Banner Tier
           const level = parseInt(localStorage.getItem("vs_user_level") || "1");
           const xp = parseInt(localStorage.getItem("vs_user_xp") || "0");
           const tier = level >= 20 ? "Gold" : level >= 10 ? "Silver" : "Bronze";
 
-          const multiplier = tier === "Gold" ? "2.0x" : tier === "Silver" ? "1.5x" : "1.0x";
-          const nextTier = level >= 20 ? "Platinum" : level >= 10 ? "Gold" : "Silver";
+          const multiplier =
+            tier === "Gold" ? "2.0x" : tier === "Silver" ? "1.5x" : "1.0x";
+          const nextTier =
+            level >= 20 ? "Platinum" : level >= 10 ? "Gold" : "Silver";
           const xpToNext = 500 - (xp % 500);
 
           nums[3].textContent = tier;
@@ -2580,7 +2725,8 @@
           const wbCoins = document.getElementById("wb-coin-count");
           if (wbCoins) wbCoins.textContent = coins;
           const wbTier = document.getElementById("wb-coin-tier");
-          if (wbTier) wbTier.textContent = `Time Coins · Level ${level} (${xp} XP)`;
+          if (wbTier)
+            wbTier.textContent = `Time Coins · Level ${level} (${xp} XP)`;
 
           const tierLabel = document.getElementById("wb-tier-label");
           if (tierLabel)
