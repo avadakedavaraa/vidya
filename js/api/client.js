@@ -1,74 +1,103 @@
-/**
- * js/api/client.js — Supabase singleton, edge function wrapper, and APIError.
- * This is the foundation all other frontend API modules depend on.
- */
-
-// ─── Supabase client (singleton) ─────────────────────────────
-let _supabase = null;
 export function getSupabase() {
-  if (!_supabase) {
-    const { createClient } = window.supabase;
-    _supabase = createClient(
-      window.APP_CONFIG.SUPABASE_URL,
-      window.APP_CONFIG.SUPABASE_ANON_KEY,
-      {
-        auth: {
-          persistSession: true,
-          autoRefreshToken: true,
-          detectSessionInUrl: true,
-        }
-      }
-    );
+  if (window.__supabaseClient) {
+    return window.__supabaseClient;
   }
-  return _supabase;
+
+  const { createClient } = window.supabase;
+
+  window.__supabaseClient = createClient(
+    window.APP_CONFIG.SUPABASE_URL,
+    window.APP_CONFIG.SUPABASE_ANON_KEY,
+    {
+      auth: {
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        persistSession: true,
+      },
+    },
+  );
+
+  return window.__supabaseClient;
 }
 
-// ─── API Error class ─────────────────────────────────────────
 export class APIError extends Error {
   constructor(message, status) {
     super(message);
-    this.name = 'APIError';
+    this.name = "APIError";
     this.status = status;
   }
 }
 
-// ─── Core fetch wrapper (authenticated) ──────────────────────
-export async function edgeFn(endpoint, payload = {}, requireAuth = true) {
-  const supabase = getSupabase();
-  const headers = { 'Content-Type': 'application/json' };
+async function getAuthHeaders(requireAuth) {
+  const headers = {
+    "Content-Type": "application/json",
+  };
 
-  if (requireAuth) {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      const redirect = encodeURIComponent(window.location.pathname + window.location.search);
-      window.location.href = `02_login.html?redirect=${redirect}`;
-      return null;
-    }
-    headers['Authorization'] = `Bearer ${session.access_token}`;
+  if (!requireAuth) {
+    return headers;
+  }
+
+  const supabase = getSupabase();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session) {
+    const redirect = encodeURIComponent(
+      window.location.pathname + window.location.search,
+    );
+
+    window.location.href = `02_login.html?redirect=${redirect}`;
+    return null;
+  }
+
+  headers.Authorization = `Bearer ${session.access_token}`;
+  return headers;
+}
+
+function getApiErrorMessage(status, data) {
+  if (data?.error) {
+    return data.error;
+  }
+
+  if (status === 404) {
+    return "API route not found. Start the app with `npx vercel dev` so /api functions are available.";
+  }
+
+  return "Request failed";
+}
+
+export async function edgeFn(endpoint, payload = {}, requireAuth = true) {
+  const headers = await getAuthHeaders(requireAuth);
+
+  if (!headers) {
+    return null;
   }
 
   try {
-    const url = `/api/${endpoint}`;
-    const res = await fetch(
-      url,
-      { method: 'POST', headers, body: JSON.stringify(payload) }
-    );
-    const contentType = res.headers.get('content-type') || '';
-    const data = contentType.includes('application/json')
-      ? await res.json()
+    const response = await fetch(`/api/${endpoint}`, {
+      body: JSON.stringify(payload),
+      headers,
+      method: "POST",
+    });
+    const contentType = response.headers.get("content-type") || "";
+    const data = contentType.includes("application/json")
+      ? await response.json()
       : null;
 
-    if (!res.ok) {
-      const message = data?.error || (
-        res.status === 404
-          ? 'API route not found. Start the app with `npx vercel dev` so /api functions are available.'
-          : 'Request failed'
+    if (!response.ok) {
+      throw new APIError(
+        getApiErrorMessage(response.status, data),
+        response.status,
       );
-      throw new APIError(message, res.status);
     }
+
     return data;
-  } catch (err) {
-    if (err instanceof APIError) throw err;
-    throw new APIError('Network error. Check your connection.', 0);
+  } catch (error) {
+    if (error instanceof APIError) {
+      throw error;
+    }
+
+    throw new APIError("Network error. Check your connection.", 0);
   }
 }
