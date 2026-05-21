@@ -5,6 +5,7 @@
     "./_shared/supabase": "./_shared/supabase.ts",
     "./_shared/auth": "./_shared/auth.ts",
     "./_shared/ledger": "./_shared/ledger.ts",
+    "./_shared/otp": "./_shared/otp.ts",
     "./_shared/validation": "./_shared/validation.ts",
     "./supabase": "./supabase.ts"
   }

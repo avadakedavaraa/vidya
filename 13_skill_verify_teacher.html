@@ -965,12 +965,49 @@
           <div>
             <div class="sb-name">Loading...</div>
             <div class="sb-coin">...</div>
-                      <div class="xph-level" style="font-size:0.7rem;color:var(--muted);margin-bottom:0.2rem;font-weight:600">Level 1</div>
-            <div class="xph-bar" style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:0.2rem;width:100%">
-               <div class="xph-fill" style="height:100%;background:var(--coin);width:0%;transition:width 1s"></div>
+            <div
+              class="xph-level"
+              style="
+                font-size: 0.7rem;
+                color: var(--muted);
+                margin-bottom: 0.2rem;
+                font-weight: 600;
+              "
+            >
+              Level 1
             </div>
-            <div class="xph-xp" style="font-size:0.65rem;color:var(--muted);font-family:'JetBrains Mono',monospace">0 / 500 XP</div>
-</div>
+            <div
+              class="xph-bar"
+              style="
+                height: 4px;
+                background: var(--border);
+                border-radius: 2px;
+                overflow: hidden;
+                margin-bottom: 0.2rem;
+                width: 100%;
+              "
+            >
+              <div
+                class="xph-fill"
+                style="
+                  height: 100%;
+                  background: var(--coin);
+                  width: 0%;
+                  transition: width 1s;
+                "
+              ></div>
+            </div>
+            <div
+              class="xph-xp"
+              style="
+                font-size: 0.65rem;
+                color: var(--muted);
+                font-family: &quot;JetBrains Mono&quot;, monospace;
+              "
+            >
+              0 / 500 XP
+            </div>
+          </div>
         </div>
       </div>
     </aside>
@@ -1128,13 +1165,13 @@
 
       // Escape HTML so tags like <script>, <style>, <a>, <b> render as text
       function escapeHTML(str) {
-        if (str == null) return '';
+        if (str == null) return "";
         return String(str)
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/"/g, '&quot;')
-          .replace(/'/g, '&#39;');
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
       }
 
       const SKILL_ICONS = {
@@ -1235,13 +1272,15 @@
     <div class="q-text">${escapeHTML(q.q)}</div>
     <div class="q-options">
       ${(q.opts || [])
-        .map(
-          (o, i) => o != null && String(o).trim().length > 0 ? `
+        .map((o, i) =>
+          o != null && String(o).trim().length > 0
+            ? `
         <div class="q-option${answers[currentQ] === i ? " selected" : ""}" onclick="selectAnswer(${i})">
           <span class="opt-letter">${letters[i]}</span>
           <span>${escapeHTML(String(o).trim())}</span>
         </div>
-      ` : ''
+      `
+            : "",
         )
         .join("")}
     </div>
@@ -1384,10 +1423,13 @@
             launchConfetti();
             // Sync XP to localStorage and update sidebar
             if (result.xp_total != null) {
-              localStorage.setItem('vs_user_xp',   String(result.xp_total));
-              localStorage.setItem('vs_user_level', String(result.level || 1));
+              localStorage.setItem("vs_user_xp", String(result.xp_total));
+              localStorage.setItem("vs_user_level", String(result.level || 1));
               if (window.VS && VS.ui) VS.ui.updateSidebar();
-              showToast('⚡', `+${result.xp_gained} XP earned for ${SKILL_NAMES[selectedSkill]} verification!`);
+              showToast(
+                "⚡",
+                `+${result.xp_gained} XP earned for ${SKILL_NAMES[selectedSkill]} verification!`,
+              );
             }
           }
         } catch (err) {

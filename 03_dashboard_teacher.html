@@ -1,1408 +1,1451 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vidyasetu — Teacher Dashboard</title>
+    <link rel="icon" href="logo-v.png" type="image/png" />
+    <link rel="stylesheet" href="ui-system.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="js/dark-mode.js"></script>
+    <script src="js/availability-manager.js" defer></script>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vidyasetu — Teacher Dashboard</title>
-  <link rel="icon" href="logo-v.png" type="image/png" />
-  <link rel="stylesheet" href="ui-system.css" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap"
-    rel="stylesheet" />
-  <script src="js/dark-mode.js"></script>
-  <script src="js/availability-manager.js" defer></script>
-  <style>
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    :root {
-      --ink: #0d0d1a;
-      --primary: #16a27b;
-      --primary-light: #f0faf6;
-      --primary-dark: #128a68;
-      --indigo: #5b45e0;
-      --indigo-light: #f0eef9;
-      --teal: #16a27b;
-      --teal-light: #f0faf6;
-      --coin: #f5a623;
-      --coin-light: #fff9ef;
-      --danger: #e84040;
-      --surface: #f7f8fa;
-      --card: #ffffff;
-      --border: #e5e7eb;
-      --muted: #9ca3af;
-      --body: #4b5563;
-      --sidebar: 256px;
-    }
-
-    [data-theme="dark"] {
-      --ink: #ebe5df;
-      --primary: #45b08c;
-      --primary-light: rgba(69, 176, 140, 0.15);
-      --primary-dark: #3d9b7a;
-      --indigo: #8a78e5;
-      --indigo-light: rgba(138, 120, 229, 0.15);
-      --teal: #45b08c;
-      --teal-light: rgba(69, 176, 140, 0.15);
-      --coin: #e8b042;
-      --coin-light: rgba(232, 176, 66, 0.15);
-      --danger: #d96161;
-      --surface: #1c1a19;
-      --card: #252220;
-      --border: #36312e;
-      --muted: #8c8279;
-      --body: #bdb3a8;
-    }
-
-    body {
-      font-family: "DM Sans", sans-serif;
-      background: var(--surface);
-      color: var(--ink);
-      display: flex;
-      min-height: 100dvh;
-      transition:
-        background 0.3s,
-        color 0.3s;
-      overflow-x: hidden;
-    }
-
-    /* ═══ SIDEBAR ═══ */
-    .sidebar {
-      width: var(--sidebar);
-      background: var(--card);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      position: fixed;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      z-index: 50;
-      transition:
-        transform 0.3s,
-        background 0.3s;
-    }
-
-    .sb-top {
-      padding: 1.5rem 1.2rem 1rem;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .sb-logo {
-      font-family: "DM Serif Display", serif;
-      font-size: 1.35rem;
-      color: var(--ink);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      text-decoration: none;
-    }
-
-    .sb-logo span {
-      color: var(--primary);
-    }
-
-    .sb-nav {
-      flex: 1;
-      padding: 1rem 0.8rem;
-      overflow-y: auto;
-    }
-
-    .sb-section {
-      font-size: 0.68rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      padding: 0.4rem 0.6rem;
-      margin-top: 1rem;
-      margin-bottom: 0.3rem;
-    }
-
-    .sb-item {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.65rem 0.8rem;
-      border-radius: 9px;
-      text-decoration: none;
-      color: var(--body);
-      font-size: 0.9rem;
-      font-weight: 500;
-      transition: all 0.18s;
-      cursor: pointer;
-      border: none;
-      background: none;
-      width: 100%;
-      text-align: left;
-    }
-
-    .sb-item:hover {
-      background: var(--surface);
-      color: var(--ink);
-    }
-
-    .sb-item.active {
-      background: var(--primary-light);
-      color: var(--primary);
-      font-weight: 600;
-    }
-
-    .sb-item .icon {
-      width: 20px;
-      text-align: center;
-      font-size: 1rem;
-      flex-shrink: 0;
-    }
-
-    .sb-item .badge {
-      margin-left: auto;
-      background: var(--primary);
-      color: #fff;
-      font-size: 0.68rem;
-      font-weight: 700;
-      padding: 2px 7px;
-      border-radius: 99px;
-    }
-
-    .sb-bottom {
-      padding: 1rem 1.2rem;
-      border-top: 1px solid var(--border);
-    }
-
-    .sb-user {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .sb-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: var(--primary);
-      color: #fff;
-      font-weight: 700;
-      font-size: 0.9rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .sb-name {
-      font-size: 0.88rem;
-      font-weight: 600;
-      color: var(--ink);
-    }
-
-    .sb-coin {
-      font-family: "JetBrains Mono", monospace;
-      font-size: 0.78rem;
-      color: var(--coin);
-      font-weight: 600;
-    }
-
-    /* ═══ MAIN ═══ */
-    .main {
-      margin-left: var(--sidebar);
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-      max-width: 100%;
-      overflow-x: hidden;
-    }
-
-    .topbar {
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
-      padding: 0 2rem;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      position: sticky;
-      top: 0;
-      z-index: 40;
-      transition: background 0.3s;
-      overflow: hidden;
-    }
-
-    .topbar-right {
-      margin-left: auto;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      flex-shrink: 0;
-    }
-
-    .icon-btn {
-      width: 38px;
-      height: 38px;
-      border-radius: 9px;
-      border: 1.5px solid var(--border);
-      background: var(--card);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-size: 0.95rem;
-      color: var(--body);
-      flex-shrink: 0;
-    }
-
-    .icon-btn:hover {
-      border-color: var(--primary);
-      color: var(--primary);
-    }
-
-    .content {
-      padding: 2rem;
-      flex: 1;
-      transition: padding 0.3s;
-      min-width: 0;
-      max-width: 100%;
-      box-sizing: border-box;
-    }
-
-    /* ═══ HAMBURGER ═══ */
-    .menu-toggle {
-      display: none;
-      width: 38px;
-      height: 38px;
-      border-radius: 9px;
-      border: 1.5px solid var(--border);
-      background: var(--card);
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 1.2rem;
-      color: var(--body);
-      z-index: 60;
-    }
-
-    /* ═══ RESPONSIVE ═══ */
-    @media (max-width: 1024px) {
       :root {
-        --sidebar: 240px;
+        --ink: #0d0d1a;
+        --primary: #16a27b;
+        --primary-light: #f0faf6;
+        --primary-dark: #128a68;
+        --indigo: #5b45e0;
+        --indigo-light: #f0eef9;
+        --teal: #16a27b;
+        --teal-light: #f0faf6;
+        --coin: #f5a623;
+        --coin-light: #fff9ef;
+        --danger: #e84040;
+        --surface: #f7f8fa;
+        --card: #ffffff;
+        --border: #e5e7eb;
+        --muted: #9ca3af;
+        --body: #4b5563;
+        --sidebar: 256px;
       }
 
-      .sidebar {
-        transform: translateX(-100%);
+      [data-theme="dark"] {
+        --ink: #ebe5df;
+        --primary: #45b08c;
+        --primary-light: rgba(69, 176, 140, 0.15);
+        --primary-dark: #3d9b7a;
+        --indigo: #8a78e5;
+        --indigo-light: rgba(138, 120, 229, 0.15);
+        --teal: #45b08c;
+        --teal-light: rgba(69, 176, 140, 0.15);
+        --coin: #e8b042;
+        --coin-light: rgba(232, 176, 66, 0.15);
+        --danger: #d96161;
+        --surface: #1c1a19;
+        --card: #252220;
+        --border: #36312e;
+        --muted: #8c8279;
+        --body: #bdb3a8;
       }
 
-      .sidebar.open {
-        transform: translateX(0);
-        box-shadow: 0 0 40px rgba(0, 0, 0, 0.15);
-      }
-
-      .main {
-        margin-left: 0;
-      }
-
-      .menu-toggle {
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--surface);
+        color: var(--ink);
         display: flex;
+        min-height: 100dvh;
+        transition:
+          background 0.3s,
+          color 0.3s;
+        overflow-x: hidden;
       }
 
-      .topbar {
-        padding: 0 1.2rem;
-      }
-
-      .content {
-        padding: 1.2rem;
-      }
-
-      /* hide the page label text in topbar to save space */
-      .res-hide {
-        display: none;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .teacher-hero {
+      /* ═══ SIDEBAR ═══ */
+      .sidebar {
+        width: var(--sidebar);
+        background: var(--card);
+        border-right: 1px solid var(--border);
+        display: flex;
         flex-direction: column;
-        text-align: center;
-        gap: 1.2rem;
-        padding: 1.4rem;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 50;
+        transition:
+          transform 0.3s,
+          background 0.3s;
       }
 
-      .th-right {
-        text-align: center;
+      .sb-top {
+        padding: 1.5rem 1.2rem 1rem;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .sb-logo {
+        font-family: "DM Serif Display", serif;
+        font-size: 1.35rem;
+        color: var(--ink);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+      }
+
+      .sb-logo span {
+        color: var(--primary);
+      }
+
+      .sb-nav {
+        flex: 1;
+        padding: 1rem 0.8rem;
+        overflow-y: auto;
+      }
+
+      .sb-section {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding: 0.4rem 0.6rem;
+        margin-top: 1rem;
+        margin-bottom: 0.3rem;
+      }
+
+      .sb-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.65rem 0.8rem;
+        border-radius: 9px;
+        text-decoration: none;
+        color: var(--body);
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.18s;
+        cursor: pointer;
+        border: none;
+        background: none;
         width: 100%;
+        text-align: left;
       }
 
-      .th-title {
-        font-size: 1.5rem;
+      .sb-item:hover {
+        background: var(--surface);
+        color: var(--ink);
       }
 
-      .th-actions {
-        width: 100%;
+      .sb-item.active {
+        background: var(--primary-light);
+        color: var(--primary);
+        font-weight: 600;
+      }
+
+      .sb-item .icon {
+        width: 20px;
+        text-align: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+      }
+
+      .sb-item .badge {
+        margin-left: auto;
+        background: var(--primary);
+        color: #fff;
+        font-size: 0.68rem;
+        font-weight: 700;
+        padding: 2px 7px;
+        border-radius: 99px;
+      }
+
+      .sb-bottom {
+        padding: 1rem 1.2rem;
+        border-top: 1px solid var(--border);
+      }
+
+      .sb-user {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .sb-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--primary);
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
         justify-content: center;
-        flex-wrap: wrap;
       }
 
-      .stats-bento,
-      .two-col {
-        grid-template-columns: 1fr !important;
+      .sb-name {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--ink);
       }
 
-      /* Mode toggle — hide labels on narrow topbar */
-      .mt-btn {
-        padding: 0.4rem 0.7rem;
+      .sb-coin {
+        font-family: "JetBrains Mono", monospace;
         font-size: 0.78rem;
+        color: var(--coin);
+        font-weight: 600;
+      }
+
+      /* ═══ MAIN ═══ */
+      .main {
+        margin-left: var(--sidebar);
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        max-width: 100%;
+        overflow-x: hidden;
       }
 
       .topbar {
-        padding: 0 0.9rem;
+        background: var(--card);
+        border-bottom: 1px solid var(--border);
+        padding: 0 2rem;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        transition: background 0.3s;
+        overflow: hidden;
+      }
+
+      .topbar-right {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
         gap: 0.5rem;
-      }
-    }
-
-    /* ═══ MODE TOGGLE ═══ */
-    .mode-toggle {
-      display: flex;
-      flex-direction: row;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 3px;
-      width: fit-content;
-      flex-shrink: 0;
-    }
-
-    .mt-btn {
-      padding: 0.5rem 1.2rem;
-      border-radius: 8px;
-      font-family: "DM Sans", sans-serif;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      background: none;
-      color: var(--muted);
-      transition: all 0.2s;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    .mt-btn.active {
-      background: var(--card);
-      color: var(--primary);
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-    }
-
-    .mt-btn:hover {
-      color: var(--ink);
-    }
-
-    /* ═══ HERO BANNER ═══ */
-    .teacher-hero {
-      background: linear-gradient(135deg,
-          var(--primary),
-          var(--primary-dark));
-      border-radius: 20px;
-      padding: 2rem 2.5rem;
-      margin-bottom: 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .th-grid {
-      position: absolute;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
-      background-size: 32px 32px;
-      pointer-events: none;
-    }
-
-    .th-left {
-      position: relative;
-      z-index: 1;
-      max-width: 500px;
-    }
-
-    .th-sub {
-      color: rgba(255, 255, 255, 0.65);
-      font-size: 0.85rem;
-      margin-bottom: 0.3rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      font-weight: 600;
-    }
-
-    .th-title {
-      font-family: "DM Serif Display", serif;
-      font-size: 2rem;
-      color: #fff;
-      line-height: 1.2;
-      margin-bottom: 0.6rem;
-    }
-
-    .th-desc {
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 0.88rem;
-      line-height: 1.6;
-      margin-bottom: 1.2rem;
-    }
-
-    .th-actions {
-      display: flex;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
-
-    .th-btn {
-      padding: 0.35rem 0.8rem;
-      border-radius: 6px;
-      font-family: "DM Sans", sans-serif;
-      font-size: 0.72rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-      border: none;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    .th-btn.primary {
-      background: #fff;
-      color: var(--primary);
-    }
-
-    .th-btn.primary:hover {
-      background: rgba(255, 255, 255, 0.9);
-      transform: translateY(-1px);
-    }
-
-    .th-btn.outline {
-      background: rgba(255, 255, 255, 0.12);
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.25);
-    }
-
-    .th-btn.outline:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    .th-right {
-      position: relative;
-      z-index: 1;
-      text-align: right;
-      flex-shrink: 0;
-    }
-
-    .th-earnings {
-      font-family: "JetBrains Mono", monospace;
-      font-size: 3rem;
-      font-weight: 600;
-      color: var(--coin);
-      line-height: 1;
-      text-shadow: 0 0 40px rgba(245, 166, 35, 0.3);
-    }
-
-    .th-earn-label {
-      color: rgba(255, 255, 255, 0.55);
-      font-size: 0.82rem;
-      margin-top: 0.3rem;
-    }
-
-    /* ═══ STATS ═══ */
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1rem;
-      margin-bottom: 2rem;
-      min-width: 0;
-    }
-
-    .stat-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1.2rem 1.5rem;
-      transition: all 0.2s;
-    }
-
-    .stat-card:hover {
-      border-color: rgba(22, 162, 123, 0.2);
-      box-shadow: 0 4px 16px rgba(22, 162, 123, 0.06);
-    }
-
-    .stat-icon {
-      font-size: 1.3rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .stat-num {
-      font-family: "JetBrains Mono", monospace;
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: var(--ink);
-    }
-
-    .stat-label {
-      font-size: 0.78rem;
-      color: var(--muted);
-      margin-top: 0.2rem;
-    }
-
-    /* ═══ SECTION HEADERS ═══ */
-    .sec-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1.2rem;
-    }
-
-    .sec-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--ink);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .sec-link {
-      font-size: 0.82rem;
-      color: var(--primary);
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    .sec-link:hover {
-      text-decoration: underline;
-    }
-
-    /* ═══ ADD SKILL FORM ═══ */
-    .add-skill-bar {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1.2rem 1.5rem;
-      margin-bottom: 2rem;
-      display: flex;
-      gap: 1rem;
-      align-items: flex-end;
-      flex-wrap: wrap;
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-      flex: 1;
-      min-width: 160px;
-    }
-
-    .field label {
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--ink);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .field input,
-    .field select {
-      padding: 0.6rem 1rem;
-      border: 1.5px solid var(--border);
-      border-radius: 9px;
-      background: var(--surface);
-      color: var(--ink);
-      font-family: "DM Sans", sans-serif;
-      font-size: 0.88rem;
-      outline: none;
-      transition: all 0.2s;
-    }
-
-    .field input:focus,
-    .field select:focus {
-      border-color: var(--primary);
-      background: var(--card);
-    }
-
-    .btn-broadcast {
-      padding: 0.65rem 1.5rem;
-      border: none;
-      border-radius: 9px;
-      background: var(--primary);
-      color: #fff;
-      font-family: "DM Sans", sans-serif;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      white-space: nowrap;
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-      height: fit-content;
-    }
-
-    .btn-broadcast:hover {
-      background: var(--primary-dark);
-      transform: translateY(-1px);
-    }
-
-    /* ═══ SKILLS GRID ═══ */
-    .skills-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 1rem;
-      margin-bottom: 2rem;
-    }
-
-    .skill-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1.3rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.8rem;
-      transition: all 0.2s;
-    }
-
-    .skill-card:hover {
-      border-color: rgba(22, 162, 123, 0.25);
-      box-shadow: 0 6px 20px rgba(22, 162, 123, 0.06);
-    }
-
-    .sk-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .sk-name {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--ink);
-    }
-
-    .sk-tier {
-      font-size: 0.72rem;
-      font-weight: 700;
-      padding: 0.2rem 0.6rem;
-      border-radius: 99px;
-    }
-
-    .tier-gold {
-      background: var(--coin-light);
-      color: var(--coin);
-    }
-
-    .tier-silver {
-      background: var(--primary-light);
-      color: var(--primary);
-    }
-
-    .tier-bronze {
-      background: var(--surface);
-      color: var(--body);
-      border: 1px solid var(--border);
-    }
-
-    .tier-unverified {
-      background: var(--surface);
-      color: var(--muted);
-      border: 1px solid var(--border);
-    }
-
-    .sk-meta {
-      display: flex;
-      gap: 1rem;
-      font-size: 0.82rem;
-      color: var(--muted);
-    }
-
-    .sk-meta span {
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-    }
-
-    .sk-rate {
-      font-family: "JetBrains Mono", monospace;
-      font-weight: 700;
-      color: var(--coin);
-      font-size: 0.88rem;
-    }
-
-    /* ═══ TWO COL ═══ */
-    .two-col {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-    }
-
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1.4rem;
-    }
-
-    .card-title {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--ink);
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    /* MINI BTNS */
-    .btn-mini {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: none;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-size: 0.9rem;
-    }
-
-    .btn-mini.primary {
-      background: var(--primary-light);
-      color: var(--primary);
-    }
-
-    .btn-mini.primary:hover {
-      background: var(--primary);
-      color: #fff;
-    }
-
-    .btn-mini.outline {
-      background: rgba(232, 64, 64, 0.05);
-      color: var(--danger);
-      border: 1px solid rgba(232, 64, 64, 0.1);
-    }
-
-    .btn-mini.outline:hover {
-      background: var(--danger);
-      color: #fff;
-    }
-
-    /* ═══ STUDENT LIST ═══ */
-    .student-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.8rem;
-    }
-
-    .student-item {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1.2rem;
-      display: flex;
-      gap: 1rem;
-      align-items: flex-start;
-      transition: all 0.2s;
-    }
-
-    .student-item:hover {
-      border-color: rgba(22, 162, 123, 0.2);
-      box-shadow: 0 4px 16px rgba(22, 162, 123, 0.06);
-    }
-
-    .si-avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      color: #fff;
-      font-size: 0.88rem;
-      flex-shrink: 0;
-    }
-
-    .si-body {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .si-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 0.3rem;
-    }
-
-    .si-name {
-      font-size: 0.92rem;
-      font-weight: 700;
-      color: var(--ink);
-    }
-
-    .si-status {
-      font-size: 0.72rem;
-      font-weight: 700;
-      padding: 0.2rem 0.6rem;
-      border-radius: 99px;
-    }
-
-    .sts-completed {
-      background: var(--primary-light);
-      color: var(--primary);
-    }
-
-    .sts-pending {
-      background: var(--coin-light);
-      color: var(--coin);
-    }
-
-    .sts-confirmed {
-      background: var(--indigo-light);
-      color: var(--indigo);
-    }
-
-    .sts-cancelled {
-      background: var(--surface);
-      color: var(--muted);
-    }
-
-    .si-meta {
-      font-size: 0.78rem;
-      color: var(--muted);
-      display: flex;
-      gap: 0.5rem 1rem;
-      flex-wrap: wrap;
-      margin-bottom: 0.3rem;
-      min-width: 0;
-    }
-
-    .si-skill-tag {
-      display: inline-flex;
-      padding: 0.15rem 0.5rem;
-      border-radius: 6px;
-      background: var(--primary-light);
-      color: var(--primary);
-      font-size: 0.72rem;
-      font-weight: 600;
-    }
-
-    .si-review {
-      margin-top: 0.5rem;
-      padding: 0.6rem 0.8rem;
-      background: var(--surface);
-      border-radius: 8px;
-      border-left: 3px solid var(--coin);
-    }
-
-    .si-review-stars {
-      color: var(--coin);
-      font-size: 0.82rem;
-      letter-spacing: 1px;
-      margin-bottom: 0.2rem;
-    }
-
-    .si-review-text {
-      font-size: 0.8rem;
-      color: var(--body);
-      line-height: 1.5;
-      font-style: italic;
-    }
-
-    /* Qualification warning */
-    .qual-warn {
-      background: var(--coin-light);
-      border: 1px solid rgba(245, 166, 35, 0.3);
-      border-radius: 12px;
-      padding: 1rem 1.2rem;
-      margin-top: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-    }
-
-    .qual-warn-text {
-      font-size: 0.85rem;
-      color: var(--ink);
-      flex: 1;
-    }
-
-    .qual-warn-btn {
-      padding: 0.45rem 1rem;
-      border: none;
-      border-radius: 8px;
-      background: var(--primary);
-      color: #fff;
-      font-family: "DM Sans", sans-serif;
-      font-size: 0.82rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      white-space: nowrap;
-    }
-
-    .qual-warn-btn:hover {
-      background: var(--primary-dark);
-    }
-
-    .sec-tabs {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .sec-tab {
-      padding: 0.4rem 1rem;
-      border-radius: 99px;
-      border: 1.5px solid var(--border);
-      background: none;
-      font-family: "DM Sans", sans-serif;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      color: var(--muted);
-      transition: all 0.2s;
-    }
-
-    .sec-tab.active {
-      background: var(--primary-light);
-      border-color: rgba(22, 162, 123, 0.3);
-      color: var(--primary);
-    }
-
-    .sec-tab:hover {
-      color: var(--ink);
-    }
-
-    /* ═══ REQUEST / REVIEW ROWS ═══ */
-    .row-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.6rem;
-    }
-
-    .row-item {
-      display: flex;
-      align-items: center;
-      gap: 0.85rem;
-      padding: 0.85rem;
-      border-radius: 10px;
-      background: var(--surface);
-      transition: all 0.15s;
-    }
-
-    .row-item:hover {
-      background: var(--primary-light);
-    }
-
-    .ri-avatar {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      color: #fff;
-      font-size: 0.82rem;
-      flex-shrink: 0;
-    }
-
-    .ri-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .ri-name {
-      font-size: 0.88rem;
-      font-weight: 600;
-      color: var(--ink);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .ri-sub {
-      font-size: 0.75rem;
-      color: var(--muted);
-      margin-top: 0.1rem;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 100%;
-    }
-
-    .ri-action {
-      flex-shrink: 0;
-    }
-
-    .ri-btn {
-      padding: 0.4rem 0.9rem;
-      border: 1.5px solid var(--primary);
-      border-radius: 7px;
-      font-family: "DM Sans", sans-serif;
-      font-size: 0.78rem;
-      font-weight: 600;
-      cursor: pointer;
-      background: none;
-      color: var(--primary);
-      transition: all 0.2s;
-    }
-
-    .ri-btn:hover {
-      background: var(--primary);
-      color: #fff;
-    }
-
-    .ri-badge {
-      padding: 0.25rem 0.6rem;
-      border-radius: 99px;
-      font-size: 0.72rem;
-      font-weight: 700;
-    }
-
-    .badge-pending {
-      background: var(--coin-light);
-      color: var(--coin);
-    }
-
-    .badge-confirmed {
-      background: var(--primary-light);
-      color: var(--primary);
-    }
-
-    /* ═══ STARS ═══ */
-    .stars {
-      color: var(--coin);
-      font-size: 0.85rem;
-      letter-spacing: 1px;
-    }
-
-    .review-text {
-      font-size: 0.82rem;
-      color: var(--body);
-      line-height: 1.5;
-      margin-top: 0.3rem;
-      font-style: italic;
-    }
-
-    /* ═══ AVAILABILITY TOGGLE ═══ */
-    .avail-toggle {
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-      padding: 0.8rem 1.2rem;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      width: fit-content;
-    }
-
-    .avail-label {
-      font-size: 0.88rem;
-      font-weight: 600;
-      color: var(--ink);
-    }
-
-    .toggle-switch {
-      position: relative;
-      width: 44px;
-      height: 24px;
-      cursor: pointer;
-    }
-
-    .toggle-switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .toggle-track {
-      position: absolute;
-      inset: 0;
-      background: var(--border);
-      border-radius: 12px;
-      transition: background 0.2s;
-    }
-
-    .toggle-switch input:checked+.toggle-track {
-      background: var(--primary);
-    }
-
-    .toggle-knob {
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      width: 20px;
-      height: 20px;
-      background: #fff;
-      border-radius: 50%;
-      transition: transform 0.2s;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-    }
-
-    .toggle-switch input:checked~.toggle-knob {
-      transform: translateX(20px);
-    }
-
-    /* ═══ EMPTY STATE ═══ */
-    .empty {
-      text-align: center;
-      padding: 2rem;
-      color: var(--muted);
-      font-size: 0.88rem;
-    }
-
-    /* ═══ TOAST ═══ */
-    .toast-wrap {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      z-index: 400;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      pointer-events: none;
-    }
-
-    .toast {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 0.7rem 1rem;
-      font-size: 0.83rem;
-      font-weight: 500;
-      color: var(--ink);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      animation: toastIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-      pointer-events: auto;
-      max-width: 280px;
-    }
-
-    @keyframes toastIn {
-      from {
-        transform: translateY(20px);
-        opacity: 0;
+        flex-shrink: 0;
       }
 
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
-
-    .floating-theme-btn {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: var(--card);
-      border: 1px solid var(--border);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      font-size: 20px;
-      cursor: pointer;
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-      color: var(--ink);
-    }
-
-    .floating-theme-btn:hover {
-      transform: scale(1.05);
-    }
-
-    .overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.3);
-      z-index: 49;
-    }
-
-    .overlay.open {
-      display: block;
-    }
-
-    .ham-btn {
-      display: none;
-      width: 38px;
-      height: 38px;
-      border-radius: 9px;
-      border: 1.5px solid var(--border);
-      background: var(--card);
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      flex-direction: column;
-      gap: 5px;
-      flex-shrink: 0;
-    }
-
-    .ham-btn span {
-      width: 16px;
-      height: 1.5px;
-      background: var(--ink);
-      border-radius: 2px;
-    }
-
-    /* ── Tablet breakpoint (replaces old 900px) ── */
-    @media (max-width: 860px) {
-      .stats-row {
-        grid-template-columns: repeat(2, 1fr);
+      .icon-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 9px;
+        border: 1.5px solid var(--border);
+        background: var(--card);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.95rem;
+        color: var(--body);
+        flex-shrink: 0;
       }
 
-      .two-col {
-        grid-template-columns: 1fr;
-      }
-
-      .add-skill-bar {
-        flex-direction: column;
-      }
-
-      .add-skill-bar .field {
-        min-width: 0;
-        width: 100%;
-      }
-    }
-
-    /* ── Mobile breakpoint ── */
-    @media (max-width: 480px) {
-      .stats-row {
-        grid-template-columns: 1fr 1fr;
+      .icon-btn:hover {
+        border-color: var(--primary);
+        color: var(--primary);
       }
 
       .content {
-        padding: 0.9rem;
+        padding: 2rem;
+        flex: 1;
+        transition: padding 0.3s;
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
       }
 
-      .skills-grid {
-        grid-template-columns: 1fr;
+      /* ═══ HAMBURGER ═══ */
+      .menu-toggle {
+        display: none;
+        width: 38px;
+        height: 38px;
+        border-radius: 9px;
+        border: 1.5px solid var(--border);
+        background: var(--card);
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 1.2rem;
+        color: var(--body);
+        z-index: 60;
       }
 
-      .teacher-hero {
-        padding: 1.2rem;
-        border-radius: 14px;
+      /* ═══ RESPONSIVE ═══ */
+      @media (max-width: 1024px) {
+        :root {
+          --sidebar: 240px;
+        }
+
+        .sidebar {
+          transform: translateX(-100%);
+        }
+
+        .sidebar.open {
+          transform: translateX(0);
+          box-shadow: 0 0 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .main {
+          margin-left: 0;
+        }
+
+        .menu-toggle {
+          display: flex;
+        }
+
+        .topbar {
+          padding: 0 1.2rem;
+        }
+
+        .content {
+          padding: 1.2rem;
+        }
+
+        /* hide the page label text in topbar to save space */
+        .res-hide {
+          display: none;
+        }
       }
 
-      .th-title {
-        font-size: 1.3rem;
+      @media (max-width: 768px) {
+        .teacher-hero {
+          flex-direction: column;
+          text-align: center;
+          gap: 1.2rem;
+          padding: 1.4rem;
+        }
+
+        .th-right {
+          text-align: center;
+          width: 100%;
+        }
+
+        .th-title {
+          font-size: 1.5rem;
+        }
+
+        .th-actions {
+          width: 100%;
+          justify-content: center;
+          flex-wrap: wrap;
+        }
+
+        .stats-bento,
+        .two-col {
+          grid-template-columns: 1fr !important;
+        }
+
+        /* Mode toggle — hide labels on narrow topbar */
+        .mt-btn {
+          padding: 0.4rem 0.7rem;
+          font-size: 0.78rem;
+        }
+
+        .topbar {
+          padding: 0 0.9rem;
+          gap: 0.5rem;
+        }
       }
 
-      .th-btn {
-        font-size: 0.8rem;
-        padding: 0.45rem 0.9rem;
+      /* ═══ MODE TOGGLE ═══ */
+      .mode-toggle {
+        display: flex;
+        flex-direction: row;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 3px;
+        width: fit-content;
+        flex-shrink: 0;
       }
 
-      .stat-card {
-        padding: 1rem;
-      }
-
-      .card {
-        padding: 1rem;
-      }
-
-      .student-item {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .si-top {
-        flex-wrap: wrap;
+      .mt-btn {
+        padding: 0.5rem 1.2rem;
+        border-radius: 8px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        background: none;
+        color: var(--muted);
+        transition: all 0.2s;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
         gap: 0.4rem;
       }
 
+      .mt-btn.active {
+        background: var(--card);
+        color: var(--primary);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+      }
+
+      .mt-btn:hover {
+        color: var(--ink);
+      }
+
+      /* ═══ HERO BANNER ═══ */
+      .teacher-hero {
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--primary-dark)
+        );
+        border-radius: 20px;
+        padding: 2rem 2.5rem;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .th-grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+        background-size: 32px 32px;
+        pointer-events: none;
+      }
+
+      .th-left {
+        position: relative;
+        z-index: 1;
+        max-width: 500px;
+      }
+
+      .th-sub {
+        color: rgba(255, 255, 255, 0.65);
+        font-size: 0.85rem;
+        margin-bottom: 0.3rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        font-weight: 600;
+      }
+
+      .th-title {
+        font-family: "DM Serif Display", serif;
+        font-size: 2rem;
+        color: #fff;
+        line-height: 1.2;
+        margin-bottom: 0.6rem;
+      }
+
+      .th-desc {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.88rem;
+        line-height: 1.6;
+        margin-bottom: 1.2rem;
+      }
+
+      .th-actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+
+      .th-btn {
+        padding: 0.35rem 0.8rem;
+        border-radius: 6px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.72rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      .th-btn.primary {
+        background: #fff;
+        color: var(--primary);
+      }
+
+      .th-btn.primary:hover {
+        background: rgba(255, 255, 255, 0.9);
+        transform: translateY(-1px);
+      }
+
+      .th-btn.outline {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+      }
+
+      .th-btn.outline:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .th-right {
+        position: relative;
+        z-index: 1;
+        text-align: right;
+        flex-shrink: 0;
+      }
+
+      .th-earnings {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 3rem;
+        font-weight: 600;
+        color: var(--coin);
+        line-height: 1;
+        text-shadow: 0 0 40px rgba(245, 166, 35, 0.3);
+      }
+
+      .th-earn-label {
+        color: rgba(255, 255, 255, 0.55);
+        font-size: 0.82rem;
+        margin-top: 0.3rem;
+      }
+
+      /* ═══ STATS ═══ */
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 2rem;
+        min-width: 0;
+      }
+
+      .stat-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.2rem 1.5rem;
+        transition: all 0.2s;
+      }
+
+      .stat-card:hover {
+        border-color: rgba(22, 162, 123, 0.2);
+        box-shadow: 0 4px 16px rgba(22, 162, 123, 0.06);
+      }
+
+      .stat-icon {
+        font-size: 1.3rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-num {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--ink);
+      }
+
+      .stat-label {
+        font-size: 0.78rem;
+        color: var(--muted);
+        margin-top: 0.2rem;
+      }
+
+      /* ═══ SECTION HEADERS ═══ */
+      .sec-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.2rem;
+      }
+
+      .sec-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--ink);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .sec-link {
+        font-size: 0.82rem;
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .sec-link:hover {
+        text-decoration: underline;
+      }
+
+      /* ═══ ADD SKILL FORM ═══ */
+      .add-skill-bar {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.2rem 1.5rem;
+        margin-bottom: 2rem;
+        display: flex;
+        gap: 1rem;
+        align-items: flex-end;
+        flex-wrap: wrap;
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        flex: 1;
+        min-width: 160px;
+      }
+
+      .field label {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--ink);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .field input,
+      .field select {
+        padding: 0.6rem 1rem;
+        border: 1.5px solid var(--border);
+        border-radius: 9px;
+        background: var(--surface);
+        color: var(--ink);
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.88rem;
+        outline: none;
+        transition: all 0.2s;
+      }
+
+      .field input:focus,
+      .field select:focus {
+        border-color: var(--primary);
+        background: var(--card);
+      }
+
+      .btn-broadcast {
+        padding: 0.65rem 1.5rem;
+        border: none;
+        border-radius: 9px;
+        background: var(--primary);
+        color: #fff;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        height: fit-content;
+      }
+
+      .btn-broadcast:hover {
+        background: var(--primary-dark);
+        transform: translateY(-1px);
+      }
+
+      /* ═══ SKILLS GRID ═══ */
+      .skills-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .skill-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.3rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+        transition: all 0.2s;
+      }
+
+      .skill-card:hover {
+        border-color: rgba(22, 162, 123, 0.25);
+        box-shadow: 0 6px 20px rgba(22, 162, 123, 0.06);
+      }
+
+      .sk-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .sk-name {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--ink);
+      }
+
+      .sk-tier {
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 0.2rem 0.6rem;
+        border-radius: 99px;
+      }
+
+      .tier-gold {
+        background: var(--coin-light);
+        color: var(--coin);
+      }
+
+      .tier-silver {
+        background: var(--primary-light);
+        color: var(--primary);
+      }
+
+      .tier-bronze {
+        background: var(--surface);
+        color: var(--body);
+        border: 1px solid var(--border);
+      }
+
+      .tier-unverified {
+        background: var(--surface);
+        color: var(--muted);
+        border: 1px solid var(--border);
+      }
+
+      .sk-meta {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+
+      .sk-meta span {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+      }
+
+      .sk-rate {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 700;
+        color: var(--coin);
+        font-size: 0.88rem;
+      }
+
+      /* ═══ TWO COL ═══ */
+      .two-col {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.4rem;
+      }
+
+      .card-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      /* MINI BTNS */
+      .btn-mini {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.9rem;
+      }
+
+      .btn-mini.primary {
+        background: var(--primary-light);
+        color: var(--primary);
+      }
+
+      .btn-mini.primary:hover {
+        background: var(--primary);
+        color: #fff;
+      }
+
+      .btn-mini.outline {
+        background: rgba(232, 64, 64, 0.05);
+        color: var(--danger);
+        border: 1px solid rgba(232, 64, 64, 0.1);
+      }
+
+      .btn-mini.outline:hover {
+        background: var(--danger);
+        color: #fff;
+      }
+
+      /* ═══ STUDENT LIST ═══ */
+      .student-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+      }
+
+      .student-item {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.2rem;
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+        transition: all 0.2s;
+      }
+
+      .student-item:hover {
+        border-color: rgba(22, 162, 123, 0.2);
+        box-shadow: 0 4px 16px rgba(22, 162, 123, 0.06);
+      }
+
+      .si-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: #fff;
+        font-size: 0.88rem;
+        flex-shrink: 0;
+      }
+
+      .si-body {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .si-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.3rem;
+      }
+
+      .si-name {
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: var(--ink);
+      }
+
+      .si-status {
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 0.2rem 0.6rem;
+        border-radius: 99px;
+      }
+
+      .sts-completed {
+        background: var(--primary-light);
+        color: var(--primary);
+      }
+
+      .sts-pending {
+        background: var(--coin-light);
+        color: var(--coin);
+      }
+
+      .sts-confirmed {
+        background: var(--indigo-light);
+        color: var(--indigo);
+      }
+
+      .sts-cancelled {
+        background: var(--surface);
+        color: var(--muted);
+      }
+
+      .si-meta {
+        font-size: 0.78rem;
+        color: var(--muted);
+        display: flex;
+        gap: 0.5rem 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.3rem;
+        min-width: 0;
+      }
+
+      .si-skill-tag {
+        display: inline-flex;
+        padding: 0.15rem 0.5rem;
+        border-radius: 6px;
+        background: var(--primary-light);
+        color: var(--primary);
+        font-size: 0.72rem;
+        font-weight: 600;
+      }
+
+      .si-review {
+        margin-top: 0.5rem;
+        padding: 0.6rem 0.8rem;
+        background: var(--surface);
+        border-radius: 8px;
+        border-left: 3px solid var(--coin);
+      }
+
+      .si-review-stars {
+        color: var(--coin);
+        font-size: 0.82rem;
+        letter-spacing: 1px;
+        margin-bottom: 0.2rem;
+      }
+
+      .si-review-text {
+        font-size: 0.8rem;
+        color: var(--body);
+        line-height: 1.5;
+        font-style: italic;
+      }
+
+      /* Qualification warning */
+      .qual-warn {
+        background: var(--coin-light);
+        border: 1px solid rgba(245, 166, 35, 0.3);
+        border-radius: 12px;
+        padding: 1rem 1.2rem;
+        margin-top: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+      }
+
+      .qual-warn-text {
+        font-size: 0.85rem;
+        color: var(--ink);
+        flex: 1;
+      }
+
+      .qual-warn-btn {
+        padding: 0.45rem 1rem;
+        border: none;
+        border-radius: 8px;
+        background: var(--primary);
+        color: #fff;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+      }
+
+      .qual-warn-btn:hover {
+        background: var(--primary-dark);
+      }
+
+      .sec-tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+      }
+
       .sec-tab {
-        padding: 0.35rem 0.75rem;
+        padding: 0.4rem 1rem;
+        border-radius: 99px;
+        border: 1.5px solid var(--border);
+        background: none;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        color: var(--muted);
+        transition: all 0.2s;
+      }
+
+      .sec-tab.active {
+        background: var(--primary-light);
+        border-color: rgba(22, 162, 123, 0.3);
+        color: var(--primary);
+      }
+
+      .sec-tab:hover {
+        color: var(--ink);
+      }
+
+      /* ═══ REQUEST / REVIEW ROWS ═══ */
+      .row-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+
+      .row-item {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 0.85rem;
+        border-radius: 10px;
+        background: var(--surface);
+        transition: all 0.15s;
+      }
+
+      .row-item:hover {
+        background: var(--primary-light);
+      }
+
+      .ri-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: #fff;
+        font-size: 0.82rem;
+        flex-shrink: 0;
+      }
+
+      .ri-info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .ri-name {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--ink);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .ri-sub {
         font-size: 0.75rem;
+        color: var(--muted);
+        margin-top: 0.1rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
       }
 
-      .mode-toggle {
+      .ri-action {
+        flex-shrink: 0;
+      }
+
+      .ri-btn {
+        padding: 0.4rem 0.9rem;
+        border: 1.5px solid var(--primary);
+        border-radius: 7px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+        background: none;
+        color: var(--primary);
+        transition: all 0.2s;
+      }
+
+      .ri-btn:hover {
+        background: var(--primary);
+        color: #fff;
+      }
+
+      .ri-badge {
+        padding: 0.25rem 0.6rem;
+        border-radius: 99px;
+        font-size: 0.72rem;
+        font-weight: 700;
+      }
+
+      .badge-pending {
+        background: var(--coin-light);
+        color: var(--coin);
+      }
+
+      .badge-confirmed {
+        background: var(--primary-light);
+        color: var(--primary);
+      }
+
+      /* ═══ STARS ═══ */
+      .stars {
+        color: var(--coin);
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+      }
+
+      .review-text {
+        font-size: 0.82rem;
+        color: var(--body);
+        line-height: 1.5;
+        margin-top: 0.3rem;
+        font-style: italic;
+      }
+
+      /* ═══ AVAILABILITY TOGGLE ═══ */
+      .avail-toggle {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 0.8rem 1.2rem;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        width: fit-content;
+      }
+
+      .avail-label {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--ink);
+      }
+
+      .toggle-switch {
+        position: relative;
+        width: 44px;
+        height: 24px;
+        cursor: pointer;
+      }
+
+      .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .toggle-track {
+        position: absolute;
+        inset: 0;
+        background: var(--border);
+        border-radius: 12px;
+        transition: background 0.2s;
+      }
+
+      .toggle-switch input:checked + .toggle-track {
+        background: var(--primary);
+      }
+
+      .toggle-knob {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 20px;
+        height: 20px;
+        background: #fff;
+        border-radius: 50%;
+        transition: transform 0.2s;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+      }
+
+      .toggle-switch input:checked ~ .toggle-knob {
+        transform: translateX(20px);
+      }
+
+      /* ═══ EMPTY STATE ═══ */
+      .empty {
+        text-align: center;
+        padding: 2rem;
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+
+      /* ═══ TOAST ═══ */
+      .toast-wrap {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 400;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        pointer-events: none;
+      }
+
+      .toast {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 0.7rem 1rem;
+        font-size: 0.83rem;
+        font-weight: 500;
+        color: var(--ink);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        animation: toastIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        pointer-events: auto;
+        max-width: 280px;
+      }
+
+      @keyframes toastIn {
+        from {
+          transform: translateY(20px);
+          opacity: 0;
+        }
+
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .floating-theme-btn {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: var(--card);
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        font-size: 20px;
+        cursor: pointer;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        color: var(--ink);
+      }
+
+      .floating-theme-btn:hover {
+        transform: scale(1.05);
+      }
+
+      .overlay {
         display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.3);
+        z-index: 49;
       }
-    }
-  </style>
-  <script>
-    (() => {
-      const t = localStorage.getItem("vs-theme");
-      if (t === "dark")
-        document.documentElement.setAttribute("data-theme", "dark");
-    })();
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js"></script>
-  <script type="module" src="api.js"></script>
 
-  <script src="https://unpkg.com/lucide@latest"></script>
-</head>
+      .overlay.open {
+        display: block;
+      }
 
-<body>
-  <div class="toast-wrap" id="toastWrap"></div>
-  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+      .ham-btn {
+        display: none;
+        width: 38px;
+        height: 38px;
+        border-radius: 9px;
+        border: 1.5px solid var(--border);
+        background: var(--card);
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        flex-direction: column;
+        gap: 5px;
+        flex-shrink: 0;
+      }
 
-  <!-- ═══ SIDEBAR ═══ -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sb-top">
-      <a href="index.html" class="sb-logo"><img src="logo-v.png" alt="V" class="logo-img" /><span
-          class="logo-text">vidyasetu</span></a>
-    </div>
-    <nav class="sb-nav">
-      <div class="sb-section">Teaching</div>
-      <a href="03_dashboard_teacher.html" class="sb-item active"><span class="icon">🎓</span> Teacher Hub</a>
-      <a href="#studentList" class="sb-item" onclick="
+      .ham-btn span {
+        width: 16px;
+        height: 1.5px;
+        background: var(--ink);
+        border-radius: 2px;
+      }
+
+      /* ── Tablet breakpoint (replaces old 900px) ── */
+      @media (max-width: 860px) {
+        .stats-row {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .two-col {
+          grid-template-columns: 1fr;
+        }
+
+        .add-skill-bar {
+          flex-direction: column;
+        }
+
+        .add-skill-bar .field {
+          min-width: 0;
+          width: 100%;
+        }
+      }
+
+      /* ── Mobile breakpoint ── */
+      @media (max-width: 480px) {
+        .stats-row {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .content {
+          padding: 0.9rem;
+        }
+
+        .skills-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .teacher-hero {
+          padding: 1.2rem;
+          border-radius: 14px;
+        }
+
+        .th-title {
+          font-size: 1.3rem;
+        }
+
+        .th-btn {
+          font-size: 0.8rem;
+          padding: 0.45rem 0.9rem;
+        }
+
+        .stat-card {
+          padding: 1rem;
+        }
+
+        .card {
+          padding: 1rem;
+        }
+
+        .student-item {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .si-top {
+          flex-wrap: wrap;
+          gap: 0.4rem;
+        }
+
+        .sec-tab {
+          padding: 0.35rem 0.75rem;
+          font-size: 0.75rem;
+        }
+
+        .mode-toggle {
+          display: none;
+        }
+      }
+    </style>
+    <script>
+      (() => {
+        const t = localStorage.getItem("vs-theme");
+        if (t === "dark")
+          document.documentElement.setAttribute("data-theme", "dark");
+      })();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script type="module" src="api.js"></script>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </head>
+
+  <body>
+    <div class="toast-wrap" id="toastWrap"></div>
+    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+    <!-- ═══ SIDEBAR ═══ -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sb-top">
+        <a href="index.html" class="sb-logo"
+          ><img src="logo-v.png" alt="V" class="logo-img" /><span
+            class="logo-text"
+            >vidyasetu</span
+          ></a
+        >
+      </div>
+      <nav class="sb-nav">
+        <div class="sb-section">Teaching</div>
+        <a href="03_dashboard_teacher.html" class="sb-item active"
+          ><span class="icon">🎓</span> Teacher Hub</a
+        >
+        <a
+          href="#studentList"
+          class="sb-item"
+          onclick="
             closeSidebar();
             document
               .getElementById('studentList')
               .scrollIntoView({ behavior: 'smooth' });
-          "><span class="icon">👥</span> My Students</a>
-      <a href="11_my_sessions_teacher.html" class="sb-item"><span class="icon">📅</span> My Sessions</a>
-      <a href="13_skill_verify_teacher.html" class="sb-item"><span class="icon">✅</span> Verify Skills</a>
-      <a href="#availabilitySection" class="sb-item"
-        onclick="closeSidebar(); document.getElementById('availabilitySection').scrollIntoView({ behavior: 'smooth' });">
-        <span class="icon">🕓</span> My Availability
-      </a>
-      <div class="sb-section">Messages</div>
-      <a href="16_messages.html" class="sb-item"><span class="icon">💬</span> My Inbox
-        <span class="badge" id="sb-unread-count" style="display: none">0</span></a>
-      <div class="sb-section">Discover</div>
-      <a href="04_explore_students.html" class="sb-item"><span class="icon">🎓</span> Explore Students</a>
-      <a href="04_explore.html" class="sb-item"><span class="icon">🔍</span> Explore Teachers</a>
-      <div class="sb-section">Earnings</div>
-      <a href="08_wallet_teacher.html" class="sb-item"><span class="icon">🪙</span> Earnings & Wallet</a>
-      <div class="sb-section">Community</div>
-      <a href="09_bounty_teacher.html" class="sb-item"><span class="icon">🎯</span> Bounty Hub</a>
-      <a href="15_campus_collab_teacher.html" class="sb-item"><span class="icon">☕</span> Campus Collab</a>
-      <div class="sb-section">Account</div>
-      <a href="12_my_profile.html" class="sb-item"><span class="icon">👤</span> My Profile</a>
-      <div style="padding: 0.5rem 0.8rem; margin-top: 0.5rem">
-        <a href="03_dashboard.html" style="
+          "
+          ><span class="icon">👥</span> My Students</a
+        >
+        <a href="11_my_sessions_teacher.html" class="sb-item"
+          ><span class="icon">📅</span> My Sessions</a
+        >
+        <a href="13_skill_verify_teacher.html" class="sb-item"
+          ><span class="icon">✅</span> Verify Skills</a
+        >
+        <a
+          href="#availabilitySection"
+          class="sb-item"
+          onclick="
+            closeSidebar();
+            document
+              .getElementById('availabilitySection')
+              .scrollIntoView({ behavior: 'smooth' });
+          "
+        >
+          <span class="icon">🕓</span> My Availability
+        </a>
+        <div class="sb-section">Messages</div>
+        <a href="16_messages.html" class="sb-item"
+          ><span class="icon">💬</span> My Inbox
+          <span class="badge" id="sb-unread-count" style="display: none"
+            >0</span
+          ></a
+        >
+        <div class="sb-section">Discover</div>
+        <a href="04_explore_students.html" class="sb-item"
+          ><span class="icon">🎓</span> Explore Students</a
+        >
+        <a href="04_explore.html" class="sb-item"
+          ><span class="icon">🔍</span> Explore Teachers</a
+        >
+        <div class="sb-section">Earnings</div>
+        <a href="08_wallet_teacher.html" class="sb-item"
+          ><span class="icon">🪙</span> Earnings & Wallet</a
+        >
+        <div class="sb-section">Community</div>
+        <a href="09_bounty_teacher.html" class="sb-item"
+          ><span class="icon">🎯</span> Bounty Hub</a
+        >
+        <a href="15_campus_collab_teacher.html" class="sb-item"
+          ><span class="icon">☕</span> Campus Collab</a
+        >
+        <div class="sb-section">Account</div>
+        <a href="12_my_profile.html" class="sb-item"
+          ><span class="icon">👤</span> My Profile</a
+        >
+        <div style="padding: 0.5rem 0.8rem; margin-top: 0.5rem">
+          <a
+            href="03_dashboard.html"
+            style="
               display: flex;
               align-items: center;
               gap: 0.5rem;
@@ -1414,45 +1457,96 @@
               font-weight: 600;
               text-decoration: none;
               transition: all 0.2s;
-            ">
-          <span>🎒</span> Switch to Student Mode
-        </a>
-      </div>
-    </nav>
-    <div class="sb-bottom" id="sb-user-area">
-      <div class="sb-user">
-        <div class="sb-avatar">...</div>
-        <div>
-          <div class="sb-name">Loading...</div>
-          <div class="sb-coin">...</div>
-          <div class="xph-level" style="font-size:0.7rem;color:var(--muted);margin-bottom:0.2rem;font-weight:600">Level
-            1</div>
-          <div class="xph-bar"
-            style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:0.2rem;width:100%">
-            <div class="xph-fill" style="height:100%;background:var(--coin);width:0%;transition:width 1s"></div>
+            "
+          >
+            <span>🎒</span> Switch to Student Mode
+          </a>
+        </div>
+      </nav>
+      <div class="sb-bottom" id="sb-user-area">
+        <div class="sb-user">
+          <div class="sb-avatar">...</div>
+          <div>
+            <div class="sb-name">Loading...</div>
+            <div class="sb-coin">...</div>
+            <div
+              class="xph-level"
+              style="
+                font-size: 0.7rem;
+                color: var(--muted);
+                margin-bottom: 0.2rem;
+                font-weight: 600;
+              "
+            >
+              Level 1
+            </div>
+            <div
+              class="xph-bar"
+              style="
+                height: 4px;
+                background: var(--border);
+                border-radius: 2px;
+                overflow: hidden;
+                margin-bottom: 0.2rem;
+                width: 100%;
+              "
+            >
+              <div
+                class="xph-fill"
+                style="
+                  height: 100%;
+                  background: var(--coin);
+                  width: 0%;
+                  transition: width 1s;
+                "
+              ></div>
+            </div>
+            <div
+              class="xph-xp"
+              style="
+                font-size: 0.65rem;
+                color: var(--muted);
+                font-family: &quot;JetBrains Mono&quot;, monospace;
+              "
+            >
+              0 / 500 XP
+            </div>
           </div>
-          <div class="xph-xp" style="font-size:0.65rem;color:var(--muted);font-family:'JetBrains Mono',monospace">0 /
-            500 XP</div>
         </div>
       </div>
-    </div>
-  </aside>
+    </aside>
 
-  <!-- ═══ MAIN ═══ -->
-  <div class="main">
-    <div class="topbar">
-      <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
-      <div class="res-hide" style="font-family:'DM Serif Display', serif; font-size: 1.1rem; color: var(--ink);">
-        Teacher Dashboard
-      </div>
-      <div class="topbar-right">
-        <!-- Mode Toggle -->
-        <div class="mode-toggle">
-          <a href="03_dashboard.html" class="mt-btn">🎒 Student</a>
-          <a href="03_dashboard_teacher.html" class="mt-btn active">🎓 Teacher</a>
+    <!-- ═══ MAIN ═══ -->
+    <div class="main">
+      <div class="topbar">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <div
+          class="res-hide"
+          style="
+            font-family: &quot;DM Serif Display&quot;, serif;
+            font-size: 1.1rem;
+            color: var(--ink);
+          "
+        >
+          Teacher Dashboard
         </div>
-        <button class="icon-btn" title="Messages" onclick="window.location.href = '16_messages.html'">
-          💬<span class="badge" id="sb-unread-count-top" style="
+        <div class="topbar-right">
+          <!-- Mode Toggle -->
+          <div class="mode-toggle">
+            <a href="03_dashboard.html" class="mt-btn">🎒 Student</a>
+            <a href="03_dashboard_teacher.html" class="mt-btn active"
+              >🎓 Teacher</a
+            >
+          </div>
+          <button
+            class="icon-btn"
+            title="Messages"
+            onclick="window.location.href = '16_messages.html'"
+          >
+            💬<span
+              class="badge"
+              id="sb-unread-count-top"
+              style="
                 display: none;
                 position: absolute;
                 top: -5px;
@@ -1462,290 +1556,335 @@
                 font-size: 10px;
                 padding: 2px 5px;
                 border-radius: 10px;
-              ">0</span>
-        </button>
-        <button class="icon-btn" title="Notifications">🔔</button>
+              "
+              >0</span
+            >
+          </button>
+          <button class="icon-btn" title="Notifications">🔔</button>
+        </div>
       </div>
-    </div>
 
-    <div class="content">
-      <!-- HERO -->
-      <div class="teacher-hero">
-        <div class="th-grid"></div>
-        <div class="th-left">
-          <div class="th-sub">🎓 Teacher Mode</div>
-          <h1 class="th-title">
-            Welcome back, <span id="th-name">Teacher</span>
-          </h1>
-          <p class="th-desc">
-            Manage your skills, track your earnings, and connect with students
-            who need your help.
-          </p>
-          <div class="th-actions">
-            <button class="th-btn primary" onclick="
+      <div class="content">
+        <!-- HERO -->
+        <div class="teacher-hero">
+          <div class="th-grid"></div>
+          <div class="th-left">
+            <div class="th-sub">🎓 Teacher Mode</div>
+            <h1 class="th-title">
+              Welcome back, <span id="th-name">Teacher</span>
+            </h1>
+            <p class="th-desc">
+              Manage your skills, track your earnings, and connect with students
+              who need your help.
+            </p>
+            <div class="th-actions">
+              <button
+                class="th-btn primary"
+                onclick="
                   document
                     .getElementById('addSkillBar')
                     .scrollIntoView({ behavior: 'smooth' })
-                ">
-              + Add a Skill
-            </button>
-            <a href="08_wallet.html" class="th-btn outline">🪙 View Earnings</a>
+                "
+              >
+                + Add a Skill
+              </button>
+              <a href="08_wallet.html" class="th-btn outline"
+                >🪙 View Earnings</a
+              >
+            </div>
+          </div>
+          <div class="th-right" style="text-align: right">
+            <div
+              class="th-earnings"
+              style="font-size: 1.4rem; font-weight: 700; color: var(--ink)"
+            >
+              🪙 <span id="th-coin-count">0</span>
+            </div>
+            <div
+              class="th-earn-label"
+              id="th-coin-tier"
+              style="
+                font-size: 0.85rem;
+                color: var(--muted);
+                margin-top: 0.2rem;
+              "
+            >
+              Time Coins · Level 1 (0 XP)
+            </div>
           </div>
         </div>
-        <div class="th-right" style="text-align: right">
-          <div class="th-earnings" style="font-size: 1.4rem; font-weight: 700; color: var(--ink)">🪙 <span
-              id="th-coin-count">0</span></div>
-          <div class="th-earn-label" id="th-coin-tier"
-            style="font-size: 0.85rem; color: var(--muted); margin-top: 0.2rem">Time Coins · Level 1 (0 XP)</div>
-        </div>
-      </div>
 
-      <!-- STATS -->
-      <div class="stats-row">
-        <div class="stat-card">
-          <div class="stat-icon">👥</div>
-          <div class="stat-num" id="st-students">-</div>
-          <div class="stat-label">Students taught</div>
+        <!-- STATS -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-num" id="st-students">-</div>
+            <div class="stat-label">Students taught</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <div class="stat-num" id="st-sessions">-</div>
+            <div class="stat-label">Sessions completed</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-num" id="st-rating">-</div>
+            <div class="stat-label">Average rating</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">💬</div>
+            <div class="stat-num" id="st-dms">-</div>
+            <div class="stat-label">Unread messages</div>
+          </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon">📅</div>
-          <div class="stat-num" id="st-sessions">-</div>
-          <div class="stat-label">Sessions completed</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">⭐</div>
-          <div class="stat-num" id="st-rating">-</div>
-          <div class="stat-label">Average rating</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">💬</div>
-          <div class="stat-num" id="st-dms">-</div>
-          <div class="stat-label">Unread messages</div>
-        </div>
-      </div>
 
-      <!-- AVAILABILITY -->
-      <div style="
+        <!-- AVAILABILITY -->
+        <div
+          style="
             display: flex;
             align-items: center;
             justify-content: space-between;
             margin-bottom: 2rem;
             flex-wrap: wrap;
             gap: 1rem;
-          ">
+          "
+        ></div>
       </div>
-    </div>
 
-    <!-- AVAILABILITY MANAGER -->
-    <div class="content" style="padding-top:0; padding-bottom:0;">
-      <div class="sec-header" id="availabilitySection">
-        <div class="sec-title">🕓 Manage Weekly Schedule</div>
-      </div>
-      <div id="availabilityTabContent" style="overflow-x: auto;">
-        <div class="empty">Loading schedule...</div>
-      </div>
-    </div>
-
-    <!-- ADD SKILL -->
-    <div class="content" style="padding-top:0; padding-bottom:0;">
-      <div class="sec-header">
-        <div class="sec-title">🎯 Broadcast a Teaching Skill</div>
-      </div>
-      <div class="add-skill-bar" id="addSkillBar">
-        <div class="field">
-          <label>Skill Name</label>
-          <input type="text" id="newSkillName" placeholder="e.g. React, Python, UI Design..."
-            onkeypress="if (event.key === 'Enter') broadcastSkill();" />
+      <!-- AVAILABILITY MANAGER -->
+      <div class="content" style="padding-top: 0; padding-bottom: 0">
+        <div class="sec-header" id="availabilitySection">
+          <div class="sec-title">🕓 Manage Weekly Schedule</div>
         </div>
-        <div class="field" style="max-width: 200px; min-width: 140px;">
-          <label>Category</label>
-          <select id="newSkillCategory">
-            <option value="programming">💻 Programming</option>
-            <option value="design">🎨 Design</option>
-            <option value="language">🌐 Languages</option>
-            <option value="music">🎵 Music</option>
-            <option value="data">📊 Data Science</option>
-            <option value="other">✨ Other</option>
-          </select>
+        <div id="availabilityTabContent" style="overflow-x: auto">
+          <div class="empty">Loading schedule...</div>
         </div>
-        <button class="btn-broadcast" onclick="AvailabilityManager.openBroadcastWizard()">
-          🎓 Broadcast
-        </button>
       </div>
-    </div>
 
-    <!-- ACTIVE SKILLS -->
-    <div class="content" style="padding-top:0; padding-bottom:0;">
-      <div class="sec-header">
-        <div class="sec-title">📚 Your Teaching Skills</div>
-        <span class="sec-link" id="skillCount">0 skills</span>
+      <!-- ADD SKILL -->
+      <div class="content" style="padding-top: 0; padding-bottom: 0">
+        <div class="sec-header">
+          <div class="sec-title">🎯 Broadcast a Teaching Skill</div>
+        </div>
+        <div class="add-skill-bar" id="addSkillBar">
+          <div class="field">
+            <label>Skill Name</label>
+            <input
+              type="text"
+              id="newSkillName"
+              placeholder="e.g. React, Python, UI Design..."
+              onkeypress="if (event.key === 'Enter') broadcastSkill();"
+            />
+          </div>
+          <div class="field" style="max-width: 200px; min-width: 140px">
+            <label>Category</label>
+            <select id="newSkillCategory">
+              <option value="programming">💻 Programming</option>
+              <option value="design">🎨 Design</option>
+              <option value="language">🌐 Languages</option>
+              <option value="music">🎵 Music</option>
+              <option value="data">📊 Data Science</option>
+              <option value="other">✨ Other</option>
+            </select>
+          </div>
+          <button
+            class="btn-broadcast"
+            onclick="AvailabilityManager.openBroadcastWizard()"
+          >
+            🎓 Broadcast
+          </button>
+        </div>
       </div>
-      <div class="skills-grid" id="skillsGrid">
-        <div class="empty">Loading your teaching skills...</div>
-      </div>
-    </div>
 
-    <!-- TWO COL: REQUESTS + REVIEWS -->
-    <div class="content" style="padding-top:0; padding-bottom:0;">
-      <div class="two-col">
-        <!-- INCOMING REQUESTS -->
-        <div class="card">
-          <div class="card-title">📋 Incoming Requests</div>
-          <div class="row-list" id="requestsList">
-            <div class="empty">No pending requests.</div>
+      <!-- ACTIVE SKILLS -->
+      <div class="content" style="padding-top: 0; padding-bottom: 0">
+        <div class="sec-header">
+          <div class="sec-title">📚 Your Teaching Skills</div>
+          <span class="sec-link" id="skillCount">0 skills</span>
+        </div>
+        <div class="skills-grid" id="skillsGrid">
+          <div class="empty">Loading your teaching skills...</div>
+        </div>
+      </div>
+
+      <!-- TWO COL: REQUESTS + REVIEWS -->
+      <div class="content" style="padding-top: 0; padding-bottom: 0">
+        <div class="two-col">
+          <!-- INCOMING REQUESTS -->
+          <div class="card">
+            <div class="card-title">📋 Incoming Requests</div>
+            <div class="row-list" id="requestsList">
+              <div class="empty">No pending requests.</div>
+            </div>
+          </div>
+
+          <!-- RECENT REVIEWS -->
+          <div class="card">
+            <div class="card-title">⭐ Recent Student Reviews</div>
+            <div class="row-list" id="reviewsList">
+              <div class="empty">No reviews yet.</div>
+            </div>
           </div>
         </div>
+      </div>
 
-        <!-- RECENT REVIEWS -->
-        <div class="card">
-          <div class="card-title">⭐ Recent Student Reviews</div>
-          <div class="row-list" id="reviewsList">
-            <div class="empty">No reviews yet.</div>
-          </div>
+      <!-- MY STUDENTS -->
+      <div class="content" style="padding-top: 0">
+        <div class="sec-header">
+          <div class="sec-title">👥 My Students</div>
+          <span class="sec-link" id="studentCount">0 students</span>
+        </div>
+        <div class="sec-tabs">
+          <button class="sec-tab active" onclick="filterStudents(this, 'all')">
+            All
+          </button>
+          <button class="sec-tab" onclick="filterStudents(this, 'upcoming')">
+            📅 Upcoming
+          </button>
+          <button class="sec-tab" onclick="filterStudents(this, 'completed')">
+            ✅ Completed
+          </button>
+          <button class="sec-tab" onclick="filterStudents(this, 'reviewed')">
+            ⭐ Reviewed
+          </button>
+        </div>
+        <div class="student-list" id="studentList">
+          <div class="empty">Loading students...</div>
         </div>
       </div>
     </div>
 
-    <!-- MY STUDENTS -->
-    <div class="content" style="padding-top:0;">
-      <div class="sec-header">
-        <div class="sec-title">👥 My Students</div>
-        <span class="sec-link" id="studentCount">0 students</span>
-      </div>
-      <div class="sec-tabs">
-        <button class="sec-tab active" onclick="filterStudents(this, 'all')">All</button>
-        <button class="sec-tab" onclick="filterStudents(this, 'upcoming')">📅 Upcoming</button>
-        <button class="sec-tab" onclick="filterStudents(this, 'completed')">✅ Completed</button>
-        <button class="sec-tab" onclick="filterStudents(this, 'reviewed')">⭐ Reviewed</button>
-      </div>
-      <div class="student-list" id="studentList">
-        <div class="empty">Loading students...</div>
-      </div>
-    </div>
-  </div>
+    <script>
+      // ── Init ──
+      let allStudentData = [];
+      let currentStudentFilter = "all";
 
-  <script>
-    // ── Init ──
-    let allStudentData = [];
-    let currentStudentFilter = "all";
-
-    async function initTeacherDashboard() {
-      if (typeof VS === "undefined" || !VS.auth) return;
-      const user = VS.auth.currentUser();
-      if (!user) {
-        window.location.replace(
-          "02_login.html?redirect=03_dashboard_teacher.html",
-        );
-        return;
-      }
-
-      document.getElementById("th-name").textContent = user.name || "Teacher";
-
-      try {
-        const [stats, students] = await Promise.all([
-          VS.teachers.myStats().catch((e) => {
-            console.error("myStats err:", e);
-            return {
-              skills: [],
-              studentsCount: 0,
-              totalSessions: 0,
-              pendingRequests: [],
-              recentReviews: [],
-              avgRating: 0,
-              totalEarned: 0,
-              unreadDMs: 0,
-            };
-          }),
-          VS.teachers.myStudents().catch((e) => {
-            console.error("myStudents err:", e);
-            return [];
-          }),
-        ]);
-        allStudentData = students;
-        renderTeacherStats(stats);
-        renderSkills(stats.skills);
-        renderRequests(stats.pendingRequests);
-        renderReviews(stats.recentReviews);
-        renderStudents(students, "all");
-
-        // Show Wallet Coins and XP matching the student dashboard
-        const realCoins = await VS.coins.balance().catch(() => null);
-        const coins = realCoins !== null ? realCoins : localStorage.getItem("vs_coins") || "0";
-        const level = parseInt(localStorage.getItem("vs_user_level") || "1");
-        const xp = parseInt(localStorage.getItem("vs_user_xp") || "0");
-        const thCoins = document.getElementById("th-coin-count");
-        if (thCoins) thCoins.textContent = coins;
-        const thTier = document.getElementById("th-coin-tier");
-        if (thTier) thTier.textContent = `Time Coins · Level ${level} (${xp} XP)`;
-
-        if (typeof AvailabilityManager !== "undefined") {
-          AvailabilityManager.renderAvailabilityTab("availabilityTabContent");
+      async function initTeacherDashboard() {
+        if (typeof VS === "undefined" || !VS.auth) return;
+        const user = VS.auth.currentUser();
+        if (!user) {
+          window.location.replace(
+            "02_login.html?redirect=03_dashboard_teacher.html",
+          );
+          return;
         }
-      } catch (err) {
-        console.error("Dashboard init fail:", err);
+
+        document.getElementById("th-name").textContent = user.name || "Teacher";
+
+        try {
+          const [stats, students] = await Promise.all([
+            VS.teachers.myStats().catch((e) => {
+              console.error("myStats err:", e);
+              return {
+                skills: [],
+                studentsCount: 0,
+                totalSessions: 0,
+                pendingRequests: [],
+                recentReviews: [],
+                avgRating: 0,
+                totalEarned: 0,
+                unreadDMs: 0,
+              };
+            }),
+            VS.teachers.myStudents().catch((e) => {
+              console.error("myStudents err:", e);
+              return [];
+            }),
+          ]);
+          allStudentData = students;
+          renderTeacherStats(stats);
+          renderSkills(stats.skills);
+          renderRequests(stats.pendingRequests);
+          renderReviews(stats.recentReviews);
+          renderStudents(students, "all");
+
+          // Show Wallet Coins and XP matching the student dashboard
+          const realCoins = await VS.coins.balance().catch(() => null);
+          const coins =
+            realCoins !== null
+              ? realCoins
+              : localStorage.getItem("vs_coins") || "0";
+          const level = parseInt(localStorage.getItem("vs_user_level") || "1");
+          const xp = parseInt(localStorage.getItem("vs_user_xp") || "0");
+          const thCoins = document.getElementById("th-coin-count");
+          if (thCoins) thCoins.textContent = coins;
+          const thTier = document.getElementById("th-coin-tier");
+          if (thTier)
+            thTier.textContent = `Time Coins · Level ${level} (${xp} XP)`;
+
+          if (typeof AvailabilityManager !== "undefined") {
+            AvailabilityManager.renderAvailabilityTab("availabilityTabContent");
+          }
+        } catch (err) {
+          console.error("Dashboard init fail:", err);
+        }
       }
-    }
 
-    function renderTeacherStats(stats) {
-      document.getElementById("st-students").textContent =
-        stats.studentsCount;
-      document.getElementById("st-sessions").textContent =
-        stats.totalSessions;
-      document.getElementById("st-rating").textContent =
-        stats.avgRating > 0 ? stats.avgRating + " ★" : "N/A";
-      document.getElementById("st-dms").textContent = stats.unreadDMs;
-    }
-
-    async function handleEditSkill(skillId, skillName, currentCat, currentRate) {
-      if (typeof AvailabilityManager !== "undefined") {
-        AvailabilityManager.openEditSkillModal(
-          skillId,
-          skillName,
-          currentCat,
-          currentRate,
-        );
-      }
-    }
-
-    async function handleRemoveSkill(skillId, skillName) {
-      if (!confirm(`Are you sure you want to stop teaching ${skillName}?`))
-        return;
-      try {
-        await VS.teachers.removeSkill(skillId);
-        showToast("🗑️", `Skill "${skillName}" removed.`);
-        initTeacherDashboard(); // Refresh
-      } catch (err) {
-        showToast("❌", err.message);
-      }
-    }
-
-    function renderSkills(skills) {
-      const grid = document.getElementById("skillsGrid");
-      document.getElementById("skillCount").textContent =
-        `${skills.length} skill${skills.length !== 1 ? "s" : ""}`;
-
-      if (!skills.length) {
-        grid.innerHTML =
-          '<div class="empty">No teaching skills yet. You must first verify a skill before you can teach it.</div>';
-        return;
+      function renderTeacherStats(stats) {
+        document.getElementById("st-students").textContent =
+          stats.studentsCount;
+        document.getElementById("st-sessions").textContent =
+          stats.totalSessions;
+        document.getElementById("st-rating").textContent =
+          stats.avgRating > 0 ? stats.avgRating + " ★" : "N/A";
+        document.getElementById("st-dms").textContent = stats.unreadDMs;
       }
 
-      const tierClass = {
-        gold: "tier-gold",
-        silver: "tier-silver",
-        bronze: "tier-bronze",
-        unverified: "tier-unverified",
-      };
-      const tierLabel = {
-        gold: "🥇 Gold",
-        silver: "🥈 Silver",
-        bronze: "🥉 Bronze",
-        unverified: "⬜ Unverified",
-      };
+      async function handleEditSkill(
+        skillId,
+        skillName,
+        currentCat,
+        currentRate,
+      ) {
+        if (typeof AvailabilityManager !== "undefined") {
+          AvailabilityManager.openEditSkillModal(
+            skillId,
+            skillName,
+            currentCat,
+            currentRate,
+          );
+        }
+      }
 
-      grid.innerHTML = skills
-        .map(
-          (s) => `
+      async function handleRemoveSkill(skillId, skillName) {
+        if (!confirm(`Are you sure you want to stop teaching ${skillName}?`))
+          return;
+        try {
+          await VS.teachers.removeSkill(skillId);
+          showToast("🗑️", `Skill "${skillName}" removed.`);
+          initTeacherDashboard(); // Refresh
+        } catch (err) {
+          showToast("❌", err.message);
+        }
+      }
+
+      function renderSkills(skills) {
+        const grid = document.getElementById("skillsGrid");
+        document.getElementById("skillCount").textContent =
+          `${skills.length} skill${skills.length !== 1 ? "s" : ""}`;
+
+        if (!skills.length) {
+          grid.innerHTML =
+            '<div class="empty">No teaching skills yet. You must first verify a skill before you can teach it.</div>';
+          return;
+        }
+
+        const tierClass = {
+          gold: "tier-gold",
+          silver: "tier-silver",
+          bronze: "tier-bronze",
+          unverified: "tier-unverified",
+        };
+        const tierLabel = {
+          gold: "🥇 Gold",
+          silver: "🥈 Silver",
+          bronze: "🥉 Bronze",
+          unverified: "⬜ Unverified",
+        };
+
+        grid.innerHTML = skills
+          .map(
+            (s) => `
     <div class="skill-card">
       <div class="sk-top">
         <span class="sk-name">${escapeHTML(s.name)}</span>
@@ -1762,36 +1901,33 @@
       ${s.tier === "unverified" ? `<a href="13_skill_verify_teacher.html" style="font-size:.78rem;color:var(--primary);font-weight:600;text-decoration:none">⚠️ Must verify to teach →</a>` : ""}
     </div>
   `,
-        )
-        .join("");
-    }
-
-    async function handleBookingAction(id, action) {
-      try {
-        if (action === "confirm") await VS.sessions.confirm(id);
-        else await VS.sessions.cancel(id);
-        showToast(
-          action === "confirm" ? "✅" : "❌",
-          `Session ${action}ed!`,
-        );
-        initTeacherDashboard(); // Refresh
-      } catch (err) {
-        showToast("❌", err.message);
-      }
-    }
-
-    function renderRequests(pending) {
-      const list = document.getElementById("requestsList");
-      if (!pending || !pending.length) {
-        list.innerHTML = '<div class="empty">No pending requests. 🎉</div>';
-        return;
+          )
+          .join("");
       }
 
-      list.innerHTML = pending
-        .map((r) => {
-          const learner = r.learner || {};
-          const initials = (learner.name || "U").charAt(0).toUpperCase();
-          return `
+      async function handleBookingAction(id, action) {
+        try {
+          if (action === "confirm") await VS.sessions.confirm(id);
+          else await VS.sessions.cancel(id);
+          showToast(action === "confirm" ? "✅" : "❌", `Session ${action}ed!`);
+          initTeacherDashboard(); // Refresh
+        } catch (err) {
+          showToast("❌", err.message);
+        }
+      }
+
+      function renderRequests(pending) {
+        const list = document.getElementById("requestsList");
+        if (!pending || !pending.length) {
+          list.innerHTML = '<div class="empty">No pending requests. 🎉</div>';
+          return;
+        }
+
+        list.innerHTML = pending
+          .map((r) => {
+            const learner = r.learner || {};
+            const initials = (learner.name || "U").charAt(0).toUpperCase();
+            return `
       <div class="row-item">
         <div class="ri-avatar" style="background:${learner.avatar_color || "var(--primary)"}">${initials}</div>
         <div class="ri-info">
@@ -1799,34 +1935,38 @@
           <div class="ri-sub">${escapeHTML(r.skill_name)} · ${r.scheduled_date}</div>
         </div>
         <div class="ri-action" style="display:flex; gap: 4px;">
-          ${r.status === "pending" ? `
+          ${
+            r.status === "pending"
+              ? `
             <button onclick="handleBookingAction('${r.id}', 'confirm')" class="btn-mini primary" title="Approve">✔</button>
             <button onclick="handleBookingAction('${r.id}', 'cancel')" class="btn-mini outline" title="Reject">✖</button>
-          ` : `
+          `
+              : `
             <span class="ri-badge badge-pending">${capitalize(r.status)}</span>
-          `}
+          `
+          }
         </div>
       </div>`;
-        })
-        .join("");
-    }
-
-    function renderReviews(reviews) {
-      const list = document.getElementById("reviewsList");
-      if (!reviews || !reviews.length) {
-        list.innerHTML =
-          '<div class="empty">No reviews yet. Keep teaching! 📚</div>';
-        return;
+          })
+          .join("");
       }
 
-      list.innerHTML = reviews
-        .map((r) => {
-          const learner = r.learner || {};
-          const initials = (learner.name || "U").charAt(0).toUpperCase();
-          const stars =
-            "★".repeat(r.learner_rating || 0) +
-            "☆".repeat(5 - (r.learner_rating || 0));
-          return `
+      function renderReviews(reviews) {
+        const list = document.getElementById("reviewsList");
+        if (!reviews || !reviews.length) {
+          list.innerHTML =
+            '<div class="empty">No reviews yet. Keep teaching! 📚</div>';
+          return;
+        }
+
+        list.innerHTML = reviews
+          .map((r) => {
+            const learner = r.learner || {};
+            const initials = (learner.name || "U").charAt(0).toUpperCase();
+            const stars =
+              "★".repeat(r.learner_rating || 0) +
+              "☆".repeat(5 - (r.learner_rating || 0));
+            return `
       <div class="row-item" style="flex-direction:column;align-items:flex-start;gap:.4rem">
         <div style="display:flex;align-items:center;gap:.6rem;width:100%">
           <div class="ri-avatar" style="background:${learner.avatar_color || "var(--primary)"};width:32px;height:32px;font-size:.75rem">${initials}</div>
@@ -1838,64 +1978,64 @@
         </div>
         <div class="review-text">"${escapeHTML(r.learner_review)}"</div>
       </div>`;
-        })
-        .join("");
-    }
+          })
+          .join("");
+      }
 
-    // ── My Students ──
-    function filterStudents(el, filter) {
-      currentStudentFilter = filter;
-      document
-        .querySelectorAll(".sec-tab")
-        .forEach((t) => t.classList.remove("active"));
-      el.classList.add("active");
-      renderStudents(allStudentData, filter);
-    }
+      // ── My Students ──
+      function filterStudents(el, filter) {
+        currentStudentFilter = filter;
+        document
+          .querySelectorAll(".sec-tab")
+          .forEach((t) => t.classList.remove("active"));
+        el.classList.add("active");
+        renderStudents(allStudentData, filter);
+      }
 
-    function renderStudents(students, filter) {
-      const list = document.getElementById("studentList");
-      let filtered = students;
+      function renderStudents(students, filter) {
+        const list = document.getElementById("studentList");
+        let filtered = students;
 
-      if (filter === "upcoming") {
-        filtered = students.filter((s) =>
-          ["pending", "confirmed", "active"].includes(s.status),
+        if (filter === "upcoming") {
+          filtered = students.filter((s) =>
+            ["pending", "confirmed", "active"].includes(s.status),
+          );
+        } else if (filter === "completed") {
+          filtered = students.filter((s) => s.status === "completed");
+        } else if (filter === "reviewed") {
+          filtered = students.filter((s) => s.review);
+        }
+
+        const uniqueStudents = new Set(
+          filtered.map((s) => s.student.id).filter(Boolean),
         );
-      } else if (filter === "completed") {
-        filtered = students.filter((s) => s.status === "completed");
-      } else if (filter === "reviewed") {
-        filtered = students.filter((s) => s.review);
-      }
+        document.getElementById("studentCount").textContent =
+          `${uniqueStudents.size} student${uniqueStudents.size !== 1 ? "s" : ""} · ${filtered.length} session${filtered.length !== 1 ? "s" : ""}`;
 
-      const uniqueStudents = new Set(
-        filtered.map((s) => s.student.id).filter(Boolean),
-      );
-      document.getElementById("studentCount").textContent =
-        `${uniqueStudents.size} student${uniqueStudents.size !== 1 ? "s" : ""} · ${filtered.length} session${filtered.length !== 1 ? "s" : ""}`;
+        if (!filtered.length) {
+          list.innerHTML =
+            '<div class="empty">No students found for this filter.</div>';
+          return;
+        }
 
-      if (!filtered.length) {
-        list.innerHTML =
-          '<div class="empty">No students found for this filter.</div>';
-        return;
-      }
+        const statusClass = {
+          completed: "sts-completed",
+          pending: "sts-pending",
+          confirmed: "sts-confirmed",
+          cancelled: "sts-cancelled",
+          active: "sts-confirmed",
+        };
+        const statusLabel = {
+          completed: "✅ Completed",
+          pending: "⏳ Pending",
+          confirmed: "📅 Confirmed",
+          cancelled: "❌ Cancelled",
+          active: "▶️ Active",
+        };
 
-      const statusClass = {
-        completed: "sts-completed",
-        pending: "sts-pending",
-        confirmed: "sts-confirmed",
-        cancelled: "sts-cancelled",
-        active: "sts-confirmed",
-      };
-      const statusLabel = {
-        completed: "✅ Completed",
-        pending: "⏳ Pending",
-        confirmed: "📅 Confirmed",
-        cancelled: "❌ Cancelled",
-        active: "▶️ Active",
-      };
-
-      list.innerHTML = filtered
-        .map(
-          (s) => `
+        list.innerHTML = filtered
+          .map(
+            (s) => `
     <div class="student-item">
       <div class="si-avatar" style="background:${s.student.color}">${s.student.initials}</div>
       <div class="si-body">
@@ -1910,107 +2050,123 @@
           <span>🪙 ${s.coinRate}/hr</span>
         </div>
         ${s.topic ? `<div style="font-size:.78rem;color:var(--body);margin-top:.2rem">Topic: ${escapeHTML(s.topic)}</div>` : ""}
-        ${s.review
-              ? `
+        ${
+          s.review
+            ? `
           <div class="si-review">
             <div class="si-review-stars">${"★".repeat(s.rating || 0)}${"☆".repeat(5 - (s.rating || 0))}</div>
             <div class="si-review-text">"${escapeHTML(s.review)}"</div>
           </div>`
-              : ""
-            }
+            : ""
+        }
       </div>
     </div>
   `,
-        )
-        .join("");
-    }
-
-    // ── Broadcast (with qualification check) ──
-    async function broadcastSkill() {
-      if (typeof AvailabilityManager !== "undefined") {
-        AvailabilityManager.openBroadcastWizard();
+          )
+          .join("");
       }
-    }
 
-    // ── Helpers ──
-    function escapeHTML(str) {
-      if (!str) return "";
-      return str.replace(
-        /[&<>'"]/g,
-        (t) =>
-          ({
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            "'": "&#39;",
-            '"': "&quot;",
-          })[t],
-      );
-    }
-    function capitalize(s) {
-      return s ? s.charAt(0).toUpperCase() + s.slice(1) : "";
-    }
-    function showToast(icon, text) {
-      const wrap = document.getElementById("toastWrap");
-      if (!wrap) return;
-      const t = document.createElement("div");
-      t.className = "toast";
-      t.innerHTML = `<span style="font-size:1rem">${icon}</span><span>${text}</span>`;
-      wrap.appendChild(t);
-      setTimeout(() => t.remove(), 3500);
-    }
-
-    // Sidebar logic is handled by toggleSidebar() and CSS media queries.
-
-    // ── Theme ──
-    function toggleTheme() {
-      const html = document.documentElement;
-      const isDark = html.getAttribute("data-theme") === "dark";
-      html.setAttribute("data-theme", isDark ? "light" : "dark");
-      document.getElementById("globalThemeBtn").textContent = isDark
-        ? "🌙"
-        : "☀️";
-      localStorage.setItem("vs-theme", isDark ? "light" : "dark");
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      if (document.documentElement.getAttribute("data-theme") === "dark")
-        document.getElementById("globalThemeBtn").textContent = "☀️";
-      if (typeof VS !== "undefined" && VS.ui) VS.ui.updateSidebar();
-      initTeacherDashboard();
-    });
-  </script>
-
-  <button onclick="toggleTheme()" id="globalThemeBtn" class="floating-theme-btn" title="Toggle Dark/Light Mode">
-    🌙
-  </button>
-
-  <script>
-    if (typeof lucide !== "undefined") {
-      lucide.createIcons();
-    }
-  </script>
-  <div id="sidebarOverlay"
-    style="position:fixed; inset:0; background:rgba(0,0,0,0.3); backdrop-filter:blur(2px); z-index:45; display:none;"
-    onclick="toggleSidebar()"></div>
-
-  <script>
-    function toggleSidebar() {
-      const sb = document.getElementById("sidebar");
-      const overlay = document.getElementById("sidebarOverlay");
-      sb.classList.toggle("open");
-      overlay.style.display = sb.classList.contains("open") ? "block" : "none";
-    }
-
-    // Close sidebar on link click (mobile)
-    document.querySelectorAll(".sb-item").forEach((item) => {
-      item.addEventListener("click", () => {
-        if (window.innerWidth <= 1024) {
-          toggleSidebar();
+      // ── Broadcast (with qualification check) ──
+      async function broadcastSkill() {
+        if (typeof AvailabilityManager !== "undefined") {
+          AvailabilityManager.openBroadcastWizard();
         }
-      });
-    });
-  </script>
-</body>
+      }
 
+      // ── Helpers ──
+      function escapeHTML(str) {
+        if (!str) return "";
+        return str.replace(
+          /[&<>'"]/g,
+          (t) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              "'": "&#39;",
+              '"': "&quot;",
+            })[t],
+        );
+      }
+      function capitalize(s) {
+        return s ? s.charAt(0).toUpperCase() + s.slice(1) : "";
+      }
+      function showToast(icon, text) {
+        const wrap = document.getElementById("toastWrap");
+        if (!wrap) return;
+        const t = document.createElement("div");
+        t.className = "toast";
+        t.innerHTML = `<span style="font-size:1rem">${icon}</span><span>${text}</span>`;
+        wrap.appendChild(t);
+        setTimeout(() => t.remove(), 3500);
+      }
+
+      // Sidebar logic is handled by toggleSidebar() and CSS media queries.
+
+      // ── Theme ──
+      function toggleTheme() {
+        const html = document.documentElement;
+        const isDark = html.getAttribute("data-theme") === "dark";
+        html.setAttribute("data-theme", isDark ? "light" : "dark");
+        document.getElementById("globalThemeBtn").textContent = isDark
+          ? "🌙"
+          : "☀️";
+        localStorage.setItem("vs-theme", isDark ? "light" : "dark");
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        if (document.documentElement.getAttribute("data-theme") === "dark")
+          document.getElementById("globalThemeBtn").textContent = "☀️";
+        if (typeof VS !== "undefined" && VS.ui) VS.ui.updateSidebar();
+        initTeacherDashboard();
+      });
+    </script>
+
+    <button
+      onclick="toggleTheme()"
+      id="globalThemeBtn"
+      class="floating-theme-btn"
+      title="Toggle Dark/Light Mode"
+    >
+      🌙
+    </button>
+
+    <script>
+      if (typeof lucide !== "undefined") {
+        lucide.createIcons();
+      }
+    </script>
+    <div
+      id="sidebarOverlay"
+      style="
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(2px);
+        z-index: 45;
+        display: none;
+      "
+      onclick="toggleSidebar()"
+    ></div>
+
+    <script>
+      function toggleSidebar() {
+        const sb = document.getElementById("sidebar");
+        const overlay = document.getElementById("sidebarOverlay");
+        sb.classList.toggle("open");
+        overlay.style.display = sb.classList.contains("open")
+          ? "block"
+          : "none";
+      }
+
+      // Close sidebar on link click (mobile)
+      document.querySelectorAll(".sb-item").forEach((item) => {
+        item.addEventListener("click", () => {
+          if (window.innerWidth <= 1024) {
+            toggleSidebar();
+          }
+        });
+      });
+    </script>
+  </body>
 </html>

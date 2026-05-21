@@ -6,8 +6,9 @@
 const AvailabilityManager = {
   // --- BROADCAST WIZARD ---
   async openBroadcastWizard() {
-    const skillName = document.getElementById('newSkillName')?.value || '';
-    const category = document.getElementById('newSkillCategory')?.value || 'other';
+    const skillName = document.getElementById("newSkillName")?.value || "";
+    const category =
+      document.getElementById("newSkillCategory")?.value || "other";
 
     if (!skillName.trim()) {
       alert("Please enter a skill name first!");
@@ -15,9 +16,9 @@ const AvailabilityManager = {
     }
 
     // Create modal
-    const modal = document.createElement('div');
-    modal.id = 'broadcastWizard';
-    modal.className = 'wizard-overlay';
+    const modal = document.createElement("div");
+    modal.id = "broadcastWizard";
+    modal.className = "wizard-overlay";
     modal.style.cssText = `
       position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
       z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px;
@@ -46,33 +47,58 @@ const AvailabilityManager = {
               <!-- Empty corner -->
               <div></div>
               <!-- Days labels -->
-              ${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((d, i) => `<div style="text-align:center; font-size:0.75rem; font-weight:800; color: ${i===0||i===6 ? 'var(--danger)' : 'var(--muted)'}; text-transform:uppercase;">${d}</div>`).join('')}
+              ${["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d, i) => `<div style="text-align:center; font-size:0.75rem; font-weight:800; color: ${i === 0 || i === 6 ? "var(--danger)" : "var(--muted)"}; text-transform:uppercase;">${d}</div>`).join("")}
               
               <!-- Rows -->
               ${[
-                { label: '🌅 Morning', range: '8am - 12pm', start: '08:00', end: '12:00' },
-                { label: '☀️ Mid-Day', range: '12pm - 4pm', start: '12:00', end: '16:00' },
-                { label: '🌆 Evening', range: '4pm - 9pm', start: '16:00', end: '21:00' },
-                { label: '🌙 Late Night', range: '9pm - 12am', start: '21:00', end: '23:59' }
-              ].map((row, timeIdx) => {
-                return `
+                {
+                  label: "🌅 Morning",
+                  range: "8am - 12pm",
+                  start: "08:00",
+                  end: "12:00",
+                },
+                {
+                  label: "☀️ Mid-Day",
+                  range: "12pm - 4pm",
+                  start: "12:00",
+                  end: "16:00",
+                },
+                {
+                  label: "🌆 Evening",
+                  range: "4pm - 9pm",
+                  start: "16:00",
+                  end: "21:00",
+                },
+                {
+                  label: "🌙 Late Night",
+                  range: "9pm - 12am",
+                  start: "21:00",
+                  end: "23:59",
+                },
+              ]
+                .map((row, timeIdx) => {
+                  return `
                   <div style="display:flex; flex-direction:column; justify-content:center; padding-right: 10px;">
                     <div style="font-size: 0.75rem; font-weight: 700; color: var(--ink); white-space:nowrap;">${row.label}</div>
                     <div style="font-size: 0.6rem; color: var(--muted); font-weight: 500;">${row.range}</div>
                   </div>
-                  ${Array(7).fill(0).map((_, day) => {
-                    const isWeekend = (day === 0 || day === 6);
-                    return `
-                      <div class="wiz-slot ${isWeekend ? 'weekend' : ''}" 
+                  ${Array(7)
+                    .fill(0)
+                    .map((_, day) => {
+                      const isWeekend = day === 0 || day === 6;
+                      return `
+                      <div class="wiz-slot ${isWeekend ? "weekend" : ""}" 
                            data-day="${day}" data-time-start="${row.start}" data-time-end="${row.end}"
                            onclick="this.classList.toggle('selected')"
                            style="aspect-ratio: 1.2; border-radius: 10px; background: var(--surface); border: 1.5px solid var(--border); cursor:pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; position:relative;">
                         <span class="check-icon" style="display:none; font-size: 1rem;">✅</span>
                       </div>
                     `;
-                  }).join('')}
+                    })
+                    .join("")}
                 `;
-              }).join('')}
+                })
+                .join("")}
             </div></div>
 
             <style>
@@ -87,7 +113,7 @@ const AvailabilityManager = {
 
             <div style="display:flex; justify-content: flex-end; gap: 0.75rem;">
               <button onclick="document.getElementById('broadcastWizard').remove()" class="th-btn outline" style="color:var(--ink); border-color:var(--border)">Cancel</button>
-              <button onclick="AvailabilityManager.wizardStep2('${skillName.replace(/'/g,"\\'")}', '${category}')" class="th-btn primary" style="background:var(--primary); color:#fff">Next Step &rarr;</button>
+              <button onclick="AvailabilityManager.wizardStep2('${skillName.replace(/'/g, "\\'")}', '${category}')" class="th-btn primary" style="background:var(--primary); color:#fff">Next Step &rarr;</button>
             </div>
           </div>
         </div>
@@ -98,13 +124,15 @@ const AvailabilityManager = {
   },
 
   wizardStep2(skillName, category) {
-    const selected = Array.from(document.querySelectorAll('.wiz-slot.selected'));
+    const selected = Array.from(
+      document.querySelectorAll(".wiz-slot.selected"),
+    );
     if (selected.length === 0) {
       alert("Please select at least one slot!");
       return;
     }
 
-    const content = document.getElementById('wizardContent');
+    const content = document.getElementById("wizardContent");
     content.innerHTML = `
       <div id="step-2">
         <h4 style="font-size: 1rem; margin-bottom: 0.5rem;">Confirm & Notify</h4>
@@ -114,16 +142,18 @@ const AvailabilityManager = {
 
         <div style="display:flex; justify-content: space-between; align-items: center;">
           <button onclick="AvailabilityManager.openBroadcastWizard()" style="background:none; border:none; color:var(--muted); font-size: 0.85rem; cursor:pointer;">&larr; Back</button>
-          <button id="finalBroadcastBtn" onclick="AvailabilityManager.finalizeBroadcast('${skillName.replace(/'/g,"\\'")}', '${category}')" class="th-btn primary" style="background:var(--primary); color:#fff">🚀 Broadcast Now</button>
+          <button id="finalBroadcastBtn" onclick="AvailabilityManager.finalizeBroadcast('${skillName.replace(/'/g, "\\'")}', '${category}')" class="th-btn primary" style="background:var(--primary); color:#fff">🚀 Broadcast Now</button>
         </div>
       </div>
     `;
   },
 
   async finalizeBroadcast(skillName, category) {
-    const btn = document.getElementById('finalBroadcastBtn');
-    const note = document.getElementById('availNote').value;
-    const slots = Array.from(document.querySelectorAll('.wiz-slot.selected')).map(el => {
+    const btn = document.getElementById("finalBroadcastBtn");
+    const note = document.getElementById("availNote").value;
+    const slots = Array.from(
+      document.querySelectorAll(".wiz-slot.selected"),
+    ).map((el) => {
       const day = parseInt(el.dataset.day);
       const startTime = el.dataset.timeStart + ":00";
       const endTime = el.dataset.timeEnd + ":00";
@@ -138,7 +168,7 @@ const AvailabilityManager = {
       const res = await VS.teachers.broadcast(skillName, category);
       if (!res.qualified) {
         alert("You need to pass the MCQ verification for this skill first!");
-        document.getElementById('broadcastWizard').remove();
+        document.getElementById("broadcastWizard").remove();
         return;
       }
 
@@ -146,10 +176,13 @@ const AvailabilityManager = {
       await VS.teachers.saveWeeklyAvailability(slots);
 
       // 3. Notify learners
-      const notify = await VS.teachers.notifyMatchingLearners(skillName, note || "Check my profile for slots.");
+      const notify = await VS.teachers.notifyMatchingLearners(
+        skillName,
+        note || "Check my profile for slots.",
+      );
 
       // Success!
-      document.getElementById('wizardContent').innerHTML = `
+      document.getElementById("wizardContent").innerHTML = `
         <div style="text-align:center; padding: 1rem;">
           <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
           <h4 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Broadcast Successful!</h4>
@@ -170,12 +203,12 @@ const AvailabilityManager = {
     if (!container) return;
 
     try {
-      const userId = localStorage.getItem('vs_user_id');
+      const userId = localStorage.getItem("vs_user_id");
       const [slots, stats] = await Promise.all([
         VS.teachers.getWeeklyAvailability(userId).catch(() => []),
-        VS.teachers.myStats().catch(() => ({ skills: [] }))
+        VS.teachers.myStats().catch(() => ({ skills: [] })),
       ]);
-      
+
       let skillsHtml = `
         <div class="card" style="margin-bottom: 2rem; border-left: 4px solid var(--border);">
           <div class="card-title">🚀 Active Teaching Broadcasts</div>
@@ -193,8 +226,10 @@ const AvailabilityManager = {
             <div class="card-title">🚀 Active Teaching Broadcasts</div>
             <p style="font-size: 0.82rem; color: var(--muted); margin-bottom: 1.2rem;">You are currently visible to students for the following subjects (click to edit):</p>
             <div style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
-              ${stats.skills.map(s => `
-                <div onclick="AvailabilityManager.openEditSkillModal('${s.id}', '${s.name.replace(/'/g,"\\'")}', '${s.category}', ${s.coin_rate})" 
+              ${stats.skills
+                .map(
+                  (s) => `
+                <div onclick="AvailabilityManager.openEditSkillModal('${s.id}', '${s.name.replace(/'/g, "\\'")}', '${s.category}', ${s.coin_rate})" 
                      class="broadcast-pill-item"
                      style="background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:0.8rem 1.2rem; display:flex; flex-direction:column; gap:0.25rem; min-width:160px; cursor:pointer; transition:all 0.2s;">
                   <span style="font-size:0.9rem; font-weight:700; color:var(--ink);">${s.name}</span>
@@ -203,7 +238,9 @@ const AvailabilityManager = {
                     <span style="font-size:0.85rem; font-weight:700; color:var(--primary);">🪙 ${s.coin_rate}/hr</span>
                   </div>
                 </div>
-              `).join('')}
+              `,
+                )
+                .join("")}
             </div>
             <style>
               .broadcast-pill-item:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(22, 162, 123, 0.1); }
@@ -243,24 +280,38 @@ const AvailabilityManager = {
 
           <div class="avail-scroll-wrap">
             <div class="avail-day-grid">
-              ${['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map((day, i) => {
-                const daySlots = slots.filter(s => s.day_of_week === i);
-                const isWeekend = (i === 0 || i === 6);
-                return `
+              ${[
+                "Sunday",
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+              ]
+                .map((day, i) => {
+                  const daySlots = slots.filter((s) => s.day_of_week === i);
+                  const isWeekend = i === 0 || i === 6;
+                  return `
                   <div style="display:flex; flex-direction:column; gap:0.5rem;">
-                    <div style="font-size:0.72rem; font-weight:700; color: ${isWeekend ? 'var(--danger)' : 'var(--ink)'}; text-align:center; margin-bottom:0.25rem; white-space:nowrap;">${day}</div>
+                    <div style="font-size:0.72rem; font-weight:700; color: ${isWeekend ? "var(--danger)" : "var(--ink)"}; text-align:center; margin-bottom:0.25rem; white-space:nowrap;">${day}</div>
                     <div id="day-slots-${i}" style="display:flex; flex-direction:column; gap:0.35rem; flex:1;">
-                      ${daySlots.map(s => `
+                      ${daySlots
+                        .map(
+                          (s) => `
                         <div style="padding:0.35rem 0.3rem; background:var(--surface); border:1px solid var(--border); border-radius:6px; font-size:0.65rem; text-align:center; font-family:'JetBrains Mono', monospace; white-space:nowrap;">
-                          ${s.start_time.substring(0,5)}&thinsp;–&thinsp;${s.end_time.substring(0,5)}
+                          ${s.start_time.substring(0, 5)}&thinsp;–&thinsp;${s.end_time.substring(0, 5)}
                         </div>
-                      `).join('')}
-                      ${daySlots.length === 0 ? '<div style="font-size:0.65rem; color:var(--muted); text-align:center; font-style:italic; padding: 0.4rem 0;">No slots</div>' : ''}
+                      `,
+                        )
+                        .join("")}
+                      ${daySlots.length === 0 ? '<div style="font-size:0.65rem; color:var(--muted); text-align:center; font-style:italic; padding: 0.4rem 0;">No slots</div>' : ""}
                     </div>
                     <button onclick="AvailabilityManager.addSlotPrompt(${i})" style="padding:0.35rem 0.25rem; border:1px dashed var(--border); background:none; border-radius:6px; font-size:0.65rem; color:var(--primary); cursor:pointer; white-space:nowrap;">+ Add</button>
                   </div>
                 `;
-              }).join('')}
+                })
+                .join("")}
             </div>
           </div>
           
@@ -276,13 +327,21 @@ const AvailabilityManager = {
   },
 
   async addSlotPrompt(day) {
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const days = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
     const dayName = days[day];
 
     // Create modal
-    const modal = document.createElement('div');
-    modal.id = 'addSlotModal';
-    modal.className = 'wizard-overlay';
+    const modal = document.createElement("div");
+    modal.id = "addSlotModal";
+    modal.className = "wizard-overlay";
     modal.style.cssText = `
       position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px);
       z-index: 1100; display: flex; align-items: center; justify-content: center; padding: 20px;
@@ -319,50 +378,56 @@ const AvailabilityManager = {
   },
 
   async confirmAddSlot(day) {
-    const start = document.getElementById('slotStart').value;
-    const end = document.getElementById('slotEnd').value;
-    const btn = document.getElementById('confirmSlotBtn');
+    const start = document.getElementById("slotStart").value;
+    const end = document.getElementById("slotEnd").value;
+    const btn = document.getElementById("confirmSlotBtn");
 
     if (!start || !end) return;
     if (start >= end) {
       alert("Start time must be before end time.");
       return;
     }
-    
+
     try {
       btn.disabled = true;
       btn.textContent = "Adding...";
 
-      const userId = localStorage.getItem('vs_user_id');
+      const userId = localStorage.getItem("vs_user_id");
       const current = await VS.teachers.getWeeklyAvailability(userId);
-      const next = [...current.map(s => ({ day_of_week: s.day_of_week, start_time: s.start_time, end_time: s.end_time })), 
-                    { day_of_week: day, start_time: `${start}:00`, end_time: `${end}:00` }];
-      
+      const next = [
+        ...current.map((s) => ({
+          day_of_week: s.day_of_week,
+          start_time: s.start_time,
+          end_time: s.end_time,
+        })),
+        { day_of_week: day, start_time: `${start}:00`, end_time: `${end}:00` },
+      ];
+
       await VS.teachers.saveWeeklyAvailability(next);
-      
-      document.getElementById('addSlotModal').remove();
-      this.renderAvailabilityTab('availabilityTabContent');
-      if (typeof showToast !== 'undefined') showToast("📅", "Time slot added!");
-    } catch (e) { 
+
+      document.getElementById("addSlotModal").remove();
+      this.renderAvailabilityTab("availabilityTabContent");
+      if (typeof showToast !== "undefined") showToast("📅", "Time slot added!");
+    } catch (e) {
       btn.disabled = false;
       btn.textContent = "Add to Schedule";
-      alert(e.message); 
+      alert(e.message);
     }
   },
 
   async clearAllAvailability() {
     if (confirm("Clear all your weekly slots?")) {
       await VS.teachers.saveWeeklyAvailability([]);
-      this.renderAvailabilityTab('availabilityTabContent');
+      this.renderAvailabilityTab("availabilityTabContent");
     }
   },
 
   // --- EDIT SKILL MODAL ---
   async openEditSkillModal(skillId, skillName, category, coinRate) {
     // Create modal
-    const modal = document.createElement('div');
-    modal.id = 'editSkillModal';
-    modal.className = 'wizard-overlay';
+    const modal = document.createElement("div");
+    modal.id = "editSkillModal";
+    modal.className = "wizard-overlay";
     modal.style.cssText = `
       position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px);
       z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px;
@@ -371,12 +436,19 @@ const AvailabilityManager = {
     // Fetch current availability to show in modal
     let currentSlots = [];
     try {
-      const userId = localStorage.getItem('vs_user_id');
+      const userId = localStorage.getItem("vs_user_id");
       currentSlots = await VS.teachers.getWeeklyAvailability(userId);
-    } catch(e) { console.warn("Failed to fetch slots for edit:", e); }
+    } catch (e) {
+      console.warn("Failed to fetch slots for edit:", e);
+    }
 
     const isSlotActive = (day, start, end) => {
-      return currentSlots.some(s => s.day_of_week === day && s.start_time.startsWith(start) && s.end_time.startsWith(end));
+      return currentSlots.some(
+        (s) =>
+          s.day_of_week === day &&
+          s.start_time.startsWith(start) &&
+          s.end_time.startsWith(end),
+      );
     };
 
     modal.innerHTML = `
@@ -399,12 +471,12 @@ const AvailabilityManager = {
             <div style="grid-column: 1/-1;">
               <label for="editSkillCategory" style="display:block; font-size:0.75rem; font-weight:700; color:var(--muted); margin-bottom:0.4rem; text-transform:uppercase;">Category</label>
               <select id="editSkillCategory" style="width:100%; padding:0.8rem; border-radius:10px; border:1.5px solid var(--border); background:var(--surface); color:var(--ink); font-size:0.9rem; outline:none;">
-                <option value="programming" ${category === 'programming' ? 'selected' : ''}>💻 Programming & Tech</option>
-                <option value="design" ${category === 'design' ? 'selected' : ''}>🎨 Design & Arts</option>
-                <option value="language" ${category === 'language' ? 'selected' : ''}>🗣️ Languages</option>
-                <option value="academics" ${category === 'academics' ? 'selected' : ''}>📚 Academics</option>
-                <option value="music" ${category === 'music' ? 'selected' : ''}>🎸 Music & Performance</option>
-                <option value="other" ${category === 'other' ? 'selected' : ''}>✨ Other</option>
+                <option value="programming" ${category === "programming" ? "selected" : ""}>💻 Programming & Tech</option>
+                <option value="design" ${category === "design" ? "selected" : ""}>🎨 Design & Arts</option>
+                <option value="language" ${category === "language" ? "selected" : ""}>🗣️ Languages</option>
+                <option value="academics" ${category === "academics" ? "selected" : ""}>📚 Academics</option>
+                <option value="music" ${category === "music" ? "selected" : ""}>🎸 Music & Performance</option>
+                <option value="other" ${category === "other" ? "selected" : ""}>✨ Other</option>
               </select>
             </div>
           </div>
@@ -412,32 +484,57 @@ const AvailabilityManager = {
           <h4 style="font-size: 0.9rem; margin-bottom: 0.75rem; font-weight: 700;">Update Weekly Timings</h4>
           <div style="overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -0.5rem; padding: 0 0.5rem 0.5rem; scrollbar-width: thin;"><div id="editWizardGrid" style="display: grid; grid-template-columns: 90px repeat(7, 1fr); gap: 0.5rem; margin-bottom: 1.5rem; align-items: stretch; min-width: 480px;">
             <div></div>
-            ${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((d, i) => `<div style="text-align:center; font-size:0.65rem; font-weight:800; color: ${i===0||i===6 ? 'var(--danger)' : 'var(--muted)'}; text-transform:uppercase;">${d}</div>`).join('')}
+            ${["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d, i) => `<div style="text-align:center; font-size:0.65rem; font-weight:800; color: ${i === 0 || i === 6 ? "var(--danger)" : "var(--muted)"}; text-transform:uppercase;">${d}</div>`).join("")}
             
             ${[
-              { label: '🌅 Morning', range: '8am-12pm', start: '08:00', end: '12:00' },
-              { label: '☀️ Mid-Day', range: '12pm-4pm', start: '12:00', end: '16:00' },
-              { label: '🌆 Evening', range: '4pm-9pm', start: '16:00', end: '21:00' },
-              { label: '🌙 Night', range: '9pm-12am', start: '21:00', end: '23:59' }
-            ].map((row, timeIdx) => {
-              return `
+              {
+                label: "🌅 Morning",
+                range: "8am-12pm",
+                start: "08:00",
+                end: "12:00",
+              },
+              {
+                label: "☀️ Mid-Day",
+                range: "12pm-4pm",
+                start: "12:00",
+                end: "16:00",
+              },
+              {
+                label: "🌆 Evening",
+                range: "4pm-9pm",
+                start: "16:00",
+                end: "21:00",
+              },
+              {
+                label: "🌙 Night",
+                range: "9pm-12am",
+                start: "21:00",
+                end: "23:59",
+              },
+            ]
+              .map((row, timeIdx) => {
+                return `
                 <div style="display:flex; flex-direction:column; justify-content:center;">
                   <div style="font-size: 0.65rem; font-weight: 700; color: var(--ink); line-height: 1;">${row.label}</div>
                   <div style="font-size: 0.55rem; color: var(--muted);">${row.range}</div>
                 </div>
-                ${Array(7).fill(0).map((_, day) => {
-                  const isActive = isSlotActive(day, row.start, row.end);
-                  return `
-                    <div class="wiz-slot edit-wiz-slot ${isActive ? 'selected' : ''}" 
+                ${Array(7)
+                  .fill(0)
+                  .map((_, day) => {
+                    const isActive = isSlotActive(day, row.start, row.end);
+                    return `
+                    <div class="wiz-slot edit-wiz-slot ${isActive ? "selected" : ""}" 
                          data-day="${day}" data-time-start="${row.start}" data-time-end="${row.end}"
                          onclick="this.classList.toggle('selected'); const check = this.querySelector('.check-icon'); check.style.display = this.classList.contains('selected') ? 'block' : 'none';"
                          style="aspect-ratio: 1.1; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); cursor:pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">
-                      <span class="check-icon" style="display:${isActive ? 'block' : 'none'}; font-size: 0.8rem;">✅</span>
+                      <span class="check-icon" style="display:${isActive ? "block" : "none"}; font-size: 0.8rem;">✅</span>
                     </div>
                   `;
-                }).join('')}
+                  })
+                  .join("")}
               `;
-            }).join('')}
+              })
+              .join("")}
           </div></div>
 
           <style>
@@ -457,16 +554,18 @@ const AvailabilityManager = {
   },
 
   async saveSkillEdit(skillId) {
-    const btn = document.getElementById('saveEditBtn');
-    const name = document.getElementById('editSkillName').value;
-    const cat = document.getElementById('editSkillCategory').value;
-    const rate = parseFloat(document.getElementById('editSkillRate').value);
-    
-    const slots = Array.from(document.querySelectorAll('.edit-wiz-slot.selected')).map(el => {
-      return { 
-        day_of_week: parseInt(el.dataset.day), 
-        start_time: el.dataset.timeStart + ":00", 
-        end_time: el.dataset.timeEnd + ":00" 
+    const btn = document.getElementById("saveEditBtn");
+    const name = document.getElementById("editSkillName").value;
+    const cat = document.getElementById("editSkillCategory").value;
+    const rate = parseFloat(document.getElementById("editSkillRate").value);
+
+    const slots = Array.from(
+      document.querySelectorAll(".edit-wiz-slot.selected"),
+    ).map((el) => {
+      return {
+        day_of_week: parseInt(el.dataset.day),
+        start_time: el.dataset.timeStart + ":00",
+        end_time: el.dataset.timeEnd + ":00",
       };
     });
 
@@ -478,23 +577,24 @@ const AvailabilityManager = {
       await VS.teachers.updateSkill(skillId, {
         name: name.trim(),
         category: cat,
-        coin_rate: rate
+        coin_rate: rate,
       });
 
       // 2. Update Availability
       await VS.teachers.saveWeeklyAvailability(slots);
 
-      if (typeof showToast !== 'undefined') showToast("✅", "Broadcast updated successfully!");
+      if (typeof showToast !== "undefined")
+        showToast("✅", "Broadcast updated successfully!");
       else alert("Broadcast updated!");
 
-      document.getElementById('editSkillModal').remove();
-      if (typeof initTeacherDashboard === 'function') initTeacherDashboard();
-    } catch(err) {
+      document.getElementById("editSkillModal").remove();
+      if (typeof initTeacherDashboard === "function") initTeacherDashboard();
+    } catch (err) {
       btn.disabled = false;
       btn.textContent = "Save Changes";
       alert("Save failed: " + err.message);
     }
-  }
+  },
 };
 
 window.AvailabilityManager = AvailabilityManager;

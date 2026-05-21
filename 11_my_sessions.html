@@ -756,12 +756,49 @@
           <div>
             <div class="sb-name">Loading...</div>
             <div class="sb-coin">🪙 0 coins</div>
-                      <div class="xph-level" style="font-size:0.7rem;color:var(--muted);margin-bottom:0.2rem;font-weight:600">Level 1</div>
-            <div class="xph-bar" style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:0.2rem;width:100%">
-               <div class="xph-fill" style="height:100%;background:var(--coin);width:0%;transition:width 1s"></div>
+            <div
+              class="xph-level"
+              style="
+                font-size: 0.7rem;
+                color: var(--muted);
+                margin-bottom: 0.2rem;
+                font-weight: 600;
+              "
+            >
+              Level 1
             </div>
-            <div class="xph-xp" style="font-size:0.65rem;color:var(--muted);font-family:'JetBrains Mono',monospace">0 / 500 XP</div>
-</div>
+            <div
+              class="xph-bar"
+              style="
+                height: 4px;
+                background: var(--border);
+                border-radius: 2px;
+                overflow: hidden;
+                margin-bottom: 0.2rem;
+                width: 100%;
+              "
+            >
+              <div
+                class="xph-fill"
+                style="
+                  height: 100%;
+                  background: var(--coin);
+                  width: 0%;
+                  transition: width 1s;
+                "
+              ></div>
+            </div>
+            <div
+              class="xph-xp"
+              style="
+                font-size: 0.65rem;
+                color: var(--muted);
+                font-family: &quot;JetBrains Mono&quot;, monospace;
+              "
+            >
+              0 / 500 XP
+            </div>
+          </div>
         </div>
       </div>
     </aside>
@@ -820,9 +857,6 @@
     </div>
 
     <!-- SCRIPTS -->
-    <script src="config.js"></script>
-    <script type="module" src="api.js"></script>
-
     <script>
       let ALL_SESSIONS = { upcoming: [], completed: [], cancelled: [] };
       let currentTab = "upcoming";
@@ -910,7 +944,9 @@
           </div>
           <div class="sc-bottom">
             <span class="sc-coin">${s.role === "learning" ? "🪙 -" + s.coins + " escrowed" : "🪙 +" + s.coins + " expected"}</span>
-            <button class="sc-btn primary${s.canJoin ? "" : " disabled"}" ${s.canJoin ? "onclick=\"window.location.href='07_session.html'\"" : ""}>Join Room →</button>
+            <button class="sc-btn primary${s.canJoin ? '' : ' disabled'}" ${s.canJoin ? `onclick="window.location.href='07_session.html?id=${s.sessionId || s.id}&teacher=${s.teacherId || ''}'"` : ''}>
+              Join Room →
+            </button>
             <button class="sc-btn outline" onclick="window.location.href='05_teacher_profile.html?id=${s.id}'">View Profile</button>
             <button class="sc-btn danger" onclick="cancelSession(${s.id})">Cancel</button>
           </div>
@@ -975,26 +1011,28 @@
             "Are you sure you want to cancel this session? Escrowed coins will be refunded.",
           )
         ) {
-          VS.sessions.update(id, { status: "cancelled", reason: "Cancelled by user" })
+          VS.sessions
+            .update(id, { status: "cancelled", reason: "Cancelled by user" })
             .then(() => {
               showToast("❌", "Session cancelled. Coins will be refunded.");
               initSessions();
             })
-            .catch(e => showToast("⚠️", "Failed to cancel: " + e.message));
+            .catch((e) => showToast("⚠️", "Failed to cancel: " + e.message));
         }
       }
 
       function openReviewModal(bookingId, teacherId, skill) {
         const overlay = document.createElement("div");
         overlay.id = "reviewModal";
-        overlay.style.cssText = "position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); z-index:100; display:flex; align-items:center; justify-content:center; padding:20px;";
+        overlay.style.cssText =
+          "position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); z-index:100; display:flex; align-items:center; justify-content:center; padding:20px;";
         overlay.innerHTML = `
           <div style="background:var(--card); width:100%; max-width:400px; border-radius:16px; padding:1.5rem; box-shadow:0 10px 40px rgba(0,0,0,0.2); border:1px solid var(--border);">
             <h3 style="font-family:'DM Serif Display',serif; font-size:1.3rem; margin-bottom:0.3rem;">Leave a Review</h3>
             <p style="font-size:0.85rem; color:var(--muted); margin-bottom:1.2rem;">Rate your ${skill} session</p>
             
             <div style="display:flex; gap:0.5rem; justify-content:center; margin-bottom:1.5rem;" id="starRater">
-              ${[1,2,3,4,5].map(i => `<span class="star" data-val="${i}" style="font-size:2rem; cursor:pointer; color:var(--border); transition:all 0.2s;">★</span>`).join('')}
+              ${[1, 2, 3, 4, 5].map((i) => `<span class="star" data-val="${i}" style="font-size:2rem; cursor:pointer; color:var(--border); transition:all 0.2s;">★</span>`).join("")}
             </div>
             
             <textarea id="reviewText" placeholder="What did you learn? (Optional)" style="width:100%; height:100px; padding:0.8rem; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--ink); font-family:inherit; margin-bottom:1rem; outline:none; resize:none;"></textarea>
@@ -1008,35 +1046,57 @@
         document.body.appendChild(overlay);
 
         let rating = 0;
-        const stars = overlay.querySelectorAll('.star');
-        const submitBtn = document.getElementById('submitReviewBtn');
+        const stars = overlay.querySelectorAll(".star");
+        const submitBtn = document.getElementById("submitReviewBtn");
 
-        stars.forEach(star => {
-          star.addEventListener('mouseover', () => {
+        stars.forEach((star) => {
+          star.addEventListener("mouseover", () => {
             const val = parseInt(star.dataset.val);
-            stars.forEach(s => s.style.color = parseInt(s.dataset.val) <= val ? 'var(--coin)' : 'var(--border)');
+            stars.forEach(
+              (s) =>
+                (s.style.color =
+                  parseInt(s.dataset.val) <= val
+                    ? "var(--coin)"
+                    : "var(--border)"),
+            );
           });
-          star.addEventListener('mouseout', () => {
-            stars.forEach(s => s.style.color = parseInt(s.dataset.val) <= rating ? 'var(--coin)' : 'var(--border)');
+          star.addEventListener("mouseout", () => {
+            stars.forEach(
+              (s) =>
+                (s.style.color =
+                  parseInt(s.dataset.val) <= rating
+                    ? "var(--coin)"
+                    : "var(--border)"),
+            );
           });
-          star.addEventListener('click', () => {
+          star.addEventListener("click", () => {
             rating = parseInt(star.dataset.val);
-            stars.forEach(s => s.style.color = parseInt(s.dataset.val) <= rating ? 'var(--coin)' : 'var(--border)');
+            stars.forEach(
+              (s) =>
+                (s.style.color =
+                  parseInt(s.dataset.val) <= rating
+                    ? "var(--coin)"
+                    : "var(--border)"),
+            );
             submitBtn.disabled = false;
           });
         });
 
-        submitBtn.addEventListener('click', async () => {
+        submitBtn.addEventListener("click", async () => {
           if (!rating) return;
           submitBtn.disabled = true;
           submitBtn.textContent = "Submitting...";
-          const text = document.getElementById('reviewText').value;
+          const text = document.getElementById("reviewText").value;
           try {
-            await VS.sessions.update(bookingId, { learner_rating: rating, learner_review: text, reviewed_at: new Date().toISOString() });
+            await VS.sessions.update(bookingId, {
+              learner_rating: rating,
+              learner_review: text,
+              reviewed_at: new Date().toISOString(),
+            });
             overlay.remove();
             showToast("⭐", "Review submitted — thank you!");
             initSessions();
-          } catch(e) {
+          } catch (e) {
             submitBtn.disabled = false;
             submitBtn.textContent = "Submit";
             alert(e.message);

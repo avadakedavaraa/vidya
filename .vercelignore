@@ -1,8 +1,6 @@
 vidyasetu_backend/
-# Exclude the backend (already there)
-vidyasetu_backend/
 
-# Exclude documentation and AI logs
+# Docs and local AI artifacts
 .agent/
 .agents/
 graphify-out/

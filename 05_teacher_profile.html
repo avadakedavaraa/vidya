@@ -751,7 +751,7 @@
         }
         .sidebar.open {
           transform: translateX(0);
-          box-shadow: 4px 0 24px rgba(0,0,0,0.1);
+          box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
         }
         .main {
           margin-left: 0;
@@ -790,7 +790,8 @@
           align-items: stretch;
           margin-top: 1rem;
         }
-        .btn-book, .btn-msg {
+        .btn-book,
+        .btn-msg {
           width: 100%;
           text-align: center;
           justify-content: center;
@@ -1288,12 +1289,49 @@
           <div>
             <div class="sb-name">Loading...</div>
             <div class="sb-coin">...</div>
-                      <div class="xph-level" style="font-size:0.7rem;color:var(--muted);margin-bottom:0.2rem;font-weight:600">Level 1</div>
-            <div class="xph-bar" style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:0.2rem;width:100%">
-               <div class="xph-fill" style="height:100%;background:var(--coin);width:0%;transition:width 1s"></div>
+            <div
+              class="xph-level"
+              style="
+                font-size: 0.7rem;
+                color: var(--muted);
+                margin-bottom: 0.2rem;
+                font-weight: 600;
+              "
+            >
+              Level 1
             </div>
-            <div class="xph-xp" style="font-size:0.65rem;color:var(--muted);font-family:'JetBrains Mono',monospace">0 / 500 XP</div>
-</div>
+            <div
+              class="xph-bar"
+              style="
+                height: 4px;
+                background: var(--border);
+                border-radius: 2px;
+                overflow: hidden;
+                margin-bottom: 0.2rem;
+                width: 100%;
+              "
+            >
+              <div
+                class="xph-fill"
+                style="
+                  height: 100%;
+                  background: var(--coin);
+                  width: 0%;
+                  transition: width 1s;
+                "
+              ></div>
+            </div>
+            <div
+              class="xph-xp"
+              style="
+                font-size: 0.65rem;
+                color: var(--muted);
+                font-family: &quot;JetBrains Mono&quot;, monospace;
+              "
+            >
+              0 / 500 XP
+            </div>
+          </div>
         </div>
       </div>
     </aside>
@@ -1345,8 +1383,20 @@
               <a
                 class="btn-book"
                 href="#"
-                onclick="localStorage.setItem('booking_teacher_id', new URLSearchParams(window.location.search).get('id')); this.href = '06_booking?id=' + new URLSearchParams(window.location.search).get('id')"
-                style="display:flex; justify-content:center; text-decoration:none"
+                onclick="
+                  localStorage.setItem(
+                    'booking_teacher_id',
+                    new URLSearchParams(window.location.search).get('id'),
+                  );
+                  this.href =
+                    '06_booking?id=' +
+                    new URLSearchParams(window.location.search).get('id');
+                "
+                style="
+                  display: flex;
+                  justify-content: center;
+                  text-decoration: none;
+                "
               >
                 Book a Session →
               </a>
@@ -1645,8 +1695,20 @@
               <a
                 class="btn-book-now"
                 href="#"
-                onclick="localStorage.setItem('booking_teacher_id', new URLSearchParams(window.location.search).get('id')); this.href = '06_booking?id=' + new URLSearchParams(window.location.search).get('id')"
-                style="display:flex; justify-content:center; text-decoration:none"
+                onclick="
+                  localStorage.setItem(
+                    'booking_teacher_id',
+                    new URLSearchParams(window.location.search).get('id'),
+                  );
+                  this.href =
+                    '06_booking?id=' +
+                    new URLSearchParams(window.location.search).get('id');
+                "
+                style="
+                  display: flex;
+                  justify-content: center;
+                  text-decoration: none;
+                "
               >
                 Book Now — 🪙 3 coins →
               </a>
@@ -1783,7 +1845,8 @@
 
       // Parse URL param
       const urlParams = new URLSearchParams(window.location.search);
-      const teacherId = urlParams.get("id") || localStorage.getItem("vidya_selected_user_id");
+      const teacherId =
+        urlParams.get("id") || localStorage.getItem("vidya_selected_user_id");
 
       async function initProfile() {
         if (typeof VS !== "undefined" && VS.ui) VS.ui.updateSidebar();
@@ -1820,10 +1883,8 @@
                   .substring(0, 2)
                   .toUpperCase()
               : "??",
-            teaches: (user.skills || [])
-              .filter((s) => s.is_teaching),
-            wants: (user.skills || [])
-              .filter((s) => !s.is_teaching),
+            teaches: (user.skills || []).filter((s) => s.is_teaching),
+            wants: (user.skills || []).filter((s) => !s.is_teaching),
             rate:
               user.skills && user.skills.length > 0
                 ? Math.max(...user.skills.map((s) => s.coin_rate || 2))
@@ -1868,9 +1929,11 @@
           `;
 
           // Stats
-          document.getElementById("statRating").textContent = t.rating > 0 ? t.rating : "N/A";
+          document.getElementById("statRating").textContent =
+            t.rating > 0 ? t.rating : "N/A";
           document.getElementById("statSessions").textContent = t.sessions || 0;
-          document.getElementById("statReviews").textContent = t.reviews_count || 0;
+          document.getElementById("statReviews").textContent =
+            t.reviews_count || 0;
 
           // Update rating bars (distribution)
           if (t.reviews_count > 0) {
@@ -1885,18 +1948,22 @@
               }
             });
           } else {
-             document.querySelectorAll(".rb-fill").forEach(f => f.style.width = "0%");
-             document.querySelectorAll(".rb-count").forEach(c => c.textContent = "0");
+            document
+              .querySelectorAll(".rb-fill")
+              .forEach((f) => (f.style.width = "0%"));
+            document
+              .querySelectorAll(".rb-count")
+              .forEach((c) => (c.textContent = "0"));
           }
 
           // Skills
           const tierIcon = { gold: "🥇", silver: "🥈", bronze: "🥉" };
-          
+
           if (t.teaches && t.teaches.length > 0) {
             document.getElementById("teachSkills").innerHTML = t.teaches
               .map(
                 (s) =>
-                  `<div class="skill-tag teach"><span class="tier-icon">${tierIcon[s.tier] || "🥉"}</span> ${s.name} — ${s.tier ? s.tier.charAt(0).toUpperCase() + s.tier.slice(1) : "Unverified"}</div>`
+                  `<div class="skill-tag teach"><span class="tier-icon">${tierIcon[s.tier] || "🥉"}</span> ${s.name} — ${s.tier ? s.tier.charAt(0).toUpperCase() + s.tier.slice(1) : "Unverified"}</div>`,
               )
               .join("");
           } else {
@@ -1920,14 +1987,17 @@
           // Reviews
           document.getElementById("reviewTitle").textContent =
             "⭐ Reviews (" + (t.reviews_count || 0) + ")";
-          document.getElementById("bigRating").textContent = t.rating > 0 ? t.rating : "0.0";
+          document.getElementById("bigRating").textContent =
+            t.rating > 0 ? t.rating : "0.0";
           document.getElementById("reviewCount").textContent =
             (t.reviews_count || 0) + " reviews";
           document.getElementById("viewAllReviews").textContent =
             "View all " + (t.reviews_count || 0) + " reviews →";
-          
+
           if (t.recentReviews && t.recentReviews.length > 0) {
-            document.getElementById("reviewsList").innerHTML = t.recentReviews.map(r => `
+            document.getElementById("reviewsList").innerHTML = t.recentReviews
+              .map(
+                (r) => `
               <div class="review-card" style="margin-top:1.5rem; border-top:1px solid var(--surface); padding-top:1.5rem">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem">
                   <div style="display:flex; align-items:center; gap:0.6rem">
@@ -1939,11 +2009,13 @@
                       <div style="font-size:0.72rem; color:var(--muted)">${new Date(r.date).toLocaleDateString()}</div>
                     </div>
                   </div>
-                  <div style="color:var(--coin); font-size:0.85rem">${"★".repeat(r.rating)}${"☆".repeat(5-r.rating)}</div>
+                  <div style="color:var(--coin); font-size:0.85rem">${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}</div>
                 </div>
                 <p style="font-size:0.88rem; color:var(--body); line-height:1.6">${r.review || "No written review."}</p>
               </div>
-            `).join("");
+            `,
+              )
+              .join("");
           } else {
             document.getElementById("reviewsList").innerHTML =
               '<div style="padding:2rem;text-align:center;color:var(--muted)">No reviews yet.</div>';
@@ -1964,7 +2036,7 @@
                <h2>Teacher not found</h2>
                <p style="color:var(--danger);font-family:monospace;background:var(--surface);padding:1rem;margin:1rem 0;word-break:break-all;">
                  DEBUG: teacherId="${teacherId}"<br>
-                 ERROR: ${err.message || 'Unknown error'}
+                 ERROR: ${err.message || "Unknown error"}
                </p>
                <a href="04_explore.html" class="btn-book" style="display:inline-block;margin-top:1rem">Back to Explore</a>
              </div>`;
@@ -1991,11 +2063,15 @@
       async function loadAvailabilityGrid(teacherId) {
         const gridEl = document.getElementById("availGrid");
         if (!gridEl) return;
-        gridEl.innerHTML = '<div style="color:var(--muted); padding:1rem;">Loading availability...</div>';
+        gridEl.innerHTML =
+          '<div style="color:var(--muted); padding:1rem;">Loading availability...</div>';
 
         try {
           // Reuse the singleton client
-          const sb = typeof window.getSupabase === "function" ? window.getSupabase() : null;
+          const sb =
+            typeof window.getSupabase === "function"
+              ? window.getSupabase()
+              : null;
           if (!sb) throw new Error("no sb");
           const { data } = await sb
             .from("availability_slots")
@@ -2004,23 +2080,37 @@
             .eq("is_active", true);
 
           if (data && data.length > 0) {
-            const daysArr = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-            let html = '<div style="display:flex; flex-direction:column; gap:0.5rem; width:100%;">';
-            
+            const daysArr = [
+              "Sunday",
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+            ];
+            let html =
+              '<div style="display:flex; flex-direction:column; gap:0.5rem; width:100%;">';
+
             for (let i = 0; i < 7; i++) {
-              const daySlots = data.filter(s => s.is_recurring && s.day_of_week === i);
+              const daySlots = data.filter(
+                (s) => s.is_recurring && s.day_of_week === i,
+              );
               if (daySlots.length > 0) {
-                const slotsHtml = daySlots.map(s => {
-                  let [sh, sm] = s.start_time.split(":");
-                  let [eh, em] = s.end_time.split(":");
-                  let shI = parseInt(sh), ehI = parseInt(eh);
-                  let ampm1 = shI >= 12 ? "PM" : "AM";
-                  let ampm2 = ehI >= 12 ? "PM" : "AM";
-                  let fsh = shI > 12 ? shI - 12 : (shI === 0 ? 12 : shI);
-                  let feh = ehI > 12 ? ehI - 12 : (ehI === 0 ? 12 : ehI);
-                  return `<span style="background:var(--surface); padding:4px 8px; border-radius:6px; font-size:0.8rem; font-weight:600; border:1px solid var(--border);">${fsh}:${sm} ${ampm1} - ${feh}:${em} ${ampm2}</span>`;
-                }).join("");
-                
+                const slotsHtml = daySlots
+                  .map((s) => {
+                    let [sh, sm] = s.start_time.split(":");
+                    let [eh, em] = s.end_time.split(":");
+                    let shI = parseInt(sh),
+                      ehI = parseInt(eh);
+                    let ampm1 = shI >= 12 ? "PM" : "AM";
+                    let ampm2 = ehI >= 12 ? "PM" : "AM";
+                    let fsh = shI > 12 ? shI - 12 : shI === 0 ? 12 : shI;
+                    let feh = ehI > 12 ? ehI - 12 : ehI === 0 ? 12 : ehI;
+                    return `<span style="background:var(--surface); padding:4px 8px; border-radius:6px; font-size:0.8rem; font-weight:600; border:1px solid var(--border);">${fsh}:${sm} ${ampm1} - ${feh}:${em} ${ampm2}</span>`;
+                  })
+                  .join("");
+
                 html += `
                   <div style="display:flex; align-items:center; justify-content:space-between; padding:0.8rem; border-bottom:1px solid var(--border);">
                     <div style="font-weight:700; font-size:0.9rem; color:var(--ink); width:90px;">${daysArr[i]}</div>
@@ -2029,7 +2119,7 @@
                 `;
               }
             }
-            html += '</div>';
+            html += "</div>";
             gridEl.innerHTML = html;
             gridEl.style.display = "block"; // overriding grid layout if necessary
             return;

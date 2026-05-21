@@ -1137,12 +1137,28 @@
           title="Campus IRL Collab"
           >☕</a
         >
-        <button id="mobile-menu-btn" onclick="toggleSidebar()" style="background:none;border:none;color:var(--ink);font-size:1.5rem;cursor:pointer;margin-left:8px;display:none;">☰</button>
+        <button
+          id="mobile-menu-btn"
+          onclick="toggleSidebar()"
+          style="
+            background: none;
+            border: none;
+            color: var(--ink);
+            font-size: 1.5rem;
+            cursor: pointer;
+            margin-left: 8px;
+            display: none;
+          "
+        >
+          ☰
+        </button>
       </div>
     </nav>
     <style>
       @media (max-width: 768px) {
-        #mobile-menu-btn { display: inline-block !important; }
+        #mobile-menu-btn {
+          display: inline-block !important;
+        }
       }
     </style>
 
@@ -1193,12 +1209,49 @@
           <div>
             <div class="sb-name">Loading...</div>
             <div class="sb-coin">...</div>
-                      <div class="xph-level" style="font-size:0.7rem;color:var(--muted);margin-bottom:0.2rem;font-weight:600">Level 1</div>
-            <div class="xph-bar" style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:0.2rem;width:100%">
-               <div class="xph-fill" style="height:100%;background:var(--coin);width:0%;transition:width 1s"></div>
+            <div
+              class="xph-level"
+              style="
+                font-size: 0.7rem;
+                color: var(--muted);
+                margin-bottom: 0.2rem;
+                font-weight: 600;
+              "
+            >
+              Level 1
             </div>
-            <div class="xph-xp" style="font-size:0.65rem;color:var(--muted);font-family:'JetBrains Mono',monospace">0 / 500 XP</div>
-</div>
+            <div
+              class="xph-bar"
+              style="
+                height: 4px;
+                background: var(--border);
+                border-radius: 2px;
+                overflow: hidden;
+                margin-bottom: 0.2rem;
+                width: 100%;
+              "
+            >
+              <div
+                class="xph-fill"
+                style="
+                  height: 100%;
+                  background: var(--coin);
+                  width: 0%;
+                  transition: width 1s;
+                "
+              ></div>
+            </div>
+            <div
+              class="xph-xp"
+              style="
+                font-size: 0.65rem;
+                color: var(--muted);
+                font-family: &quot;JetBrains Mono&quot;, monospace;
+              "
+            >
+              0 / 500 XP
+            </div>
+          </div>
         </div>
       </div>
     </aside>
@@ -1225,7 +1278,7 @@
         border-bottom: 1px solid var(--border);
       }
       .sb-logo {
-        font-family: 'DM Serif Display', serif;
+        font-family: "DM Serif Display", serif;
         font-size: 1.45rem;
         color: var(--ink);
         display: flex;
@@ -1303,7 +1356,7 @@
       .overlay {
         position: fixed;
         inset: 0;
-        background: rgba(0,0,0,0.5);
+        background: rgba(0, 0, 0, 0.5);
         z-index: 999;
         display: none;
         backdrop-filter: blur(4px);
@@ -1333,12 +1386,12 @@
     </style>
     <script>
       function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('active');
-        document.getElementById('overlay').classList.toggle('active');
+        document.getElementById("sidebar").classList.toggle("active");
+        document.getElementById("overlay").classList.toggle("active");
       }
       // Update sidebar dynamically using UI helper
-      window.addEventListener('DOMContentLoaded', () => {
-        if (typeof VS !== 'undefined' && VS.ui) {
+      window.addEventListener("DOMContentLoaded", () => {
+        if (typeof VS !== "undefined" && VS.ui) {
           VS.ui.updateSidebar();
         }
       });
@@ -1617,7 +1670,18 @@
           <div class="coins-big" id="coins-earned">+8 🪙</div>
           <div class="coins-label">Time Coins earned</div>
         </div>
-        <div id="xp-notice" style="display:none;margin-top:0.5rem;font-size:0.9rem;font-weight:700;color:var(--coin);font-family:'JetBrains Mono',monospace;animation:fadeIn 0.5s ease"></div>
+        <div
+          id="xp-notice"
+          style="
+            display: none;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--coin);
+            font-family: &quot;JetBrains Mono&quot;, monospace;
+            animation: fadeIn 0.5s ease;
+          "
+        ></div>
 
         <div class="stats-row" id="stats-row"></div>
 
@@ -2488,29 +2552,31 @@ Return ONLY valid JSON — no markdown, no extra text:
         try {
           const sb = window.getSupabase && window.getSupabase();
           if (sb) {
-            const { data: xpResult } = await sb.rpc('award_game_xp', {
+            const { data: xpResult } = await sb.rpc("award_game_xp", {
               p_correct: state.correctCount || 0,
-              p_level:   state.level || 1
+              p_level: state.level || 1,
             });
             if (xpResult) {
               // Update localStorage with fresh XP
-              localStorage.setItem('vs_user_xp',    String(xpResult.xp    || 0));
-              localStorage.setItem('vs_user_level',  String(xpResult.level || 1));
+              localStorage.setItem("vs_user_xp", String(xpResult.xp || 0));
+              localStorage.setItem(
+                "vs_user_level",
+                String(xpResult.level || 1),
+              );
               // Refresh sidebar XP bar if VS is loaded
               if (window.VS && VS.ui) VS.ui.updateSidebar();
 
               const gained = xpResult.gained || 0;
-              const xpNotice = document.getElementById('xp-notice');
+              const xpNotice = document.getElementById("xp-notice");
               if (xpNotice) {
                 xpNotice.textContent = `+${gained} XP earned!`;
-                xpNotice.style.display = 'block';
+                xpNotice.style.display = "block";
               }
             }
           }
         } catch (e) {
-          console.warn('[XP] award_game_xp failed:', e.message);
+          console.warn("[XP] award_game_xp failed:", e.message);
         }
-
 
         const key = `${state.lang}_${state.theme}`;
         if (!state.completedLevels[key]) state.completedLevels[key] = [];

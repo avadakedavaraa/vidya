@@ -777,7 +777,7 @@
         }
         .sidebar.open {
           transform: translateX(0);
-          box-shadow: 4px 0 24px rgba(0,0,0,0.1);
+          box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
         }
         .main {
           margin-left: 0;
@@ -1204,7 +1204,6 @@
       [data-theme="dark"] .ham-btn span {
         background: var(--ink);
       }
-      
     </style>
     <script src="js/dark-mode.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1261,12 +1260,49 @@
           <div>
             <div class="sb-name">Loading...</div>
             <div class="sb-coin">...</div>
-                      <div class="xph-level" style="font-size:0.7rem;color:var(--muted);margin-bottom:0.2rem;font-weight:600">Level 1</div>
-            <div class="xph-bar" style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:0.2rem;width:100%">
-               <div class="xph-fill" style="height:100%;background:var(--coin);width:0%;transition:width 1s"></div>
+            <div
+              class="xph-level"
+              style="
+                font-size: 0.7rem;
+                color: var(--muted);
+                margin-bottom: 0.2rem;
+                font-weight: 600;
+              "
+            >
+              Level 1
             </div>
-            <div class="xph-xp" style="font-size:0.65rem;color:var(--muted);font-family:'JetBrains Mono',monospace">0 / 500 XP</div>
-</div>
+            <div
+              class="xph-bar"
+              style="
+                height: 4px;
+                background: var(--border);
+                border-radius: 2px;
+                overflow: hidden;
+                margin-bottom: 0.2rem;
+                width: 100%;
+              "
+            >
+              <div
+                class="xph-fill"
+                style="
+                  height: 100%;
+                  background: var(--coin);
+                  width: 0%;
+                  transition: width 1s;
+                "
+              ></div>
+            </div>
+            <div
+              class="xph-xp"
+              style="
+                font-size: 0.65rem;
+                color: var(--muted);
+                font-family: &quot;JetBrains Mono&quot;, monospace;
+              "
+            >
+              0 / 500 XP
+            </div>
+          </div>
         </div>
       </div>
     </aside>
@@ -1304,7 +1340,18 @@
         >
           <span></span><span></span><span></span>
         </button>
-        <a href="#" onclick="var id = new URLSearchParams(window.location.search).get('id') || localStorage.getItem('booking_teacher_id'); window.location.href='05_teacher_profile?id=' + id; return false;" class="back-btn">← Back to Profile</a>
+        <a
+          href="#"
+          onclick="
+            var id =
+              new URLSearchParams(window.location.search).get('id') ||
+              localStorage.getItem('booking_teacher_id');
+            window.location.href = '05_teacher_profile?id=' + id;
+            return false;
+          "
+          class="back-btn"
+          >← Back to Profile</a
+        >
         <div class="topbar-right">
           <div style="font-size: 0.82rem; color: var(--muted)">
             Your balance:
@@ -1645,7 +1692,8 @@
 
     <script>
       const urlParams = new URLSearchParams(window.location.search);
-      const teacherId = urlParams.get("id") || localStorage.getItem("booking_teacher_id");
+      const teacherId =
+        urlParams.get("id") || localStorage.getItem("booking_teacher_id");
 
       let selectedDate = null;
       let selectedTime = null;
@@ -1654,10 +1702,20 @@
       let BALANCE = 0;
       let duration = 1.5;
       let selectedTopic = "";
-      
+
       const MONTH_NAMES = [
-        "January", "February", "March", "April", "May", "June", 
-        "July", "August", "September", "October", "November", "December"
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
       ];
       const DAY_LABELS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
       let currentMonth = new Date().getMonth();
@@ -1667,7 +1725,12 @@
         if (typeof VS !== "undefined" && VS.ui) VS.ui.updateSidebar();
 
         if (!teacherId || teacherId === "undefined" || teacherId === "null") {
-          console.error("Redirecting because teacherId is:", teacherId, "URL search:", window.location.search);
+          console.error(
+            "Redirecting because teacherId is:",
+            teacherId,
+            "URL search:",
+            window.location.search,
+          );
           window.location.href = "04_explore.html";
           return;
         }
@@ -1713,20 +1776,27 @@
           // ── Populate topic chips from teacher's actual skills ──
           const chips = document.getElementById("topicChips");
           if (chips) {
-            const skills = (t.teaches && t.teaches.length > 0)
-              ? t.teaches.map(s => s.name || s)
-              : ["General Session"];
+            const skills =
+              t.teaches && t.teaches.length > 0
+                ? t.teaches.map((s) => s.name || s)
+                : ["General Session"];
             // Auto-select first skill
             selectedTopic = skills[0];
             if (document.getElementById("sumTopic"))
               document.getElementById("sumTopic").textContent = selectedTopic;
 
-            chips.innerHTML = skills.map((skill, i) => `
-              <button class="pill pill-teal topic-chip${i === 0 ? ' chip-active' : ''}"
+            chips.innerHTML =
+              skills
+                .map(
+                  (skill, i) => `
+              <button class="pill pill-teal topic-chip${i === 0 ? " chip-active" : ""}"
                 style="cursor:pointer;border:1.5px solid rgba(22,162,123,0.3);padding:0.35rem 0.85rem;font-size:0.8rem;font-family:inherit;"
-                onclick="selectTopic(this,'${skill.replace(/'/g,"\\'")}')">
+                onclick="selectTopic(this,'${skill.replace(/'/g, "\\'")}')">
                 ${skill.charAt(0).toUpperCase() + skill.slice(1)}
-              </button>`).join("") + `
+              </button>`,
+                )
+                .join("") +
+              `
               <button class="pill pill-indigo topic-chip"
                 style="cursor:pointer;border:1.5px solid rgba(91,69,224,0.3);padding:0.35rem 0.85rem;font-size:0.8rem;font-family:inherit;background:#fff;color:var(--body);"
                 onclick="showCustomTopicInput()">
@@ -1737,7 +1807,8 @@
             if (!document.getElementById("customTopicInput")) {
               const inp = document.createElement("div");
               inp.id = "customTopicWrap";
-              inp.style.cssText = "display:none;margin-top:0.5rem;display:none;gap:0.4rem;align-items:center;flex-wrap:wrap";
+              inp.style.cssText =
+                "display:none;margin-top:0.5rem;display:none;gap:0.4rem;align-items:center;flex-wrap:wrap";
               inp.innerHTML = `
                 <input id="customTopicInput" type="text" placeholder="Type your topic…"
                   style="flex:1;min-width:160px;padding:0.45rem 0.75rem;border:1.5px solid var(--border);border-radius:8px;
@@ -1807,9 +1878,12 @@
       async function loadTeacherAvailability(teacherId) {
         try {
           // Reuse the singleton client — avoids "Multiple GoTrueClient instances" warning
-          const sb = typeof window.getSupabase === "function"
-            ? window.getSupabase()
-            : (VS?.api && getSupabase ? getSupabase() : null);
+          const sb =
+            typeof window.getSupabase === "function"
+              ? window.getSupabase()
+              : VS?.api && getSupabase
+                ? getSupabase()
+                : null;
           if (!sb) throw new Error("no supabase");
           const { data } = await sb
             .from("availability_slots")
@@ -1849,10 +1923,10 @@
                   }
                 });
                 // Deduplicate and sort
-                TIME_SLOTS[d] = [...new Set(TIME_SLOTS[d])].sort((a,b) => {
-                   const t1 = new Date("1970/01/01 " + a);
-                   const t2 = new Date("1970/01/01 " + b);
-                   return t1 - t2;
+                TIME_SLOTS[d] = [...new Set(TIME_SLOTS[d])].sort((a, b) => {
+                  const t1 = new Date("1970/01/01 " + a);
+                  const t2 = new Date("1970/01/01 " + b);
+                  return t1 - t2;
                 });
               }
             }
@@ -1936,7 +2010,7 @@
             )
             .join("");
         }
-        
+
         // Append Custom Time Picker
         grid.innerHTML += `
           <div style="grid-column: 1/-1; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--surface);">
@@ -1957,7 +2031,9 @@
         hour = hour % 12;
         if (hour === 0) hour = 12;
         const t = `${hour}:${m} ${ampm}`;
-        document.querySelectorAll(".time-slot").forEach((e) => e.classList.remove("selected"));
+        document
+          .querySelectorAll(".time-slot")
+          .forEach((e) => e.classList.remove("selected"));
         selectedTime = t;
         document.getElementById("sumTime").textContent = t;
         updateConfirmBtn();
@@ -2031,7 +2107,10 @@
         if (!wrap) return;
         wrap.style.display = "flex";
         const input = document.getElementById("customTopicInput");
-        if (input) { input.focus(); input.select(); }
+        if (input) {
+          input.focus();
+          input.select();
+        }
         // Deselect all chips
         document.querySelectorAll("#topicChips .topic-chip").forEach((b) => {
           b.classList.remove("chip-active");
